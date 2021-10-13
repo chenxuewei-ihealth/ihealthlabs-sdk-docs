@@ -1,0 +1,58 @@
+{
+  "/-deb": {
+    "component": "c4f5d8e4",
+    "config": "5e9f5e1a"
+  },
+  "/blog/archive-f4c": {
+    "component": "9e4087bc",
+    "archive": "b2f554cd"
+  },
+  "/docs/tags-0cc": {
+    "component": "3720c009",
+    "tags": "55960ee5"
+  },
+  "/markdown-page-be1": {
+    "component": "1f391b9e",
+    "content": "393be207"
+  },
+  "/docs-1c9": {
+    "component": "1be78505",
+    "versionMetadata": "935f2afb"
+  },
+  "/docs/device/bp3l-8af": {
+    "component": "17896441",
+    "content": "5773632d"
+  },
+  "/docs/device/bp5-d21": {
+    "component": "17896441",
+    "content": "5f029480"
+  },
+  "/docs/device/bp5s-c14": {
+    "component": "17896441",
+    "content": "abeff6e5"
+  },
+  "/docs/device/bp7-ceb": {
+    "component": "17896441",
+    "content": "328ad520"
+  },
+  "/docs/device/bp7s-81e": {
+    "component": "17896441",
+    "content": "3e0514bc"
+  },
+  "/docs/device/kn550-2d7": {
+    "component": "17896441",
+    "content": "0d57293d"
+  },
+  "/docs/get-started/android-072": {
+    "component": "17896441",
+    "content": "dc782e3a"
+  },
+  "/docs/get-started/ios-2ba": {
+    "component": "17896441",
+    "content": "19ba56e1"
+  },
+  "/docs/intro-aed": {
+    "component": "17896441",
+    "content": "0e384e19"
+  }
+}

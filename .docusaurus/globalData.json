@@ -1,0 +1,63 @@
+{
+  "docusaurus-plugin-content-docs": {
+    "default": {
+      "path": "/docs",
+      "versions": [
+        {
+          "name": "current",
+          "label": "Next",
+          "isLast": true,
+          "path": "/docs",
+          "mainDocId": "intro",
+          "docs": [
+            {
+              "id": "device/bp3l",
+              "path": "/docs/device/bp3l",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "device/bp5",
+              "path": "/docs/device/bp5",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "device/bp5s",
+              "path": "/docs/device/bp5s",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "device/bp7",
+              "path": "/docs/device/bp7",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "device/bp7s",
+              "path": "/docs/device/bp7s",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "device/kn550",
+              "path": "/docs/device/kn550",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "get-started/android",
+              "path": "/docs/get-started/android",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "get-started/ios",
+              "path": "/docs/get-started/ios",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "intro",
+              "path": "/docs/intro",
+              "sidebar": "tutorialSidebar"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
