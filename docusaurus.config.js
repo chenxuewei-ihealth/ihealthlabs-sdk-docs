@@ -6,7 +6,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
   title: 'Docs',
   tagline: '',
   url: 'https://github.com/chenxuewei-ihealth/doc.sdk.ihealthlabs.com',
-  baseUrl: '/',
+  baseUrl: '/doc.sdk.ihealthlabs/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
