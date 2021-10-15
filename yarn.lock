@@ -9,6 +9,23 @@
   dependencies:
     "@algolia/autocomplete-shared" "1.2.2"
 
+"@algolia/autocomplete-core@1.4.1":
+  version "1.4.1"
+  resolved "https://registry.npmmirror.com/@algolia/autocomplete-core/download/@algolia/autocomplete-core-1.4.1.tgz#b17ef0e3299d6159ab6041365893384ec75de204"
+  integrity sha1-sX7w4ymdYVmrYEE2WJM4Tsdd4gQ=
+  dependencies:
+    "@algolia/autocomplete-shared" "1.4.1"
+
+"@algolia/autocomplete-js@^1.2.2":
+  version "1.4.1"
+  resolved "https://registry.npmmirror.com/@algolia/autocomplete-js/download/@algolia/autocomplete-js-1.4.1.tgz#56974112c6b65d3529e489d47c769ed0dc280377"
+  integrity sha1-VpdBEsa2XTUp5InUfHae0NwoA3c=
+  dependencies:
+    "@algolia/autocomplete-core" "1.4.1"
+    "@algolia/autocomplete-preset-algolia" "1.4.1"
+    "@algolia/autocomplete-shared" "1.4.1"
+    preact "^10.0.0"
+
 "@algolia/autocomplete-preset-algolia@1.2.2":
   version "1.2.2"
   resolved "https://registry.nlark.com/@algolia/autocomplete-preset-algolia/download/@algolia/autocomplete-preset-algolia-1.2.2.tgz?cache=0&sync_timestamp=1631525168964&other_urls=https%3A%2F%2Fregistry.nlark.com%2F%40algolia%2Fautocomplete-preset-algolia%2Fdownload%2F%40algolia%2Fautocomplete-preset-algolia-1.2.2.tgz#da734ef9e42a5f64cdad2dfc81c4e9fbf805d976"
@@ -16,10 +33,27 @@
   dependencies:
     "@algolia/autocomplete-shared" "1.2.2"
 
+"@algolia/autocomplete-preset-algolia@1.4.1":
+  version "1.4.1"
+  resolved "https://registry.npmmirror.com/@algolia/autocomplete-preset-algolia/download/@algolia/autocomplete-preset-algolia-1.4.1.tgz#7550b46a4911517da382a266946cd0bb7d9b49bf"
+  integrity sha1-dVC0akkRUX2jgqJmlGzQu32bSb8=
+  dependencies:
+    "@algolia/autocomplete-shared" "1.4.1"
+
 "@algolia/autocomplete-shared@1.2.2":
   version "1.2.2"
   resolved "https://registry.nlark.com/@algolia/autocomplete-shared/download/@algolia/autocomplete-shared-1.2.2.tgz?cache=0&sync_timestamp=1631525169348&other_urls=https%3A%2F%2Fregistry.nlark.com%2F%40algolia%2Fautocomplete-shared%2Fdownload%2F%40algolia%2Fautocomplete-shared-1.2.2.tgz#ff25dc308f2a296b2b9b325f1e3b57498eea3e0c"
   integrity sha1-/yXcMI8qKWsrmzJfHjtXSY7qPgw=
+
+"@algolia/autocomplete-shared@1.4.1":
+  version "1.4.1"
+  resolved "https://registry.npmmirror.com/@algolia/autocomplete-shared/download/@algolia/autocomplete-shared-1.4.1.tgz#d8f3b71dee1474a89989d359b434addacf140cdb"
+  integrity sha1-2PO3He4UdKiZidNZtDSt2s8UDNs=
+
+"@algolia/autocomplete-theme-classic@^1.2.2":
+  version "1.4.1"
+  resolved "https://registry.npmmirror.com/@algolia/autocomplete-theme-classic/download/@algolia/autocomplete-theme-classic-1.4.1.tgz#5f27d9bf78660d77374a8cd757dd8f438aa0ff38"
+  integrity sha1-XyfZv3hmDXc3SozXV92PQ4qg/zg=
 
 "@algolia/cache-browser-local-storage@4.10.5":
   version "4.10.5"
@@ -76,7 +110,7 @@
     "@algolia/requester-common" "4.10.5"
     "@algolia/transporter" "4.10.5"
 
-"@algolia/client-search@4.10.5":
+"@algolia/client-search@4.10.5", "@algolia/client-search@^4.10.3":
   version "4.10.5"
   resolved "https://registry.nlark.com/@algolia/client-search/download/@algolia/client-search-4.10.5.tgz?cache=0&sync_timestamp=1629984287290&other_urls=https%3A%2F%2Fregistry.nlark.com%2F%40algolia%2Fclient-search%2Fdownload%2F%40algolia%2Fclient-search-4.10.5.tgz#47907232a3e4ecf2aa4459b8de17242afd88147c"
   integrity sha1-R5ByMqPk7PKqRFm43hckKv2IFHw=
@@ -1145,6 +1179,21 @@
     "@babel/helper-validator-identifier" "^7.14.9"
     to-fast-properties "^2.0.0"
 
+"@cmfcmf/docusaurus-search-local@^0.6.6":
+  version "0.6.6"
+  resolved "https://registry.npmmirror.com/@cmfcmf/docusaurus-search-local/download/@cmfcmf/docusaurus-search-local-0.6.6.tgz#213a1e674f7d550baaab7be85e187fa114b55c1c"
+  integrity sha1-IToeZ099VQuqq3voXhh/oRS1XBw=
+  dependencies:
+    "@algolia/autocomplete-js" "^1.2.2"
+    "@algolia/autocomplete-theme-classic" "^1.2.2"
+    "@algolia/client-search" "^4.10.3"
+    algoliasearch "^4.10.3"
+    cheerio "^1.0.0-rc.9"
+    clsx "^1.1.1"
+    lunr "^2.3.9"
+    lunr-languages "^1.4.0"
+    mark.js "^8.11.1"
+
 "@docsearch/css@3.0.0-alpha.40":
   version "3.0.0-alpha.40"
   resolved "https://registry.nlark.com/@docsearch/css/download/@docsearch/css-3.0.0-alpha.40.tgz#c37bd7b03f4c30a6ea7a19b87fe71880d2e8b22a"
@@ -2028,7 +2077,7 @@ algoliasearch-helper@^3.3.4:
   dependencies:
     events "^1.1.1"
 
-algoliasearch@^4.0.0, algoliasearch@^4.8.4:
+algoliasearch@^4.0.0, algoliasearch@^4.10.3, algoliasearch@^4.8.4:
   version "4.10.5"
   resolved "https://registry.nlark.com/algoliasearch/download/algoliasearch-4.10.5.tgz?cache=0&sync_timestamp=1629980901116&other_urls=https%3A%2F%2Fregistry.nlark.com%2Falgoliasearch%2Fdownload%2Falgoliasearch-4.10.5.tgz#1faf34a3ae5ac3bef27282eb141251c70c7f5db2"
   integrity sha1-H680o65aw77ycoLrFBJRxwx/XbI=
@@ -2600,6 +2649,17 @@ character-reference-invalid@^1.0.0:
   resolved "https://registry.npm.taobao.org/character-reference-invalid/download/character-reference-invalid-1.1.4.tgz#083329cda0eae272ab3dbbf37e9a382c13af1560"
   integrity sha1-CDMpzaDq4nKrPbvzfpo4LBOvFWA=
 
+cheerio-select@^1.5.0:
+  version "1.5.0"
+  resolved "https://registry.nlark.com/cheerio-select/download/cheerio-select-1.5.0.tgz#faf3daeb31b17c5e1a9dabcee288aaf8aafa5823"
+  integrity sha1-+vPa6zGxfF4anavO4oiq+Kr6WCM=
+  dependencies:
+    css-select "^4.1.3"
+    css-what "^5.0.1"
+    domelementtype "^2.2.0"
+    domhandler "^4.2.0"
+    domutils "^2.7.0"
+
 cheerio@^0.22.0:
   version "0.22.0"
   resolved "https://registry.nlark.com/cheerio/download/cheerio-0.22.0.tgz?cache=0&sync_timestamp=1623167586610&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fcheerio%2Fdownload%2Fcheerio-0.22.0.tgz#a9baa860a3f9b595a6b81b1a86873121ed3a269e"
@@ -2621,6 +2681,19 @@ cheerio@^0.22.0:
     lodash.reduce "^4.4.0"
     lodash.reject "^4.4.0"
     lodash.some "^4.4.0"
+
+cheerio@^1.0.0-rc.9:
+  version "1.0.0-rc.10"
+  resolved "https://registry.nlark.com/cheerio/download/cheerio-1.0.0-rc.10.tgz?cache=0&sync_timestamp=1623167586610&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fcheerio%2Fdownload%2Fcheerio-1.0.0-rc.10.tgz#2ba3dcdfcc26e7956fc1f440e61d51c643379f3e"
+  integrity sha1-K6Pc38wm55VvwfRA5h1RxkM3nz4=
+  dependencies:
+    cheerio-select "^1.5.0"
+    dom-serializer "^1.3.2"
+    domhandler "^4.2.0"
+    htmlparser2 "^6.1.0"
+    parse5 "^6.0.1"
+    parse5-htmlparser2-tree-adapter "^6.0.1"
+    tslib "^2.2.0"
 
 chokidar@^2.1.8:
   version "2.1.8"
@@ -3099,7 +3172,7 @@ css-what@^3.2.1:
   resolved "https://registry.npmmirror.com/css-what/download/css-what-3.4.2.tgz#ea7026fcb01777edbde52124e21f327e7ae950e4"
   integrity sha1-6nAm/LAXd+295SEk4h8yfnrpUOQ=
 
-css-what@^5.0.0:
+css-what@^5.0.0, css-what@^5.0.1:
   version "5.1.0"
   resolved "https://registry.npmmirror.com/css-what/download/css-what-5.1.0.tgz#3f7b707aadf633baf62c2ceb8579b545bb40f7fe"
   integrity sha1-P3tweq32M7r2LCzrhXm1RbtA9/4=
@@ -3387,7 +3460,7 @@ dom-serializer@0:
     domelementtype "^2.0.1"
     entities "^2.0.0"
 
-dom-serializer@^1.0.1:
+dom-serializer@^1.0.1, dom-serializer@^1.3.2:
   version "1.3.2"
   resolved "https://registry.nlark.com/dom-serializer/download/dom-serializer-1.3.2.tgz#6206437d32ceefaec7161803230c7a20bc1b4d91"
   integrity sha1-YgZDfTLO767HFhgDIwx6ILwbTZE=
@@ -3444,7 +3517,7 @@ domutils@^1.5.1, domutils@^1.7.0:
     dom-serializer "0"
     domelementtype "1"
 
-domutils@^2.5.2, domutils@^2.6.0:
+domutils@^2.5.2, domutils@^2.6.0, domutils@^2.7.0:
   version "2.8.0"
   resolved "https://registry.nlark.com/domutils/download/domutils-2.8.0.tgz#4437def5db6e2d1f5d6ee859bd95ca7d02048135"
   integrity sha1-RDfe9dtuLR9dbuhZvZXKfQIEgTU=
@@ -5472,6 +5545,16 @@ lru-cache@^6.0.0:
   dependencies:
     yallist "^4.0.0"
 
+lunr-languages@^1.4.0:
+  version "1.9.0"
+  resolved "https://registry.nlark.com/lunr-languages/download/lunr-languages-1.9.0.tgz#7105230807788a112a69910561b7bbd055a0e588"
+  integrity sha1-cQUjCAd4ihEqaZEFYbe70FWg5Yg=
+
+lunr@^2.3.9:
+  version "2.3.9"
+  resolved "https://registry.nlark.com/lunr/download/lunr-2.3.9.tgz#18b123142832337dd6e964df1a5a7707b25d35e1"
+  integrity sha1-GLEjFCgyM33W6WTfGlp3B7JdNeE=
+
 make-dir@^3.0.0, make-dir@^3.0.2, make-dir@^3.1.0:
   version "3.1.0"
   resolved "https://registry.nlark.com/make-dir/download/make-dir-3.1.0.tgz#415e967046b3a7f1d185277d84aa58203726a13f"
@@ -5490,6 +5573,11 @@ map-visit@^1.0.0:
   integrity sha1-7Nyo8TFE5mDxtb1B8S80edmN+48=
   dependencies:
     object-visit "^1.0.0"
+
+mark.js@^8.11.1:
+  version "8.11.1"
+  resolved "https://registry.nlark.com/mark.js/download/mark.js-8.11.1.tgz#180f1f9ebef8b0e638e4166ad52db879beb2ffc5"
+  integrity sha1-GA8fnr74sOY45BZq1S24eb6y/8U=
 
 markdown-escapes@^1.0.0:
   version "1.0.4"
@@ -6135,12 +6223,19 @@ parse-numeric-range@^1.2.0:
   resolved "https://registry.nlark.com/parse-numeric-range/download/parse-numeric-range-1.3.0.tgz?cache=0&sync_timestamp=1629604699749&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fparse-numeric-range%2Fdownload%2Fparse-numeric-range-1.3.0.tgz#7c63b61190d61e4d53a1197f0c83c47bb670ffa3"
   integrity sha1-fGO2EZDWHk1ToRl/DIPEe7Zw/6M=
 
+parse5-htmlparser2-tree-adapter@^6.0.1:
+  version "6.0.1"
+  resolved "https://registry.nlark.com/parse5-htmlparser2-tree-adapter/download/parse5-htmlparser2-tree-adapter-6.0.1.tgz#2cdf9ad823321140370d4dbf5d3e92c7c8ddc6e6"
+  integrity sha1-LN+a2CMyEUA3DU2/XT6Sx8jdxuY=
+  dependencies:
+    parse5 "^6.0.1"
+
 parse5@^5.0.0:
   version "5.1.1"
   resolved "https://registry.nlark.com/parse5/download/parse5-5.1.1.tgz#f68e4e5ba1852ac2cadc00f4555fff6c2abb6178"
   integrity sha1-9o5OW6GFKsLK3AD0VV//bCq7YXg=
 
-parse5@^6.0.0:
+parse5@^6.0.0, parse5@^6.0.1:
   version "6.0.1"
   resolved "https://registry.nlark.com/parse5/download/parse5-6.0.1.tgz#e1a1c085c569b3dc08321184f19a39cc27f7c30b"
   integrity sha1-4aHAhcVps9wIMhGE8Zo5zCf3wws=
@@ -6592,6 +6687,11 @@ postcss@^8.2.15, postcss@^8.2.4, postcss@^8.3.5:
     nanoid "^3.1.28"
     picocolors "^0.2.1"
     source-map-js "^0.6.2"
+
+preact@^10.0.0:
+  version "10.5.15"
+  resolved "https://registry.npmmirror.com/preact/download/preact-10.5.15.tgz?cache=0&sync_timestamp=1634018113117&other_urls=https%3A%2F%2Fregistry.npmmirror.com%2Fpreact%2Fdownload%2Fpreact-10.5.15.tgz#6df94d8afecf3f9e10a742fd8c362ddab464225f"
+  integrity sha1-bflNiv7PP54Qp0L9jDYt2rRkIl8=
 
 prepend-http@^2.0.0:
   version "2.0.0"

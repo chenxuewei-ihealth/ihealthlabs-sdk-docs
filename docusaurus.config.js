@@ -50,6 +50,17 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
             position: 'left',
             label: 'Docs',
           },
+          // {
+          //   type: 'docsVersionDropdown',
+          //   position: 'left',
+          //   dropdownActiveClassDisabled: true,
+          //   dropdownItemsAfter: [
+          //     {
+          //       to: '/versions',
+          //       label: 'All versions',
+          //     },
+          //   ],
+          // },
           // {to: '/blog', label: 'Blog', position: 'left'},
           {
             href: 'https://github.com/facebook/docusaurus',
@@ -108,4 +119,22 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
         darkTheme: darkCodeTheme,
       },
     }),
+  
+  plugins: [
+    ['@cmfcmf/docusaurus-search-local',
+      ({
+        indexDocs: true,
+        docsRouteBasePath: '/docs',
+        indexDocSidebarParentCategories: 0,
+        indexBlog: true,
+        blogRouteBasePath: '/blog',
+        indexPages: false,
+        language: "en",
+        style: undefined,
+        lunr: {
+          tokenizerSeparator: /[\s\-]+/
+        }
+      })
+    ]
+  ]
 });
