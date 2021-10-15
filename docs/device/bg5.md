@@ -1,4 +1,4 @@
-# BG5 Workflow
+# BG5
 
 ## Import BG5 Module
 

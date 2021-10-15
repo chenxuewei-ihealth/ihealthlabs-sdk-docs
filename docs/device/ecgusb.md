@@ -1,4 +1,4 @@
-# ECG3 Workflow
+# ECG3
 
 ## import ECG3 module
 

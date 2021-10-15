@@ -1,4 +1,4 @@
-# AM3S Workflow
+# AM3S
 
 ## Import AM3S Module
 

@@ -1,4 +1,4 @@
-# HS6 Workflow
+# HS6
 
 ## import HS6 module
 

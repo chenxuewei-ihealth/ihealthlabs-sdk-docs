@@ -1,4 +1,4 @@
-# HS4S Workflow
+# HS4S
 
 ## import HS4S module
 

@@ -1,4 +1,4 @@
-# HS2S Workflow
+# HS2S
 
 ## import HS2S module
 

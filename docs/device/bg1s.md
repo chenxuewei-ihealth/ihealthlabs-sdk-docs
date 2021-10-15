@@ -1,4 +1,4 @@
-# BG1S Workflow
+# BG1S
 
 ## Import BG1S Module
 

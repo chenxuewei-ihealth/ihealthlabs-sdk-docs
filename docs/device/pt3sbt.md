@@ -1,4 +1,4 @@
-# PT3SBT Workflow
+# PT3SBT
 
 ## Import PT3SBT Module
 
