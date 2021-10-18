@@ -2071,9 +2071,9 @@ ajv@^6.1.0, ajv@^6.12.4, ajv@^6.12.5:
     uri-js "^4.2.2"
 
 algoliasearch-helper@^3.3.4:
-  version "3.6.0"
-  resolved "https://registry.npmmirror.com/algoliasearch-helper/download/algoliasearch-helper-3.6.0.tgz#69c8c544746f1536c7c27c6f2db782300450b250"
-  integrity sha1-acjFRHRvFTbHwnxvLbeCMARQslA=
+  version "3.6.1"
+  resolved "https://registry.npmmirror.com/algoliasearch-helper/download/algoliasearch-helper-3.6.1.tgz#b2964de29f69d8266d714e74cf097c06447ffaf2"
+  integrity sha1-spZN4p9p2CZtcU50zwl8BkR/+vI=
   dependencies:
     events "^1.1.1"
 
@@ -3017,9 +3017,9 @@ core-js-pure@^3.16.0:
   integrity sha1-2MwR1IheqRnz3ndtRecg5Mdp1AY=
 
 core-js@^3.9.1:
-  version "3.18.2"
-  resolved "https://registry.npmmirror.com/core-js/download/core-js-3.18.2.tgz?cache=0&sync_timestamp=1633458900768&other_urls=https%3A%2F%2Fregistry.npmmirror.com%2Fcore-js%2Fdownload%2Fcore-js-3.18.2.tgz#63a551e8a29f305cd4123754846e65896619ba5b"
-  integrity sha1-Y6VR6KKfMFzUEjdUhG5liWYZuls=
+  version "3.18.3"
+  resolved "https://registry.npmmirror.com/core-js/download/core-js-3.18.3.tgz?cache=0&sync_timestamp=1634062560319&other_urls=https%3A%2F%2Fregistry.npmmirror.com%2Fcore-js%2Fdownload%2Fcore-js-3.18.3.tgz#86a0bba2d8ec3df860fefcc07a8d119779f01509"
+  integrity sha1-hqC7otjsPfhg/vzAeo0Rl3nwFQk=
 
 core-util-is@~1.0.0:
   version "1.0.3"
@@ -6441,7 +6441,7 @@ postcss-discard-unused@^5.0.1:
 
 postcss-loader@^5.3.0:
   version "5.3.0"
-  resolved "https://registry.nlark.com/postcss-loader/download/postcss-loader-5.3.0.tgz?cache=0&sync_timestamp=1625142952652&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fpostcss-loader%2Fdownload%2Fpostcss-loader-5.3.0.tgz#1657f869e48d4fdb018a40771c235e499ee26244"
+  resolved "https://registry.npmmirror.com/postcss-loader/download/postcss-loader-5.3.0.tgz?cache=0&sync_timestamp=1634140473743&other_urls=https%3A%2F%2Fregistry.npmmirror.com%2Fpostcss-loader%2Fdownload%2Fpostcss-loader-5.3.0.tgz#1657f869e48d4fdb018a40771c235e499ee26244"
   integrity sha1-Flf4aeSNT9sBikB3HCNeSZ7iYkQ=
   dependencies:
     cosmiconfig "^7.0.0"

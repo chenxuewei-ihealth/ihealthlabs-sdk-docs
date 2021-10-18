@@ -1,4 +1,23 @@
+
 # AM3S
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs>
+  <TabItem value="iOS" label="iOS" default>
+
+#### iOS Doc
+
+  </TabItem>
+  
+  <TabItem value="android" label="Android">
+
+#### Android Doc
+
+  </TabItem>
+  
+  <TabItem value="reactnative" label="React Native">
 
 ## Import AM3S Module
 
@@ -386,3 +405,6 @@ notifyListener = DeviceEventEmitter.addListener(AM3SModule.Event_Notify,  (event
     }
 });
 ```
+
+  </TabItem>
+</Tabs>
