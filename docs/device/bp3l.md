@@ -1,5 +1,22 @@
 # BP3L
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs>
+  <TabItem value="android" label="Android" default>
+
+#### Android Doc
+
+  </TabItem>
+  
+  <TabItem value="ios" label="iOS">
+
+#### iOS Doc
+
+  </TabItem>
+  
+  <TabItem value="reactnative" label="React Native">
 ## import BP3L module
 
 ```js
@@ -159,3 +176,6 @@ iHealthDeviceManagerModule.getDevicesIDPS(mac, (event) => {
 ```js
 BP3LModule.getAllConnectedDevices();
 ```
+
+  </TabItem>
+</Tabs>

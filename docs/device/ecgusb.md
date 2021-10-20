@@ -1,5 +1,22 @@
 # ECG3
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs>
+  <TabItem value="android" label="Android" default>
+
+#### Android Doc
+
+  </TabItem>
+  
+  <TabItem value="ios" label="iOS">
+
+#### iOS Doc
+
+  </TabItem>
+  
+  <TabItem value="reactnative" label="React Native">
 ## import ECG3 module
 
 ```js
@@ -74,3 +91,5 @@ ECGUSBModule.deleteCacheData();
 ECGUSBModule.getFilterDataByFileName("ECG_Total_Data_20160420025256.dat","ECG_Total_Mark_20160420025256.txt");
 ```
 
+  </TabItem>
+</Tabs>

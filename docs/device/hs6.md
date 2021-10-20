@@ -1,5 +1,22 @@
 # HS6
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs>
+  <TabItem value="android" label="Android" default>
+
+#### Android Doc
+
+  </TabItem>
+  
+  <TabItem value="ios" label="iOS">
+
+#### iOS Doc
+
+  </TabItem>
+  
+  <TabItem value="reactnative" label="React Native">
 ## import HS6 module
 
 ```js
@@ -134,4 +151,7 @@ notifyListener = DeviceEventEmitter.addListener(HS6Module.Event_Notify,  (event)
     }
 });
 ```
+
+  </TabItem>
+</Tabs>
 

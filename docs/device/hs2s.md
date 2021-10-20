@@ -1,5 +1,22 @@
 # HS2S
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs>
+  <TabItem value="android" label="Android" default>
+
+#### Android Doc
+
+  </TabItem>
+  
+  <TabItem value="ios" label="iOS">
+
+#### iOS Doc
+
+  </TabItem>
+  
+  <TabItem value="reactnative" label="React Native">
 ## import HS2S module
 
 ```js
@@ -305,3 +322,6 @@ HS2SModule.disConnect(mac);
 ```js
 HS2SModule.getAllConnectedDevices();
 ```
+
+  </TabItem>
+</Tabs>

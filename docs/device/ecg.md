@@ -1,5 +1,22 @@
 # ECG3
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs>
+  <TabItem value="android" label="Android" default>
+
+#### Android Doc
+
+  </TabItem>
+  
+  <TabItem value="ios" label="iOS">
+
+#### iOS Doc
+
+  </TabItem>
+  
+  <TabItem value="reactnative" label="React Native">
 ## import ECG3 module
 
 ```js
@@ -67,3 +84,6 @@ notifyListener = DeviceEventEmitter.addListener(ECGModule.Event_Notify,  (event)
 ```js
 ECGModule.sysTime(mac);
 ```
+
+  </TabItem>
+</Tabs>

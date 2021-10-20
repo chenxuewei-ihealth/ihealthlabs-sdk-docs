@@ -4,28 +4,27 @@ import styles from './HomepageFeatures.module.css';
 
 const FeatureList = [
   {
-    title: 'Easy to Connection',
-    Svg: require('../../static/img/undraw_docusaurus_mountain.svg').default,
+    title: 'Easy to Measurement',
+    Svg: require('../../static/img/doc_index_1.svg').default,
     description: (
       <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
+        iHealth SDK was designed for connecting iHealth devices easily and use it quickly.
       </>
     ),
   },
   {
     title: 'Focus on What Matters',
-    Svg: require('../../static/img/undraw_docusaurus_tree.svg').default,
+    Svg: require('../../static/img/doc_index_2.svg').default,
     description: (
       <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
+        iHealth SDK lets you focus on your app, and don&apos;t to know the device low-level interaction. Go
         ahead and move your docs into the <code>docs</code> directory.
       </>
     ),
   },
   {
     title: 'Support Multi-platform',
-    Svg: require('../../static/img/undraw_docusaurus_react.svg').default,
+    Svg: require('../../static/img/doc_index_3.svg').default,
     description: (
       <>
         iHealth SDK support multi-platform Android iOS and React Native.

@@ -1,5 +1,22 @@
 # BP7S
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs>
+  <TabItem value="android" label="Android" default>
+
+#### Android Doc
+
+  </TabItem>
+  
+  <TabItem value="ios" label="iOS">
+
+#### iOS Doc
+
+  </TabItem>
+  
+  <TabItem value="reactnative" label="React Native">
 ## Import BP7S Module
 
 ```js
@@ -127,3 +144,6 @@ BP7SModule.getFunctionInfo(mac);
 ```js
 BP7SModule.getAllConnectedDevices();
 ```
+
+  </TabItem>
+</Tabs>

@@ -11,13 +11,13 @@ function HomepageHeader() {
   return (
     <header className={clsx('hero hero--primary', styles.heroBanner)}>
       <div className="container">
-        <h1 className="hero_title">iHealthlabs</h1>
-        <p className="hero__subtitle">xxx</p>
+        <h1 className="hero__title">iHealthlabs</h1>
+        <p className="hero__subtitle">Easy to manage your health data.</p>
         <div className={styles.buttons}>
           <Link
             className="button button--secondary button--lg"
             to="/docs/intro">
-            Go to doc
+            Get started
           </Link>
         </div>
       </div>

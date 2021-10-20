@@ -1,5 +1,22 @@
 # BG1S
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs>
+  <TabItem value="android" label="Android" default>
+
+#### Android Doc
+
+  </TabItem>
+  
+  <TabItem value="ios" label="iOS">
+
+#### iOS Doc
+
+  </TabItem>
+  
+  <TabItem value="reactnative" label="React Native">
 ## Import BG1S Module
 
 ```js
@@ -64,3 +81,6 @@ notifyListener = DeviceEventEmitter.addListener(BG1SModule.Event_Notify,  (event
     }
 });
 ```
+
+  </TabItem>
+</Tabs>

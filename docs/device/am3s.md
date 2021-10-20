@@ -5,15 +5,15 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
 <Tabs>
-  <TabItem value="iOS" label="iOS" default>
+  <TabItem value="android" label="Android" default>
 
-#### iOS Doc
+#### Android Doc
 
   </TabItem>
   
-  <TabItem value="android" label="Android">
+  <TabItem value="ios" label="iOS">
 
-#### Android Doc
+#### iOS Doc
 
   </TabItem>
   

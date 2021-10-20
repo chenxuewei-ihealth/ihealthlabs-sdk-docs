@@ -1,5 +1,22 @@
 # TS28B
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs>
+  <TabItem value="android" label="Android" default>
+
+#### Android Doc
+
+  </TabItem>
+  
+  <TabItem value="ios" label="iOS">
+
+#### iOS Doc
+
+  </TabItem>
+  
+  <TabItem value="reactnative" label="React Native">
 ## Import TS28B Module
 
 ```js
@@ -36,3 +53,6 @@ notifyListener = DeviceEventEmitter.addListener(TS28BModule.Event_Notify,  (even
     } 
 });
 ```
+
+  </TabItem>
+</Tabs>

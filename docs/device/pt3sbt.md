@@ -1,5 +1,22 @@
 # PT3SBT
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs>
+  <TabItem value="android" label="Android" default>
+
+#### Android Doc
+
+  </TabItem>
+  
+  <TabItem value="ios" label="iOS">
+
+#### iOS Doc
+
+  </TabItem>
+  
+  <TabItem value="reactnative" label="React Native">
 ## Import PT3SBT Module
 
 ```js
@@ -140,3 +157,6 @@ notifyListener = DeviceEventEmitter.addListener(PT3SBTModule.Event_Notify,  (eve
     } 
 });
 ```
+
+  </TabItem>
+</Tabs>

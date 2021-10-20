@@ -1,5 +1,22 @@
 # BP5
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs>
+  <TabItem value="android" label="Android" default>
+
+#### Android Doc
+
+  </TabItem>
+  
+  <TabItem value="ios" label="iOS">
+
+#### iOS Doc
+
+  </TabItem>
+  
+  <TabItem value="reactnative" label="React Native">
 ## import BP5 module
 
 ```js
@@ -159,3 +176,6 @@ iHealthDeviceManagerModule.getDevicesIDPS(mac, (event) => {
 ```js
 BP5Module.getAllConnectedDevices();
 ```
+
+  </TabItem>
+</Tabs>

@@ -1,5 +1,22 @@
 # AM5
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs>
+  <TabItem value="android" label="Android" default>
+
+#### iOS Doc
+
+  </TabItem>
+  
+  <TabItem value="ios" label="iOS">
+
+#### Android Doc
+
+  </TabItem>
+  
+  <TabItem value="reactnative" label="React Native">
 ## Import AM5 Module
 
 ```js
@@ -213,3 +230,6 @@ notifyListener = DeviceEventEmitter.addListener(AM5Module.Event_Notify,  (event)
     }
 });
 ```
+
+  </TabItem>
+</Tabs>
