@@ -8,6 +8,8 @@
   text-align: center;
   position: relative;
   overflow: hidden;
+  background-image: url("../../static/img/bg_index.png");
+  background-size: 100% 100%;
 }
 
 @media screen and (max-width: 966px) {
@@ -21,3 +23,17 @@
   align-items: center;
   justify-content: center;
 }
+
+.links {
+  border-radius: 10px;
+  border: 2px solid white;
+  padding: 0.1cm 0.3cm 0.1cm 0.3cm;
+  color: white;
+  font-size: 1.2em;
+}
+
+.links:hover {
+  color: white;
+  text-decoration:none
+}
+

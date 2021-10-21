@@ -1,5 +1,7 @@
-
-# AM3S
+---
+id: am3s
+title: AM3S
+---
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
@@ -7,13 +9,110 @@ import TabItem from '@theme/TabItem';
 <Tabs>
   <TabItem value="android" label="Android" default>
 
-#### Android Doc
+## Connection to device
+
+### 1.Listen to device notify
+
+```java
+int callbackId = iHealthDevicesManager.getInstance().registerClientCallback(new iHealthDevicesCallback() {
+    
+    @Override
+    public void onScanDevice(String mac, String deviceType, int rssi, Map manufactorData) {
+
+    }
+
+    @Override
+    public void onDeviceConnectionStateChange(String mac, String deviceType, int status, int errorID, Map manufactorData) {
+
+    }
+
+    @Override
+    public void onScanError(String reason, long latency) {
+        
+    }
+
+    @Override
+    public void onScanFinish() {
+       
+    }
+});
+
+iHealthDevicesManager.getInstance().addCallbackFilterForDeviceType(mClientCallbackId, iHealthDevicesManager.TYPE_AM3S);
+iHealthDevicesManager.getInstance().addCallbackFilterForAddress(int clientCallbackId, String... macs)
+```
+
+### 2.Scan for AM3S devices
+
+```java
+iHealthDevicesManager.getInstance().startDiscovery(DiscoveryTypeEnum.AM3S);
+```
+
+### 3.Connect to AM3S devices
+
+```java
+iHealthDevicesManager.getInstance().connectDevice("", mac, iHealthDevicesManager.TYPE_AM3S)
+
+mAm3sControl = iHealthDevicesManager.getInstance().getAm3sControl(mDeviceMac);
+```
+
+### Sy
+##### Get user id
+
+
+##### Get AM device's IDPS information
+
+
+##### Set user ID
+
+##### Get user information
+
+##### Set user's BMR
+
+
+##### Get device state and battery information
+
+## Sync history data
+
+### Get the activity data
+
+### Get current time activity data
+
+### Get sleep data
+
+
+
+
+
+##### Get alarm count
+
+##### Get alarm information by id
+
+##### Delete alarm by id
+
+##### Unset alarm
+
+##### Get activity remind setting
+
+##### Set/Unset activity remind
+
+
+
+
+
+##### Set the system time to AM device
+
+##### Set hour mode
+
+##### Get hour mode
+
+## Reset the device
+
 
   </TabItem>
   
   <TabItem value="ios" label="iOS">
 
-#### iOS Doc
+## iOS Doc
 
   </TabItem>
   

@@ -15,7 +15,7 @@ function HomepageHeader() {
         <p className="hero__subtitle">Easy to manage your health data.</p>
         <div className={styles.buttons}>
           <Link
-            className="button button--secondary button--lg"
+            className={styles.links}
             to="/docs/intro">
             Get started
           </Link>
