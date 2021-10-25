@@ -55,14 +55,16 @@ iHealthDevicesManager.getInstance().connectDevice("", mac, iHealthDevicesManager
 mAm3sControl = iHealthDevicesManager.getInstance().getAm3sControl(mDeviceMac);
 ```
 
-### Sy
-##### Get user id
+## Initia Device
 
+##### Get user ID
+
+##### Set user ID
 
 ##### Get AM device's IDPS information
 
 
-##### Set user ID
+
 
 ##### Get user information
 
