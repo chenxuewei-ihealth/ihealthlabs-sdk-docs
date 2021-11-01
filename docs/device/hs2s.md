@@ -81,7 +81,7 @@ control.getDeviceInfo();
 ```
 
 ```java
-// Retrun value
+// Return value
 private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
     @Override
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
@@ -107,7 +107,7 @@ control.getBattery();
 ```
 
 ```java
-// Retrun value
+// Return value
 private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
     @Override
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
@@ -133,7 +133,7 @@ control.setUnit(Hs2sProfile.UNIT_KG);
 ```
 
 ```java
-// Retrun value
+// Return value
 private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
     @Override
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
@@ -152,7 +152,7 @@ control.getUserInfo();
 ```
 
 ```java
-// Retrun value
+// Return value
 private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
     @Override
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
@@ -197,7 +197,7 @@ control.createOrUpdateUserInfo(String id, float weight, int gender, int age, int
 ```
 
 ```java
-// Retrun value
+// Return value
 private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
     @Override
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
@@ -223,7 +223,7 @@ control.deleteUserInfo(String id);
 ```
 
 ```java
-// Retrun value
+// Return value
 private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
     @Override
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
@@ -248,7 +248,7 @@ control.specifyTouristUsers();
 ```
 
 ```java
-// Retrun value
+// Return value
 private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
     @Override
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
@@ -305,7 +305,7 @@ control.specifyOnlineUsers(String id,
 ```
 
 ```java
-// Retrun value
+// Return value
 private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
     @Override
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
@@ -390,7 +390,7 @@ control.getOfflineDataCount(String... IDArray);
 ```
 
 ```java
-// Retrun value
+// Return value
 private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
     @Override
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
@@ -419,7 +419,7 @@ control.getOfflineData(String id)
 ```
 
 ```java
-// Retrun value
+// Return value
 private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
     @Override
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
@@ -471,7 +471,7 @@ control.deleteOfflineData(String id);
 ```
 
 ```java
-// Retrun value
+// Return value
 private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
     @Override
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
