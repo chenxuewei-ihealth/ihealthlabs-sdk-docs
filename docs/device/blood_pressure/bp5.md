@@ -413,6 +413,9 @@ notifyListener = DeviceEventEmitter.addListener(BP5Module.Event_Notify,  (event)
 
 ### disconnect device
 
+
+
+
 ```js
 BP5Module.disConnect(mac);
 ```
