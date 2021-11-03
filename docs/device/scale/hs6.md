@@ -1,4 +1,7 @@
-# HS6
+---
+title: HS6
+sidebar_position: 12
+---
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';

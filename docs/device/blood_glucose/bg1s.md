@@ -1,4 +1,7 @@
-# BG1S
+---
+title: BG1S
+sidebar_position: 13
+---
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';

@@ -1,4 +1,7 @@
-# BG5S
+---
+title: BG5S
+sidebar_position: 15
+---
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';

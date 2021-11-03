@@ -1,6 +1,6 @@
 ---
-id: hs2s
 title: HS2S
+sidebar_position: 8
 ---
 
 import Tabs from '@theme/Tabs';
