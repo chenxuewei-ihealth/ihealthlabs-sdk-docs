@@ -1,6 +1,6 @@
----
+--- 
 title: HS5
-sidebar_position: 11
+sidebar_position: 5
 ---
 
 import Tabs from '@theme/Tabs';
@@ -9,151 +9,149 @@ import TabItem from '@theme/TabItem';
 <Tabs>
   <TabItem value="android" label="Android" default>
 
-#### Android Doc
+## WorkFlow
+
+1. The HS5 is Wifi body fat scale. If you've already set up wifi information, please jump to step 2. If you need to set wifi information, please scan and connect HS5(Bluetooth) scale.
+
+2. Call funtion "setWifi" for setting wifi information to HS5(Bluetooth) scale.
+
+3. HS5 support online measurement and offline measurement.
+
+## Connection to device
+
+### 1.Listen to device notify
+
+```java
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    
+    @Override
+    public void onScanDevice(String mac, String deviceType, int rssi, Map manufactorData) { }
+
+    @Override
+    public void onDeviceConnectionStateChange(String mac, String deviceType, int status, int errorID, Map manufactorData){ }
+
+    @Override
+    public void onScanError(String reason, long latency) { }
+
+    @Override
+    public void onScanFinish() { }
+
+    @Override
+    public void onDeviceNotify(String mac, String deviceType,
+                                String action, String message) { }
+}
+int callbackId = iHealthDevicesManager.getInstance().registerClientCallback(miHealthDevicesCallback);
+iHealthDevicesManager.getInstance().addCallbackFilterForDeviceType(callbackId, iHealthDevicesManager.TYPE_HS5);
+iHealthDevicesManager.getInstance().addCallbackFilterForAddress(callbackId, String... macs)
+```
+
+### 2.Scan for HS4S devices
+
+```java
+iHealthDevicesManager.getInstance().startDiscovery(DiscoveryTypeEnum.HS4);
+```
+
+```java
+
+```
+
+### 3.Connect to HS4S devices
+
+```java
+iHealthDevicesManager.getInstance().connectDevice("", mac, iHealthDevicesManager.TYPE_HS4S)
+Hs4sControl control = iHealthDevicesManager.getInstance().getHs4sControl(mDeviceMac);
+```
+
+## API reference
+
+### Get offline data
+
+```java
+Hs4sControl control = iHealthDevicesManager.getInstance().getHs4sControl(mDeviceMac);
+control.getOfflineData() 
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (HsProfile.ACTION_HISTORICAL_DATA_COMPLETE_HS.equals(action)) {
+            try {
+                JSONArray historyArr = new JSONArray(message);
+                for (int i = 0; i < historyArr.length(); i++) {
+                    JSONObject obj = historyArr.getJSONObject(i);
+                    String measureTs = obj.getString(HsProfile.MEASUREMENT_DATE_HS);
+                    String weight    = obj.getString(HsProfile.WEIGHT_HS);
+                 
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    } 
+}
+```
+
+### Start a online measurement
+
+```java
+Hs2Control control = iHealthDevicesManager.getInstance().getHs2Control(mDeviceMac);
+/*
+ * @param unit 1 kg; 2 lb; 3 st
+ * @param userId user identify number
+ */
+control.measureOnline(int unit, int userId)
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (HsProfile.ACTION_LIVEDATA_HS.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                String weight = obj.getString(HsProfile.DATA_LIVEDATA_HSWEIGHT);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } else if (HsProfile.ACTION_ONLINE_RESULT_HS.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                String weight = obj.getString(HsProfile.WEIGHT_HS);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } 
+    }
+}
+```
+
+### Disconnect the HS4S
+
+```java
+Hs4sControl control = iHealthDevicesManager.getInstance().getHs4Control(mDeviceMac);
+control.disconnect();
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+     @Override
+    public void onDeviceConnectionStateChange(String mac, String deviceType, int status, int errorID, Map manufactorData) { 
+        
+    }
+}
+```
 
   </TabItem>
   
   <TabItem value="ios" label="iOS">
 
 #### iOS Doc
-
-  </TabItem>
-  
-  <TabItem value="reactnative" label="React Native">
-## import HS6 module
-
-```js
-import {
-  HS6Module,
-  HS6ProfileModule
-} from '@ihealth/ihealthlibrary-react-native';
-```
-
-## APIs
-
-### add and remove listener
-
-```js
-// add
-notifyListener = DeviceEventEmitter.addListener(HS6Module.Event_Notify,  (event) => {
-    console.log(event);
-});
-
-// remove
-notifyListener.remove();
-```
-
-### init hs6
-
-```js
-// need the ihealth account, apply from ihealth developer website
-HS6Module.init("xxx.xxx@xxx.com");
-```
-
-### set wifi for hs6
-
-The api only support the 2.4G wifi.
-
-```js
-HS6Module.setWifi("xxxx", "1234567890");
-
-// response
-notifyListener = DeviceEventEmitter.addListener(HS6Module.Event_Notify,  (event) => {
-    if (event.action === HS6ProfileModule.ACTION_HS6_SETWIFI) {
-        console.log(event[HS6ProfileModule.SETWIFI_RESULT]);
-    }
-});
-```
-
-### bind user with hs6
-
-```js
-/**
- * birthday
- * weight(kg)
- * height(cm)
- * isSporter
- * gender
- * serialNumber
- */
-HS6Module.bindDeviceHS6("1979-02-26 12:20:10", 85.0, 180, 2, 1, "ACCF2337A952");
-
-// response
-notifyListener = DeviceEventEmitter.addListener(HS6Module.Event_Notify,  (event) => {
-    if (event.action === HS6ProfileModule.ACTION_HS6_BIND) {
-        console.log(event[HS6ProfileModule.HS6_BIND_EXTRA]);
-        // 1: bind success, 2: the scale has no empty position, 3: bind fail
-        console.log(event[HS6ProfileModule.BIND_HS6_RESULT]);
-        console.log(event[HS6ProfileModule.HS6_MODEL]);
-        // The range is from 1~10
-        console.log(event[HS6ProfileModule.HS6_POSITION]);
-        // 1: setted, 0: not
-        console.log(event[HS6ProfileModule.HS6_SETTED_WIFI]);
-    }
-});
-```
-
-### unbind hs6
-
-```js
-HS6Module.unBindDeviceHS6("ACCF2337A952");
-
-// response
-notifyListener = DeviceEventEmitter.addListener(HS6Module.Event_Notify,  (event) => {
-    if (event.action === HS6ProfileModule.ACTION_HS6_UNBIND) {
-        console.log(event[HS6ProfileModule.HS6_UNBIND_RESULT]);
-    }
-});
-```
-
-### get token
-
-```js
-/**
- * clientId, 
- * clientSecret, 
- * username, 
- * clientPara
-`*/
-HS6Module.getToken("xxx", "xxx", "xxx.xxx@xxx.com", "random_str");
-
-// response
-notifyListener = DeviceEventEmitter.addListener(HS6Module.Event_Notify,  (event) => {
-    if (event.action === HS6ProfileModule.ACTION_HS6_GET_TOKEN) {
-        console.log(event[HS6ProfileModule.GET_TOKEN_RESULT]);
-    }
-});
-```
-
-### set unit
-
-```js
-/**
- * username
- * unitType 0: Kg 1: lbs 2: st
-`*/
-HS6Module.setUnit("xxx.xxx@xxx.com", 0);
-
-// response
-notifyListener = DeviceEventEmitter.addListener(HS6Module.Event_Notify,  (event) => {
-    if (event.action === HS6ProfileModule.ACTION_HS6_SET_UNIT) {
-        console.log(event[HS6ProfileModule.SET_UNIT_RESULT]);
-    }
-});
-```
-
-### get data stored in cloud
-
-```js
-HS6Module.getCloudData("xxx", "xxx", "xxx.xxx@xxx.com", 0, 10);
-
-// response
-notifyListener = DeviceEventEmitter.addListener(HS6Module.Event_Notify,  (event) => {
-    if (event.action === HSProfileModule.ACTION_HS6_GET_CLOUDDATA) {
-        
-    }
-});
-```
 
   </TabItem>
 </Tabs>

@@ -37,7 +37,7 @@ As shown below, Add your license file to your iOS project.
 
 For Android
 As show below, Add your license file to your asserts folder.
-![integrate android](/img/integrate-android.png)
+![integrate android](/img/guide_android_1.png)
 
 #### Using license file
 

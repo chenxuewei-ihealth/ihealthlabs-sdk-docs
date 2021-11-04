@@ -1,6 +1,6 @@
 ---
 title: HS6
-sidebar_position: 12
+sidebar_position: 7
 ---
 
 import Tabs from '@theme/Tabs';

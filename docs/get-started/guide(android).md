@@ -6,23 +6,47 @@ sidebar_position: 2
 
 ## Step 1: Add license in your application
 
-As show below, Add your license file to your root asserts folder.
-![integrate android](/img/integrate-android.png)
+As shown below, add your license file to your root assets folder.
+![guide android](/img/guide_android_1.png)
 
-## Step 2: Check application permission
+## Step 2: Add SDK library and SO file
+
+As shown below, add your SDK jar file and SO file to your project.
+![guide android](/img/guide_android_2.png)
+
+For the library project, add the following:
+
+```groovy
+android {
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+    }
+}
+```
+
+## Step 3: Check application permission
 
 To use Bluetooth Low Energy, you must declare [several permissions](https://developer.android.com/guide/topics/connectivity/bluetooth/permissions).
 
-## Step 3: Init SDK
+## Step 4: Init SDK
 
 ```java
-iHealthDevicesManager.getInstance().init(this,  Log.VERBOSE, Log.VERBOSE);
+public class BaseApplication extends Application {
+    
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        iHealthDevicesManager.getInstance().init(this,  Log.VERBOSE, Log.VERBOSE);
+    }
+}
 ```
 
-## Step 4: Authentication license
+## Step 5: Authentication license
 
-Please call the following method, if license is invalid, it will return false.
-Somtimes license needs to be updated, the first call will return false, the SDK will synchronize with the server, and the next call will return true.
+Please call the following method, if the license is invalid, it will return false.
+When the license needs to be updated, the first call will return false, the SDK will sync with the server, and the next call will return true.
 
 ```java
 public void auth() {

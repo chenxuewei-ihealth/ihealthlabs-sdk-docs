@@ -20,13 +20,13 @@ import TabItem from '@theme/TabItem';
 ### 1.Listen to device notify
 
 ```java
-int callbackId = iHealthDevicesManager.getInstance().registerClientCallback(new iHealthDevicesCallback() {
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
     
     @Override
     public void onScanDevice(String mac, String deviceType, int rssi, Map manufactorData) { }
 
     @Override
-    public void onDeviceConnectionStateChange(String mac, String deviceType, int status, int errorID, Map manufactorData) { }
+    public void onDeviceConnectionStateChange(String mac, String deviceType, int status, int errorID, Map manufactorData){ }
 
     @Override
     public void onScanError(String reason, long latency) { }
@@ -37,8 +37,8 @@ int callbackId = iHealthDevicesManager.getInstance().registerClientCallback(new 
     @Override
     public void onDeviceNotify(String mac, String deviceType,
                                 String action, String message) { }
-});
-
+}
+int callbackId = iHealthDevicesManager.getInstance().registerClientCallback(miHealthDevicesCallback);
 iHealthDevicesManager.getInstance().addCallbackFilterForDeviceType(callbackId, iHealthDevicesManager.TYPE_BP3L);
 iHealthDevicesManager.getInstance().addCallbackFilterForAddress(callbackId, String... macs)
 ```
