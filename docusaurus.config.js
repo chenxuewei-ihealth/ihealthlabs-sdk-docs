@@ -19,7 +19,7 @@ module.exports = {
   title: 'iHealth SDK Docs',
   tagline: 'Real-time audio & video SDKs, ready to launch 🚀',
   url: 'https://docs.dyte.io',
-  baseUrl: '/',
+  baseUrl: '/doc.sdk.ihealthlabs/',
   onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'favicon.ico',
