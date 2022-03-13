@@ -1,100 +1,102 @@
-const lightCodeTheme = require('prism-react-renderer/themes/github');
-const darkCodeTheme = require('prism-react-renderer/themes/dracula');
+/* eslint-disable */
+const {
+  tailwindPlugin,
+  webpackPlugin,
+  posthogPlugin,
+} = require('./src/plugins');
+
+const isDev = process.env.NODE_ENV === 'development';
+
+const pageOptions = {
+  sidebarCollapsible: false,
+  editUrl: 'https://github.com/dyte-in/docs/tree/main',
+  showLastUpdateAuthor: false,
+  showLastUpdateTime: false,
+};
 
 /** @type {import('@docusaurus/types').DocusaurusConfig} */
-(module.exports = {
-  title: 'Docs',
-  tagline: '',
-  url: 'https://github.com/chenxuewei-ihealth/doc.sdk.ihealthlabs.com',
-  baseUrl: '/doc.sdk.ihealthlabs/',
-  onBrokenLinks: 'throw',
+module.exports = {
+  title: 'iHealth SDK Docs',
+  tagline: 'Real-time audio & video SDKs, ready to launch 🚀',
+  url: 'https://docs.dyte.io',
+  baseUrl: '/',
+  onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
-  favicon: 'img/favicon.ico',
-  organizationName: 'ihealthlabs', 
-  projectName: 'doc.sdk.ihealthlabs', 
-
+  favicon: 'favicon.ico',
+  organizationName: 'iHealthlabs', 
+  projectName: 'docs',
+  clientModules: [require.resolve('./src/css/tailwind.css')],
+  themeConfig: {
+    image: '/logo.svg',
+    colorMode: {
+      defaultMode: 'dark',
+      disableSwitch: true,
+    },
+    navbar: {
+      hideOnScroll: true,
+      logo: {
+        alt: 'Dyte Docs',
+        src: '/logo.svg',
+      },
+      items: [
+        {
+          label: 'Home',
+          to: '/',
+          activeBaseRegex: '(^/docs)',
+        },
+        {
+          label: 'API Reference',
+          to: '/android/quickstart',
+        },
+        {
+          label: 'Guides',
+          to: '/guides/subscribing-to-server-events',
+        },
+      ],
+    },
+    hideableSidebar: true,
+    prism: {
+      additionalLanguages: [
+        'dart',
+        'ruby',
+        'groovy',
+        'kotlin',
+        'java',
+        'swift',
+        'objectivec',
+      ],
+      theme: require('prism-react-renderer/themes/vsDark'),
+    },
+    algolia: process.env.ALGOLIA_API_KEY && {
+      apiKey: process.env.ALGOLIA_API_KEY,
+      indexName: 'prod_docs',
+      contextualSearch: true,
+      appId: process.env.ALGOLIA_APP_ID,
+      searchParameters: {},
+    },
+    posthog: {
+      apiKey: process.env.POSTHOG_API_KEY,
+    },
+  },
   presets: [
     [
       '@docusaurus/preset-classic',
-      /** @type {import('@docusaurus/preset-classic').Options} */
-      ({
+      {
         docs: {
-          sidebarPath: require.resolve('./sidebars.js'),
-          editUrl: 'https://github.com/facebook/docusaurus/edit/main/website/',
+          path: 'docs/main',
+          id: 'default',
+          routeBasePath: 'docs',
+          sidebarPath: require.resolve('./sidebars/sidebars-docs.js'),
+          sidebarCollapsible: false,
         },
-        blog: {
-          showReadingTime: true,
-          editUrl:
-            'https://github.com/facebook/docusaurus/edit/main/website/blog/',
-        },
-        theme: {
-          customCss: require.resolve('./src/css/custom.css'),
-        },
-      }),
+        blog: false,
+      },
     ],
   ],
-
-  themeConfig:
-    /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
-    ({
-      navbar: {
-        title: 'iHealthlabs',
-        logo: {
-          alt: 'iHealthlabs',
-          src: 'img/logo.svg',
-        },
-        items: [
-          {
-            type: 'doc',
-            docId: 'intro',
-            position: 'left',
-            label: 'Docs',
-          },
-          // {
-          //   type: 'docsVersionDropdown',
-          //   position: 'left',
-          //   dropdownActiveClassDisabled: true,
-          //   dropdownItemsAfter: [
-          //     {
-          //       to: '/versions',
-          //       label: 'All versions',
-          //     },
-          //   ],
-          // },
-          // {to: '/blog', label: 'Blog', position: 'left'},
-          {
-            href: 'https://github.com/chenxuewei-ihealth/doc.sdk.ihealthlabs',
-            label: 'GitHub',
-            position: 'right',
-          },
-        ],
-      },
-      footer: {
-        style: 'dark',
-        links: [
-          {
-            title: 'Docs',
-            items: [
-              {
-                label: 'Get Started',
-                to: '/docs/intro',
-              },
-              {
-                label: 'GitHub',
-                href: 'https://github.com/facebook/docusaurus',
-              },
-            ],
-          },
-        ],
-        copyright: `Copyright © ${new Date().getFullYear()} iHealthlabs SDK Docs, Inc. Built with iHealthlabs.`,
-      },
-      prism: {
-        theme: lightCodeTheme,
-        darkTheme: darkCodeTheme,
-      },
-    }),
-  
   plugins: [
+    tailwindPlugin,
+    webpackPlugin,
+    posthogPlugin,
     ['@cmfcmf/docusaurus-search-local',
       ({
         indexDocs: true,
@@ -109,6 +111,45 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
           tokenizerSeparator: /[\s\-]+/
         }
       })
-    ]
-  ]
-});
+    ],
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        path: 'docs/react-native',
+        routeBasePath: 'react-native',
+        id: 'react-native',
+        sidebarPath: require.resolve('./sidebars/sidebars-react-native.js'),
+        onlyIncludeVersions: !isDev
+          ? require('./react-native_versions.json')
+          : undefined,
+        ...pageOptions,
+      },
+    ],
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        path: 'docs/android',
+        routeBasePath: 'android',
+        id: 'android',
+        sidebarPath: require.resolve('./sidebars/sidebars-android.js'),
+        onlyIncludeVersions: !isDev
+          ? require('./android_versions.json')
+          : undefined,
+        ...pageOptions,
+      },
+    ],
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        path: 'docs/ios',
+        routeBasePath: 'ios',
+        id: 'ios',
+        sidebarPath: require.resolve('./sidebars/sidebars-ios.js'),
+        onlyIncludeVersions: !isDev
+          ? require('./ios_versions.json')
+          : undefined,
+        ...pageOptions,
+      },
+    ],
+  ],
+};
