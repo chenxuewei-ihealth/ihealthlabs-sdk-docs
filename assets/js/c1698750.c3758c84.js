@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunksdk_docs=self.webpackChunksdk_docs||[]).push([[1257],{4112:function(e,t,n){n.r(t),n.d(t,{default:function(){return o}});var s=n(7294),c=n(5977);function o(){return s.createElement(c.l_,{to:"/ihealthlabs-sdk-docs/docs/home/introduction"})}}}]);
