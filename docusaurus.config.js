@@ -62,6 +62,7 @@ module.exports = {
         docs: {
           path: 'docs/main',
           routeBasePath: '/docs',
+          id: 'ihealthlabs-sdk-docs',
           sidebarPath: require.resolve('./sidebars/sidebars-docs.js'),
           sidebarCollapsible: false,
         },
