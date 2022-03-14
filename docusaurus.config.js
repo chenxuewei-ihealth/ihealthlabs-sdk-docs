@@ -9,7 +9,7 @@ const isDev = process.env.NODE_ENV === 'development';
 
 const pageOptions = {
   sidebarCollapsible: false,
-  editUrl: 'https://github.com/dyte-in/docs/tree/main',
+  editUrl: 'https://github.com/chenxuewei-ihealth/ihealthlabs-sdk-docs/tree/main',
   showLastUpdateAuthor: false,
   showLastUpdateTime: false,
 };
@@ -17,8 +17,7 @@ const pageOptions = {
 /** @type {import('@docusaurus/types').DocusaurusConfig} */
 module.exports = {
   title: 'iHealth SDK Docs',
-  tagline: 'Real-time audio & video SDKs, ready to launch 🚀',
-  url: 'https://github.com/chenxuewei-ihealth/doc.sdk.ihealthlabs.com',
+  url: 'https://chenxuewei-ihealth.github.io/',
   baseUrl: '/',
   onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
@@ -73,7 +72,7 @@ module.exports = {
       {
         docs: {
           path: 'docs/main',
-          routeBasePath: 'docs',
+          routeBasePath: '/docs',
           sidebarPath: require.resolve('./sidebars/sidebars-docs.js'),
           sidebarCollapsible: false,
         },
