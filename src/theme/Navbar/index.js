@@ -210,13 +210,11 @@ function NavbarMobileSidebar({ sidebarShown, toggleSidebar }) {
 }
 
 const getPage = () => {
-  const [, doc] = window.location.pathname.split('/');
+  const [, , doc] = window.location.pathname.split('/');
 
   switch (doc) {
     case 'docs':
       return 'home';
-    case 'guides':
-      return 'guides';
     default:
       if (
         [
@@ -255,7 +253,7 @@ function Navbar() {
             </button>
 
             <Link to="/" className="flex">
-              <img src="../../../static/logo.svg" style={{ width: 32, height: 32 }}/>
+              <img src="https://raw.githubusercontent.com/chenxuewei-ihealth/ihealthlabs-sdk-docs/master/static/logo.svg" style={{ width: 32, height: 32 }}/>
             </Link>
           </div>
 

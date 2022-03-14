@@ -32,7 +32,7 @@ const CONTEXTS = [
 const getContext = (id) => CONTEXTS.find((context) => context.id === id);
 
 export const getCurrentPageInfo = () => {
-  return window.location.pathname.split('/').slice(1);
+  return window.location.pathname.split('/').slice(2);
 };
 
 const pathExists = (path, data) => {
@@ -46,8 +46,10 @@ const ContextSwitcher = ({ className }) => {
 
   useEffect(() => {
     const [doc] = getCurrentPageInfo();
-
+    console.log('doc: ' + doc);
     const currContext = getContext(doc);
+    console.log(currContext);
+    console.log(context);
     if (currContext && currContext.id !== context.id) {
       setContext(currContext);
     }
@@ -60,7 +62,11 @@ const ContextSwitcher = ({ className }) => {
 
     const newDoc = newValue.id;
 
-    let path = `/${newDoc}/${docPath.join('/')}`;
+    console.log('newDoc: ' + newDoc);
+
+    let path = `/ihealthlabs-sdk-docs/${newDoc}/${docPath.join('/')}`;
+
+    console.log('path: ' + path);
 
     const lastVersion = data[newDoc].versions.find(
       (version) => version.isLast === true

@@ -52,14 +52,13 @@ function HideableSidebarButton({ onClick }) {
 }
 
 const getDocId = () => {
-  const [, doc] = window.location.pathname.split('/');
+  const [, , doc] = window.location.pathname.split('/');
   if (['docs', '', 'guides'].includes(doc)) return 'default';
   return doc;
 };
 
 const DocManager = () => {
   const docId = getDocId();
-
   if (docId === 'default') {
     // don't show docs for `/docs` or `/`
     return null;
