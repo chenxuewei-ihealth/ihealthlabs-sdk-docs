@@ -18,13 +18,13 @@ const pageOptions = {
 module.exports = {
   title: 'iHealth SDK Docs',
   tagline: 'Real-time audio & video SDKs, ready to launch 🚀',
-  url: 'https://docs.dyte.io',
-  baseUrl: '/doc.sdk.ihealthlabs/',
+  url: 'https://github.com/chenxuewei-ihealth/doc.sdk.ihealthlabs.com',
+  baseUrl: '/',
   onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
-  favicon: 'favicon.ico',
+  favicon: 'img/favicon.ico',
   organizationName: 'iHealthlabs', 
-  projectName: 'docs',
+  projectName: 'iHealth SDK docs',
   clientModules: [require.resolve('./src/css/tailwind.css')],
   themeConfig: {
     image: '/logo.svg',
@@ -35,7 +35,7 @@ module.exports = {
     navbar: {
       hideOnScroll: true,
       logo: {
-        alt: 'Dyte Docs',
+        alt: 'iHealthlabs SDK Docs',
         src: '/logo.svg',
       },
       items: [
@@ -47,10 +47,6 @@ module.exports = {
         {
           label: 'API Reference',
           to: '/android/quickstart',
-        },
-        {
-          label: 'Guides',
-          to: '/guides/subscribing-to-server-events',
         },
       ],
     },
@@ -67,13 +63,6 @@ module.exports = {
       ],
       theme: require('prism-react-renderer/themes/vsDark'),
     },
-    algolia: process.env.ALGOLIA_API_KEY && {
-      apiKey: process.env.ALGOLIA_API_KEY,
-      indexName: 'prod_docs',
-      contextualSearch: true,
-      appId: process.env.ALGOLIA_APP_ID,
-      searchParameters: {},
-    },
     posthog: {
       apiKey: process.env.POSTHOG_API_KEY,
     },
@@ -84,7 +73,6 @@ module.exports = {
       {
         docs: {
           path: 'docs/main',
-          id: 'default',
           routeBasePath: 'docs',
           sidebarPath: require.resolve('./sidebars/sidebars-docs.js'),
           sidebarCollapsible: false,
