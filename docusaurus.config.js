@@ -18,7 +18,7 @@ const pageOptions = {
 module.exports = {
   title: 'iHealth SDK Docs',
   url: 'https://chenxuewei-ihealth.github.io/',
-  baseUrl: '/',
+  baseUrl: '/ihealthlabs-sdk-docs/',
   onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
@@ -37,17 +37,6 @@ module.exports = {
         alt: 'iHealthlabs SDK Docs',
         src: '/logo.svg',
       },
-      items: [
-        {
-          label: 'Home',
-          to: '/',
-          activeBaseRegex: '(^/docs)',
-        },
-        {
-          label: 'API Reference',
-          to: '/android/quickstart',
-        },
-      ],
     },
     hideableSidebar: true,
     prism: {
