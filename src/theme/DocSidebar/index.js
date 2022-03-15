@@ -93,8 +93,7 @@ function DocSidebarDesktop({ path, sidebar, onCollapse, isHidden }) {
     >
       {hideOnScroll && (
         <Link to="/" className={clsx('hidden p-4 lg:block')}>
-          {/* <DocsLogo tabIndex={-1} className={clsx('h-7 self-start')} /> */}
-
+          <img src="https://raw.githubusercontent.com/chenxuewei-ihealth/ihealthlabs-sdk-docs/master/static/logo.svg" style={{ width: 36, height: 36 }}/>
         </Link>
       )}
       <nav
@@ -105,7 +104,8 @@ function DocSidebarDesktop({ path, sidebar, onCollapse, isHidden }) {
           {
             [styles.menuWithAnnouncementBar]:
               !isAnnouncementBarClosed && showAnnouncementBar,
-          }
+
+          },
         )}
       >
         <ul className={clsx(ThemeClassNames.docs.docSidebarMenu, 'menu__list')}>

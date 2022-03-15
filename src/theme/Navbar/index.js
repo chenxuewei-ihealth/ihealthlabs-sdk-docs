@@ -247,8 +247,7 @@ function Navbar() {
           <div className="flex items-center space-x-2">
             <button
               onClick={mobileSidebar.toggle}
-              className="bg-transparent lg:hidden"
-            >
+              className="bg-transparent lg:hidden">
               <MenuIcon className="h-6 text-text-100" />
             </button>
 
