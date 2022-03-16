@@ -254,10 +254,13 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
     @Override
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
         if (Bg5sProfile.ACTION_START_MEASURE.equals(action)) {
-            
+            Log.i("start a measure")
+
         } else if (Bg5sProfile.ACTION_STRIP_IN.equals(action)) {
+            Log.i("test strip in")
 
         } else if (Bg5sProfile.ACTION_GET_BLOOD.equals(action)) {
+            Log.i("test drop blood")
 
         } else if (Bg5sProfile.ACTION_RESULT.equals(action)) {
             try {
@@ -267,7 +270,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
                 e.printStackTrace();
             }
         } else if (Bg5sProfile.ACTION_STRIP_OUT.equals(action)) {
-
+            Log.i("test strip out")
         }
     } 
 }

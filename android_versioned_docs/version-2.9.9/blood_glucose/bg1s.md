@@ -43,7 +43,7 @@ iHealthDevicesManager.getInstance().addCallbackFilterForAddress(callbackId, Stri
 iHealthDevicesManager.getInstance().startDiscovery(DiscoveryTypeEnum.BG1S);
 ```
 
-### 3.Connect to BP3L devices
+### 3.Connect to BG1S devices
 
 ```java
 iHealthDevicesManager.getInstance().connectDevice("", mac, iHealthDevicesManager.TYPE_BG1S)
@@ -160,6 +160,51 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
                 e.printStackTrace();
             }
         }
+    } 
+}
+```
+
+### Start measure
+
+```java
+Bg5sControl control = iHealthDevicesManager.getInstance().getBg5sControl(mDeviceMac);
+/**
+ * @param measureType the measure type set to BG5S.Can be one of
+ *                    {@link Bg5sProfile#MEASURE_BLOOD}  or
+ *                    {@link Bg5sProfile#MEASURE_CTL}
+ */
+control.startMeasure(int measureType);
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Bg1sProfile.ACTION_STRIP_INSERTION_STATUS.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                int status = obj.getInt((Bg1sProfile.STRIP_INSERTION_STATUS);
+                if (1 == status) {
+                    Log.i("test strip in")
+                } else if (2 == status) {
+                    Log.i("test strip out")
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        } else if (Bg1sProfile.ACTION_GET_BLOOD.equals(action)) {
+            Log.i("test drop blood")
+
+        } else if (Bg1sProfile.ACTION_MEASURE_RESULT.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                int value = obj.getInt(Bg1sProfile.MEASURE_RESULT);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } 
     } 
 }
 ```

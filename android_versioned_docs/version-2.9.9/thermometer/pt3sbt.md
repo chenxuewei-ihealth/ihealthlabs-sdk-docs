@@ -2,12 +2,11 @@
 title: PT3SBT
 sidebar_position: 3
 ---
-
 ## WorkFlow
 
-1. Scan and connect PO3 scale.
+1. Scan and connect PT3SBT.
 
-2. PO3 support online measurement and offline measurement.
+2. PT3SBT support online measurement and offine measurement.
 
 ## Connection to device
 
@@ -33,14 +32,14 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
                                 String action, String message) { }
 }
 int callbackId = iHealthDevicesManager.getInstance().registerClientCallback(miHealthDevicesCallback);
-iHealthDevicesManager.getInstance().addCallbackFilterForDeviceType(callbackId, iHealthDevicesManager.TYPE_PO3);
+iHealthDevicesManager.getInstance().addCallbackFilterForDeviceType(callbackId, iHealthDevicesManager.TYPE_PT3SBT);
 iHealthDevicesManager.getInstance().addCallbackFilterForAddress(callbackId, String... macs)
 ```
 
-### 2.Scan for PO3 devices
+### 2.Scan for PT3SBT devices
 
 ```java
-iHealthDevicesManager.getInstance().startDiscovery(DiscoveryTypeEnum.PO3);
+iHealthDevicesManager.getInstance().startDiscovery(DiscoveryTypeEnum.PT3SBT);
 ```
 
 ```java
@@ -54,20 +53,20 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 }
 ```
 
-### 3.Connect to PO3 devices
+### 3.Connect to PT3SBT devices
 
 ```java
-iHealthDevicesManager.getInstance().connectDevice("", mac, iHealthDevicesManager.TYPE_PO3)
-Po3Control control = iHealthDevicesManager.getInstance().getPo3Control(mDeviceMac);
+iHealthDevicesManager.getInstance().connectDevice("", mac, iHealthDevicesManager.TYPE_PT3SBT)
+PT3SBTControl control = iHealthDevicesManager.getInstance().getPt3sbtDevice(mDeviceMac);
 ```
 
 ## API reference
 
-### Get the PO3 battery status
+### Set time for PT3SBT device
 
 ```java
-Po3Control control = iHealthDevicesManager.getInstance().getPo3Control(mDeviceMac);
-control.getBattery();
+Pt3sbtControl control = iHealthDevicesManager.getInstance().getPt3sbtDevice(mDeviceMac);
+control.setTime();
 ```
 
 ```java
@@ -75,97 +74,14 @@ control.getBattery();
 private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
     @Override
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (PoProfile.ACTION_BATTERY_PO.equals(action)) {
+        if (Pt3sbtProfile.ACTION_SET_TIME.equals(action)) {
             try {
                 JSONObject obj = new JSONObject(message);
-                int battery = obj.getInt(PoProfile.BATTERY_PO);
+                int result = obj.getInt(NT13BProfile.RESULT);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
     } 
-}
-```
-
-### Start real-time measurement
-
-```java
-Po3Control control = iHealthDevicesManager.getInstance().getPo3Control(mDeviceMac);
-control.startMeasure() 
-```
-
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (HsProfile.ACTION_HISTORICAL_DATA_COMPLETE_HS.equals(action)) {
-            try {
-                JSONArray historyArr = new JSONArray(message);
-                for (int i = 0; i < historyArr.length(); i++) {
-                    JSONObject obj = historyArr.getJSONObject(i);
-                    String measureTs = obj.getString(HsProfile.MEASUREMENT_DATE_HS);
-                    String weight    = obj.getString(HsProfile.WEIGHT_HS);
-                 
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
-```
-
-### Specify Online Users
-
-```java
-Hs2Control control = iHealthDevicesManager.getInstance().getHs2Control(mDeviceMac);
-/*
- * @param unit 1 kg; 2 lb; 3 st
- * @param userId user identify number
- */
-control.measureOnline(int unit, int userId)
-```
-
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (HsProfile.ACTION_LIVEDATA_HS.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                String weight = obj.getString(HsProfile.DATA_LIVEDATA_HSWEIGHT);
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        } else if (HsProfile.ACTION_ONLINE_RESULT_HS.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                String weight = obj.getString(HsProfile.WEIGHT_HS);
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        } 
-    }
-}
-```
-
-### Disconnect the HS2
-
-```java
-Hs2Control control = iHealthDevicesManager.getInstance().getHs2Control(mDeviceMac);
-control.disconnect();
-```
-
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-     @Override
-    public void onDeviceConnectionStateChange(String mac, String deviceType, int status, int errorID, Map manufactorData) { 
-        
-    }
 }
 ```

@@ -77,10 +77,8 @@ module.exports = {
     ['@cmfcmf/docusaurus-search-local',
       ({
         indexDocs: true,
-        docsRouteBasePath: '/docs',
         indexDocSidebarParentCategories: 0,
-        indexBlog: true,
-        blogRouteBasePath: '/blog',
+
         indexPages: false,
         language: "en",
         style: undefined,

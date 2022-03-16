@@ -37,14 +37,6 @@ iHealthDevicesManager.getInstance().addCallbackFilterForDeviceType(callbackId, i
 iHealthDevicesManager.getInstance().addCallbackFilterForAddress(callbackId, String... macs)
 ```
 
-:::info
-Need ACCESS_COARSE_LOCATION or ACCESS_FINE_LOCATION permission in Android API 23+
-```xml
-<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-```
-:::
-
 ### 2.Scan for PO1 devices
 
 ```java
@@ -148,7 +140,9 @@ control.disconnect();
 private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
      @Override
     public void onDeviceConnectionStateChange(String mac, String deviceType, int status, int errorID, Map manufactorData) { 
-        
+        if (iHealthDevicesManager.DEVICE_STATE_DISCONNECTED == status) {
+            Log.i("The device is disconnected");
+        }
     }
 }
 ```
