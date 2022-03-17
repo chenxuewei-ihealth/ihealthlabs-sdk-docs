@@ -33,22 +33,22 @@ int callbackId = iHealthDevicesManager.getInstance().registerClientCallback(new 
     }
 });
 
-iHealthDevicesManager.getInstance().addCallbackFilterForDeviceType(mClientCallbackId, iHealthDevicesManager.TYPE_AM3);
+iHealthDevicesManager.getInstance().addCallbackFilterForDeviceType(mClientCallbackId, iHealthDevicesManager.TYPE_AM3S);
 iHealthDevicesManager.getInstance().addCallbackFilterForAddress(int clientCallbackId, String... macs)
 ```
 
-### 2.Scan for AM3 devices
+### 2.Scan for AM3S devices
 
 ```java
-iHealthDevicesManager.getInstance().startDiscovery(DiscoveryTypeEnum.AM3);
+iHealthDevicesManager.getInstance().startDiscovery(DiscoveryTypeEnum.AM3S);
 ```
 
-### 3.Connect to AM3 devices
+### 3.Connect to AM3S devices
 
 ```java
-iHealthDevicesManager.getInstance().connectDevice("", mac, iHealthDevicesManager.TYPE_AM3)
+iHealthDevicesManager.getInstance().connectDevice("", mac, iHealthDevicesManager.TYPE_AM3S)
 
-Am3Control control = iHealthDevicesManager.getInstance().getAm3Control(mDeviceMac);
+Am3sControl control = iHealthDevicesManager.getInstance().getAm3sControl(mDeviceMac);
 ```
 
 ## API reference
@@ -56,7 +56,7 @@ Am3Control control = iHealthDevicesManager.getInstance().getAm3Control(mDeviceMa
 ### Get AM device's IDPS information
 
 ```java
-Am3Control control = iHealthDevicesManager.getInstance().getAm3Control(mDeviceMac);
+Am3sControl control = iHealthDevicesManager.getInstance().getAm3sControl(mDeviceMac);
 control.getBattery();
 ```
 
@@ -80,7 +80,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 ### Reset the device
 
 ```java
-Am3Control control = iHealthDevicesManager.getInstance().getAm3Control(mDeviceMac);
+Am3sControl control = iHealthDevicesManager.getInstance().getAm3sControl(mDeviceMac);
 control.getBattery();
 ```
 
@@ -104,7 +104,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 ### Get user id
 
 ```java
-Am3Control control = iHealthDevicesManager.getInstance().getAm3Control(mDeviceMac);
+Am3sControl control = iHealthDevicesManager.getInstance().getAm3sControl(mDeviceMac);
 control.getBattery();
 ```
 
@@ -128,7 +128,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 ### Get alarms' count
 
 ```java
-Am3Control control = iHealthDevicesManager.getInstance().getAm3Control(mDeviceMac);
+Am3sControl control = iHealthDevicesManager.getInstance().getAm3sControl(mDeviceMac);
 control.getBattery();
 ```
 
@@ -152,7 +152,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 ### Get alarm information by id
 
 ```java
-Am3Control control = iHealthDevicesManager.getInstance().getAm3Control(mDeviceMac);
+Am3sControl control = iHealthDevicesManager.getInstance().getAm3sControl(mDeviceMac);
 control.getBattery();
 ```
 
@@ -176,7 +176,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 ### Set/Unset alarm
 
 ```java
-Am3Control control = iHealthDevicesManager.getInstance().getAm3Control(mDeviceMac);
+Am3sControl control = iHealthDevicesManager.getInstance().getAm3sControl(mDeviceMac);
 control.getBattery();
 ```
 
@@ -200,7 +200,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 ### Delete alarm by id
 
 ```java
-Am3Control control = iHealthDevicesManager.getInstance().getAm3Control(mDeviceMac);
+Am3sControl control = iHealthDevicesManager.getInstance().getAm3sControl(mDeviceMac);
 control.getBattery();
 ```
 
@@ -224,7 +224,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 ### Get activity remind setting
 
 ```java
-NT13BControl control = iHealthDevicesManager.getInstance().getNT13BControl(mDeviceMac);
+Am3Control control = iHealthDevicesManager.getInstance().getAm3sControl(mDeviceMac);
 control.getBattery();
 ```
 
@@ -248,7 +248,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 ### Set/Unset activity remind
 
 ```java
-Am3Control control = iHealthDevicesManager.getInstance().getAm3Control(mDeviceMac);
+Am3sControl control = iHealthDevicesManager.getInstance().getAm3sControl(mDeviceMac);
 control.getBattery();
 ```
 
@@ -272,7 +272,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 ### Get device state and battery information
 
 ```java
-Am3Control control = iHealthDevicesManager.getInstance().getAm3Control(mDeviceMac);
+Am3sControl control = iHealthDevicesManager.getInstance().getAm3sControl(mDeviceMac);
 control.getBattery();
 ```
 
@@ -296,7 +296,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 ### Set user ID
 
 ```java
-Am3Control control = iHealthDevicesManager.getInstance().getAm3Control(mDeviceMac);
+Am3sControl control = iHealthDevicesManager.getInstance().getAm3sControl(mDeviceMac);
 control.getBattery();
 ```
 
@@ -320,7 +320,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 ### Get user information
 
 ```java
-Am3Control control = iHealthDevicesManager.getInstance().getAm3Control(mDeviceMac);
+Am3sControl control = iHealthDevicesManager.getInstance().getAm3sControl(mDeviceMac);
 control.getBattery();
 ```
 
@@ -344,7 +344,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 ### Set user's BMR
 
 ```java
-Am3Control control = iHealthDevicesManager.getInstance().getAm3Control(mDeviceMac);
+Am3sControl control = iHealthDevicesManager.getInstance().getAm3sControl(mDeviceMac);
 control.getBattery();
 ```
 
@@ -368,7 +368,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 ### Get the activity data
 
 ```java
-Am3Control control = iHealthDevicesManager.getInstance().getAm3Control(mDeviceMac);
+Am3sControl control = iHealthDevicesManager.getInstance().getAm3sControl(mDeviceMac);
 control.getBattery();
 ```
 
@@ -392,7 +392,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 ### Get current time activity data
 
 ```java
-Am3Control control = iHealthDevicesManager.getInstance().getAm3Control(mDeviceMac);
+Am3sControl control = iHealthDevicesManager.getInstance().getAm3sControl(mDeviceMac);
 control.getBattery();
 ```
 
@@ -416,7 +416,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 ### Get sleep data
 
 ```java
-Am3Control control = iHealthDevicesManager.getInstance().getAm3Control(mDeviceMac);
+Am3sControl control = iHealthDevicesManager.getInstance().getAm3sControl(mDeviceMac);
 control.getBattery();
 ```
 
@@ -440,7 +440,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 ### Set the system time to AM device
 
 ```java
-Am3Control control = iHealthDevicesManager.getInstance().getAm3Control(mDeviceMac);
+Am3sControl control = iHealthDevicesManager.getInstance().getAm3sControl(mDeviceMac);
 control.getBattery();
 ```
 
@@ -464,7 +464,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 ### Set hour mode
 
 ```java
-Am3Control control = iHealthDevicesManager.getInstance().getAm3Control(mDeviceMac);
+Am3sControl control = iHealthDevicesManager.getInstance().getAm3sControl(mDeviceMac);
 control.getBattery();
 ```
 
@@ -488,7 +488,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 ### Get hour mode
 
 ```java
-Am3Control control = iHealthDevicesManager.getInstance().getAm3Control(mDeviceMac);
+Am3sControl control = iHealthDevicesManager.getInstance().getAm3sControl(mDeviceMac);
 control.getBattery();
 ```
 
