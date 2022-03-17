@@ -235,30 +235,6 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 }
 ```
 
-### Set bottle info to Bg5 device
-
-```java
-Bg5Control control = iHealthDevicesManager.getInstance().getBg5Control(mDeviceMac);
-control.getBottleMessage();
-```
-
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if Bg5Profile.ACTION_GET_CODEINFO.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                int battery = obj.getInt((Bg5Profile.BATTERY_BG);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
-```
-
 ### Send bottleId to current BG5 device
 
 ```java

@@ -149,20 +149,3 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
     }
 }
 ```
-
-### Disconnect the HS4S
-
-```java
-Hs4sControl control = iHealthDevicesManager.getInstance().getHs4Control(mDeviceMac);
-control.disconnect();
-```
-
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-     @Override
-    public void onDeviceConnectionStateChange(String mac, String deviceType, int status, int errorID, Map manufactorData) { 
-        
-    }
-}
-```

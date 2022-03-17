@@ -262,8 +262,10 @@ control.disconnect();
 // Return value
 private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
     @Override
-    public void onDeviceConnectionStateChange(String mac, String deviceType, int status, int errorID, Map       manufactorData) { 
-        
+    public void onDeviceConnectionStateChange(String mac, String deviceType, int status, int errorID, Map manufactorData) { 
+        if (iHealthDevicesManager.DEVICE_STATE_DISCONNECTED == status) {
+            Log.i("The device is disconnected");
+        }
     }
 }
 ```

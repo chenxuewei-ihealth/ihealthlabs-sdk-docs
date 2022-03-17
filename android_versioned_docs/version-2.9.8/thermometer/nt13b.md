@@ -5,9 +5,9 @@ sidebar_position: 1
 
 ## WorkFlow
 
-1. Scan and connect PO3 scale.
+1. Scan and connect NT13B.
 
-2. PO3 support online measurement and offline measurement.
+2. NT13B support online measurement.
 
 ## Connection to device
 
@@ -37,10 +37,10 @@ iHealthDevicesManager.getInstance().addCallbackFilterForDeviceType(callbackId, i
 iHealthDevicesManager.getInstance().addCallbackFilterForAddress(callbackId, String... macs)
 ```
 
-### 2.Scan for PO3 devices
+### 2.Scan for NT13B devices
 
 ```java
-iHealthDevicesManager.getInstance().startDiscovery(DiscoveryTypeEnum.PO3);
+iHealthDevicesManager.getInstance().startDiscovery(DiscoveryTypeEnum.NT13B);
 ```
 
 ```java
@@ -54,20 +54,20 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 }
 ```
 
-### 3.Connect to PO3 devices
+### 3.Connect to NT13B devices
 
 ```java
-iHealthDevicesManager.getInstance().connectDevice("", mac, iHealthDevicesManager.TYPE_PO3)
-Po3Control control = iHealthDevicesManager.getInstance().getPo3Control(mDeviceMac);
+iHealthDevicesManager.getInstance().connectDevice("", mac, iHealthDevicesManager.TYPE_NT13B)
+NT13BControl control = iHealthDevicesManager.getInstance().getNT13BControl(mDeviceMac);
 ```
 
 ## API reference
 
-### Get the PO3 battery status
+### Listen the measurement notification
 
 ```java
 NT13BControl control = iHealthDevicesManager.getInstance().getNT13BControl(mDeviceMac);
-control.getBattery();
+control.getMeasurement();
 ```
 
 ```java
@@ -75,10 +75,10 @@ control.getBattery();
 private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
     @Override
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (PoProfile.ACTION_BATTERY_PO.equals(action)) {
+        if (NT13BProfile.ACTION_MEASUREMENT_RESULT.equals(action)) {
             try {
                 JSONObject obj = new JSONObject(message);
-                int battery = obj.getInt(PoProfile.BATTERY_PO);
+                int result = obj.getInt(NT13BProfile.RESULT);
             } catch (JSONException e) {
                 e.printStackTrace();
             }

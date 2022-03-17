@@ -153,10 +153,10 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 }
 ```
 
-### Disconnect the HS2
+### Disconnect the PO3
 
 ```java
-Hs2Control control = iHealthDevicesManager.getInstance().getHs2Control(mDeviceMac);
+Po3Control control = iHealthDevicesManager.getInstance().getPo3Control(mDeviceMac);
 control.disconnect();
 ```
 
@@ -165,7 +165,9 @@ control.disconnect();
 private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
      @Override
     public void onDeviceConnectionStateChange(String mac, String deviceType, int status, int errorID, Map manufactorData) { 
-        
+        if (iHealthDevicesManager.DEVICE_STATE_DISCONNECTED == status) {
+            Log.i("The device is disconnected");
+        }
     }
 }
 ```

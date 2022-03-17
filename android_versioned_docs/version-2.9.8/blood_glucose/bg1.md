@@ -69,12 +69,58 @@ control.sendCode(String QRCode, int stripType, int measureType)
 
 ```java
 // Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
     @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (BpProfile.ACTION_INTERRUPTED_BP.equals(action)) {
-            
+    public void onReceive(Context context, Intent intent) { 
+        String action = intent.getAction();
+        if (action.equals(Bg1Profile.ACTION_BG1_SENDCODE_RESULT)) {
+            int flag = intent.getIntExtra(Bg1Profile.BG1_SENDCODE_RESULT, -1);
+            Log.i( "sendCode flag = " + flag);
+            if (flag == 0) {
+                Log.i( "sendCode success,ready to measure");
+            } else {
+                Log.i( "sendCode failed");
+                mBg1Control.disconnect();
+            }
         }
-    } 
+    }
+}
+```
+
+### Start a measurement
+
+```java
+// Return value
+BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+    @Override
+    public void onReceive(Context context, Intent intent) { 
+        String action = intent.getAction();
+        if (action.equals(Bg1Profile.ACTION_BG1_MEASURE_STRIP_IN)) {
+            Log.i( "test strip in");
+
+        } else if (action.equals(Bg1Profile.ACTION_BG1_MEASURE_GET_BLOOD)) {
+            Log.i( "drop blood");
+
+        } else if (action.equals(Bg1Profile.ACTION_BG1_MEASURE_RESULT)) {
+           try {
+                JSONObject obj = new JSONObject(message);
+                int value = obj.getInt(Bg1Profile.BG1_MEASURE_RESULT);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        } else if (action.equals(Bg1Profile.ACTION_BG1_MEASURE_ERROR)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                int error_id = obj.getInt(Bg1Profile.BG1_MEASURE_ERROR);
+                String error_message = obj.getInt(Bg1Profile.BG1_MEASURE_ERROR_DESCRIPTION);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        } else if (action.equals(Bg1Profile.ACTION_BG1_MEASURE_STRIP_OUT)) {
+            Log.i( "test strip out");
+        }
+    }
 }
 ```

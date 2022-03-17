@@ -139,7 +139,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
     @Override
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
         if (BpProfile.ACTION_INTERRUPTED_BP.equals(action)) {
-            
+            Log.i("The measurement is stop")
         }
     } 
 }
