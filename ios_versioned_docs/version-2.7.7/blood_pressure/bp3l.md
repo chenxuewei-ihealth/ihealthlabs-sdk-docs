@@ -14,41 +14,28 @@ sidebar_position: 1
 #### 1.Listen to device notify
 
 ```java
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    
-    @Override
-    public void onScanDevice(String mac, String deviceType, int rssi, Map manufactorData) { }
+[[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(DeviceDiscover:) name:BP3LDiscover object:nil];
 
-    @Override
-    public void onDeviceConnectionStateChange(String mac, String deviceType, int status, int errorID, Map manufactorData){ }
+[[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(DeviceConnectFail:) name:BP3LConnectFailed object:nil];
 
-    @Override
-    public void onScanError(String reason, long latency) { }
+[[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(DeviceConnect:) name:BP3LConnectNoti object:nil];
 
-    @Override
-    public void onScanFinish() { }
-
-    @Override
-    public void onDeviceNotify(String mac, String deviceType,
-                                String action, String message) { }
-}
-int callbackId = iHealthDevicesManager.getInstance().registerClientCallback(miHealthDevicesCallback);
-iHealthDevicesManager.getInstance().addCallbackFilterForDeviceType(callbackId, iHealthDevicesManager.TYPE_BP3L);
-iHealthDevicesManager.getInstance().addCallbackFilterForAddress(callbackId, String... macs)
+[[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(DeviceDisConnect:) name:BP3LDisConnectNoti object:nil];
+            
+            
+[BP3LController shareBP3LController];
 ```
 
 ### 2.Scan for BP3L devices
 
 ```java
-iHealthDevicesManager.getInstance().startDiscovery(DiscoveryTypeEnum.BP3L);
+[[ScanDeviceController commandGetInstance] commandScanDeviceType:HealthDeviceType_BP3L];
 ```
 
 ### 3.Connect to BP3L devices
 
 ```java
-iHealthDevicesManager.getInstance().connectDevice("", mac, iHealthDevicesManager.TYPE_BP3L)
-
-Bp3lControl control = iHealthDevicesManager.getInstance().getBp3lControl(mDeviceMac);
+[[ConnectDeviceController commandGetInstance] commandContectDeviceWithDeviceType:HealthDeviceType_BP3L andSerialNub:deviceMac];
 ```
 
 ## API reference
@@ -56,91 +43,36 @@ Bp3lControl control = iHealthDevicesManager.getInstance().getBp3lControl(mDevice
 ### Get the device battery
 
 ```java
-Bp3lControl control = iHealthDevicesManager.getInstance().getBp3lControl(mDeviceMac);
-control.getBattery();
-```
-
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (BpProfile.ACTION_BATTERY_BP.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                int battery = obj.getInt(BpProfile.BATTERY_BP);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
+/**
+ * Query battery remaining energy
+ * @param energyValue  A block to return the device battery remaining energy percentage, ‘80’ stands for 80%.
+ * @param error  A block to return the error in ‘Establish measurement connection’.
+ */
+-(void)commandEnergy:(BlockEnergyValue)energyValue errorBlock:(BlockError)error;
 ```
 
 ### Start a measurement
 
 ```java
-Bp3lControl control = iHealthDevicesManager.getInstance().getBp3lControl(mDeviceMac);
-control.startMeasure();
-```
-
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (BpProfile.ACTION_ZOREING_BP.equals(action)) {
-           
-        } else if (BpProfile.ACTION_ZOREOVER_BP.equals(action)) {
-            
-        } else if (BpProfile.ACTION_ONLINE_PRESSURE_BP.equals(action)) {
-            try {
-                int pressure = obj.getInt(BpProfile.BLOOD_PRESSURE_BP);
-            } catch(JSONException e) {
-                e.printStackTrace();
-            }
-            
-        } else if (BpProfile.ACTION_ONLINE_PULSEWAVE_BP.equals(action)) {
-            try {
-               JSONObject obj = new JSONObject(message);
-               int pressure = obj.getInt(BpProfile.BLOOD_PRESSURE_BP);
-               Sting wave = obj.getString(BpProfile.PULSEWAVE_BP);
-               Boolean heartbeat = obj.getBoolean(BpProfile.FLAG_HEARTBEAT_BP);
-            } catch(JSONException e) {
-                e.printStackTrace();
-            }
-            
-        } else if (BpProfile.ACTION_ONLINE_RESULT_BP.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                int highBloodPressure = obj.getInt(BpProfile.HIGH_BLOOD_PRESSURE_BP);
-                int lowBloodPressure  = obj.getInt(BpProfile.LOW_BLOOD_PRESSURE_BP);
-                int pulse = obj.getInt(BpProfile.PULSE_BP);
-                int ahr   = obj.getBoolean(BpProfile.MEASUREMENT_AHR_BP);
-                int hsd   = obj.getBoolean(BpProfile.MEASUREMENT_HSD_BP);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        } 
-    } 
-}
+/**
+ * Establish measurement connection and start BP measurement.
+ * @param blockZeroState Zeroing state
+ * @param pressure  Pressure value in the process of measurement, the unit is ‘mmHg’.
+ * @param blockWaveletWithHeartbeat   Wavelet data set with heart beat.
+ * @param blockWaveletWithoutHeartbeat   Wavelet data set without heart beat.
+ * @param result   result of the measurement, including systolic pressure, diastolic pressure, pulse rate and irregular judgment. Relevant key: time, sys, dia, heartRate, irregular. irregular will be 0 or 1.
+ * @param error   Return error codes.
+ */
+-(void)commandStartMeasureWithZeroingState:(BlockZero)blockZeroState pressure:(BlockPressure)pressure waveletWithHeartbeat:(BlockWavelet)blockWaveletWithHeartbeat waveletWithoutHeartbeat:(BlockWavelet)blockWaveletWithoutHeartbeat  result:(BlockMeasureResult)result errorBlock:(BlockError)error;
 ```
 
 ### Stop measurement
 
 ```java
-Bp3lControl control = iHealthDevicesManager.getInstance().getBp3lControl(mDeviceMac);
-control.getDeviceInfo();
-```
-
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (BpProfile.ACTION_INTERRUPTED_BP.equals(action)) {
-            
-        }
-    } 
-}
+/**
+ * Measurement termination and stop BP3L measurement
+ * @param success  The block return means measurement has been terminated.
+ * @param error  A block to return the error in ‘Establish measurement connection’ in BP3L.
+ */
+-(void)stopBPMeassureSuccessBlock:(BlockSuccess)success errorBlock:(BlockError)error;
 ```
