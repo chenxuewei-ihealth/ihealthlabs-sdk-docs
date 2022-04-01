@@ -6,264 +6,446 @@ sidebar_position: 4
 ### 1.Listen to device notify
 
 ```java
-int callbackId = iHealthDevicesManager.getInstance().registerClientCallback(new iHealthDevicesCallback() {
-    
-    @Override
-    public void onScanDevice(String mac, String deviceType, int rssi, Map manufactorData) { }
 
-    @Override
-    public void onDeviceConnectionStateChange(String mac, String deviceType, int status, int errorID, Map manufactorData) { }
+[[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(DeviceDiscover:) name:AM5Discover object:nil];
+            
+[[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(DeviceConnectFail:) name:AM5ConnectFailed object:nil];
+            
+[[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(DeviceConnect:) name:AM5ConnectNoti object:nil];
+            
+[[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(DeviceDisConnect:) name:AM5DisConnectNoti object:nil];
+            
+            
+[AM5Controller shareAM5Controller];
 
-    @Override
-    public void onScanError(String reason, long latency) { }
 
-    @Override
-    public void onScanFinish() { }
-});
-
-iHealthDevicesManager.getInstance().addCallbackFilterForDeviceType(mClientCallbackId, iHealthDevicesManager.TYPE_AM5);
-iHealthDevicesManager.getInstance().addCallbackFilterForAddress(int clientCallbackId, String... macs)
 ```
 
 ### 2.Scan for AM5 devices
 
 ```java
-iHealthDevicesManager.getInstance().startDiscovery(DiscoveryTypeEnum.AM5);
+[[ScanDeviceController commandGetInstance] commandScanDeviceType:HealthDeviceType_AM5];
 ```
 
 ### 3.Connect to AM5 devices
 
 ```java
-iHealthDevicesManager.getInstance().connectDevice("", mac, iHealthDevicesManager.TYPE_AM5)
-
-Am5Control control = iHealthDevicesManager.getInstance().getAm5Control(mDeviceMac);
+[[ConnectDeviceController commandGetInstance] commandContectDeviceWithDeviceType:HealthDeviceType_AM5 andSerialNub:deviceMac];
 ```
 
 ## API reference
 
-### Binding apps and devices
+### BindingDevice
 
 ```java
-Am5Control control = iHealthDevicesManager.getInstance().getAm5Control(mDeviceMac);
-control.bindDevice();
+
+/**
+ *Binding Device
+ 
+ * @param bindingResult YES:success  NO:failed
+ * @param disposeErrorBlock error code
+ */
+-(void)commandBindingDevice:(DisposeBindingAM5Result)bindingResult DiaposeErrorBlock:(DisposeAM5ErrorBlock)disposeErrorBlock;
 ```
+
+### UnBinding Device
 
 ```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (OtherDeviceProfile.ACTION_USER_BIND.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                //status - 3: success 4: fail
-                int status = obj.getInt(PoProfile.STATUS_SUCCESS);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
+/**
+ *UnBindingDevice
+ 
+ * @param unbindingResult YES:success  NO:failed
+ * @param disposeErrorBlock error code
+ */
+-(void)commandUnBindingDevice:(DisposeUnBindingAM5Result)unbindingResult DiaposeErrorBlock:(DisposeAM5ErrorBlock)disposeErrorBlock;
 ```
 
-### UnBind apps and devices
+### Get Device Info
 
 ```java
-Am5Control control = iHealthDevicesManager.getInstance().getAm5Control(mDeviceMac);
-control.unBindDevice();
+/**
+ * GetDeviceInfo
+ 
+ * @param deviceInfo
+ This dictionary includes key:
+ Mode:Device mode    BatteryStatus:Battery status  BatteryLevel:Battery level RebootFlag:Whether to restart  BindTimeStr:Binding timestamp  BindState:Binding status
+ * @param disposeErrorBlock error code
+ */
+-(void)commandGetDeviceInfo:(DisposeGetAM5DeviceInfo)deviceInfo DiaposeErrorBlock:(DisposeAM5ErrorBlock)disposeErrorBlock;
 ```
+
+### Get functional information
 
 ```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (OtherDeviceProfile.ACTION_USER_UNBIND.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                //status - 3: success 4: fail
-                int status = obj.getInt(PoProfile.STATUS_SUCCESS);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
+/**
+ * Get functional information
+ 
+ * @param deviceFunctionalInfo
+ This dictionary includes key:
+ Steps:Number of steps
+ SleepDetection:Sleep detection
+ SingleMovement:Single movement
+ LiveData:Real-time data
+ Update:Equipment Update
+ HeartRate:Heart rate function
+ Notification:Notification Center
+ Timeline:Timeline
+ * @param disposeErrorBlock error code
+ */
+-(void)commandGetFuncTable:(DisposeGetAM5FuncTable)deviceFunctionalInfo DiaposeErrorBlock:(DisposeAM5ErrorBlock)disposeErrorBlock;
 ```
 
-### Get user id
+### Get Device Mac
 
 ```java
-Am3Control control = iHealthDevicesManager.getInstance().getAm3Control(mDeviceMac);
-control.getBattery();
+/**
+ * GetDeviceMac
+ 
+ * @param deviceMac  This is the MAC for the device
+ * @param disposeErrorBlock error code
+ */
+-(void)commandGetDeviceMac:(DisposeGetAM5Mac)deviceMac DiaposeErrorBlock:(DisposeAM5ErrorBlock)disposeErrorBlock;
 ```
+
+### Get Live Data
 
 ```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (PoProfile.ACTION_BATTERY_PO.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                int battery = obj.getInt(PoProfile.BATTERY_PO);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
+/**
+ * GetLiveData
+ 
+ * @param liveData
+ This dictionary includes key:
+ Step:Step count Calorie:Calorie  Distances:distance ActiveTime:Duration of activity HeartRate:Heart rate
+ * @param disposeErrorBlock error code
+ */
+-(void)commandGetLiveData:(DisposeGetAM5LiveData)liveData DiaposeErrorBlock:(DisposeAM5ErrorBlock)disposeErrorBlock;
 ```
 
-### Gets whether it has been bound
+### Get Activity Count
 
 ```java
-Am5Control control = iHealthDevicesManager.getInstance().getAm5Control(mDeviceMac);
-boolean isBind = control.isBind();
+/**
+ * GetActivityCount
+ 
+ * @param activityCount
+ 
+ This dictionary includes key:
+ 
+ ActivityCount:Number of activities   ActivityPacketCount:Number of active packages GpsCount:Number of GPS data GpsPacketCount:Number of GPS packets
+ 
+ * @param disposeErrorBlock error code
+ */
+-(void)commandGetActivityCount:(DisposeGetAM5ActivityCount)activityCount DiaposeErrorBlock:(DisposeAM5ErrorBlock)disposeErrorBlock;
 ```
 
-### Get information of the device
+### Set Current Time
 
 ```java
-Am5Control control = iHealthDevicesManager.getInstance().getAm5Control(mDeviceMac);
-control.getBasicInfo();
+/**
+ * setCurrentTime
+ * @param setCurrentTime  Synchronizes the current time to the device  YES:success  NO:failed
+ * @param disposeErrorBlock error code
+ */
+-(void)commandSetCurrentTime:(DisposeAM5SetCurrentTime)setCurrentTime DiaposeErrorBlock:(DisposeAM5ErrorBlock)disposeErrorBlock;
 ```
+### Set Alarm
 
 ```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (OtherDeviceProfile.ACTION_BASIC_INFO.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                int battery = obj.getInt(OtherDeviceProfile.BASIC_BATTSTATUS);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
+/**
+ * setAlarm
+ * @param alarm
+ example code:
+ IDOSetAlarmInfoBluetoothModel * alarmModel= [IDOSetAlarmInfoBluetoothModel currentModel];
+ switch                                alarmModel.isOpen
+ Whether the synchronization           alarmModel.isSync
+ Whether or not to delete              alarmModel.isDelete
+ Type                                  alarmModel.type
+ Hour                                  alarmModel.hour
+ Minute                                alarmModel.minute
+ Repeat                                alarmModel.repeat
+ TsnoozeDuration                       alarmModel.tsnoozeDuration
+ AlarmId                               alarmModel.alarmId
+ 
+ * @param setAlarmResult YES:success  NO:failed
+ * @param disposeErrorBlock error code
+ */
+-(void)commandSetAlarm:(IDOSetAlarmInfoBluetoothModel*)alarm setResult:(DisposeAM5SetAlarm)setAlarmResult DiaposeErrorBlock:(DisposeAM5ErrorBlock)disposeErrorBlock;
 ```
 
-### Get the time on the phone and set it to the device
+### Set User Target
 
 ```java
-Am5Control control = iHealthDevicesManager.getInstance().getAm5Control(mDeviceMac);
-control.getLiveData();
+/**
+ * SetUserTarget
+ * @param target
+ example code:
+ IDOSetUserInfoBuletoothModel * userModel= [IDOSetUserInfoBuletoothModel currentModel];
+ Target sleep time(hour)      userModel.goalSleepDataHour
+ Target sleep time(minutes)   userModel.goalSleepDataMinute
+ Target steps                 userModel.goalStepData
+ Target Calorie               userModel.goalCalorieData
+ Target Distance              userModel.goalDistanceData
+ Target Weight                userModel.goalWeightData
+ Target type  userModel.goalType (type: 0: steps 1: calories 2: distance) setting a type of target requires executing a command once
+ 
+ * @param setUserTargetResult YES:success  NO:failed
+ * @param disposeErrorBlock error code
+ */
+-(void)commandSetUserTarget:(IDOSetUserInfoBuletoothModel*)target  setResult:(DisposeAM5SetUserTarget)setUserTargetResult DiaposeErrorBlock:(DisposeAM5ErrorBlock)disposeErrorBlock;
 ```
+
+### Set User Info
 
 ```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (OtherDeviceProfile.ACTION_SET_TIME.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                boolean result = obj.getBoolean("result");
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
+/**
+ * SetUserInfo
+ @param userInfo
+ example code:
+ IDOSetUserInfoBuletoothModel * userModel= [IDOSetUserInfoBuletoothModel currentModel];
+ height     userModel.height
+ weight     userModel.weight
+ gender     userModel.gender   Gender 1: male 2: female
+ year       userModel.year
+ month      userModel.month
+ day        userModel.day
+ 
+ * @param setUserInfoResult YES:success  NO:failed
+ * @param disposeErrorBlock error code
+ */
+-(void)commandSetUserInfo:(IDOSetUserInfoBuletoothModel*)userInfo  setResult:(DisposeAM5SetUserInfo)setUserInfoResult DiaposeErrorBlock:(DisposeAM5ErrorBlock)disposeErrorBlock;
 ```
 
-### Get the live data of the device
+### Set Unit
 
 ```java
-Am5Control control = iHealthDevicesManager.getInstance().getAm5Control(mDeviceMac);
-control.getLiveData();
+/**
+ * SetUnit
+ @param unit
+ example code:
+ IDOSetUnitInfoBluetoothModel * unitInfo = [IDOSetUnitInfoBluetoothModel currentModel];
+ From the unit        unitInfo.distanceUnit  0x00: invalid, 0x01:km, 0x02:mi
+ Unit of weight       unitInfo.weightUnit    0x00: invalid, 0x01:kg, 0x02:lb, 0x03: st
+ Temperature of the unit  unitInfo.tempUnit  0x00: invalid, 0 x01: ° C, 0 x02: ° F
+ The language unit    unitInfo.languageUnit  (Invalid :0, Chinese :1, English :2, French :3, German :4, Italian :5, Spanish :6, Japanese :7,Polish :8, Czech :9, Romania :10, Lithuanian :11, Dutch :12, Slovenia :13,Hungarian :14, Russian :15, Ukrainian :16, slovak :17, Danish :18, Croatian :19)
+ Walking pace        unitInfo.strideWalk  Convert to the default value of 90 for men (unit: cm)
+ Running pace        unitInfo.strideRun  According to the default value of male conversion 72 (unit: cm)
+ GPS calibration step size unitInfo.strideGps  0x00: invalid, 0x01: on, 0x02: off
+ Unit of time        unitInfo.timeUnit  0x00: invalid, 0x01:24 hours, 0x02: 12 hours
+ The beginning of the week  unitInfo.weekStart     (Sunday: 0, Monday: 1, Tuesday: 2, Wednesday: 3, Thursday: 4, Friday: 5, Saturday: 6)
+ 
+ * @param setUnitResult YES:success  NO:failed
+ * @param disposeErrorBlock error code
+ */
+-(void)commandSetUnit:(IDOSetUnitInfoBluetoothModel*)unit  setResult:(DisposeAM5SetUnit)setUnitResult DiaposeErrorBlock:(DisposeAM5ErrorBlock)disposeErrorBlock;
 ```
+
+### Set LongSit
 
 ```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (OtherDeviceProfile.ACTION_LIVE_DATA.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                int step = obj.getInt("totalStep");
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
+/**
+ * SetLongSit
+ @param longSit
+ example code:
+ IDOSetLongSitInfoBuletoothModel * SitInfo = [IDOSetLongSitInfoBuletoothModel currentModel];
+ 
+ interval                  SitInfo.interval
+ Start(Hour)               SitInfo.startHour
+ Start(minutes)            SitInfo.startMinute
+ End(Hour)                 SitInfo.endHour
+ End(minutes)              SitInfo.endMinute
+ Switch                    SitInfo.isOpen
+ 
+ * @param setLongSitResult YES:success  NO:failed
+ * @param disposeErrorBlock error code
+ */
+-(void)commandSetLongSit:(IDOSetLongSitInfoBuletoothModel*)longSit  setResult:(DisposeAM5SetLongSit)setLongSitResult DiaposeErrorBlock:(DisposeAM5ErrorBlock)disposeErrorBlock;
 ```
 
-### Sync health data from device
-
-```java
-Am5Control control = iHealthDevicesManager.getInstance().getAm5Control(mDeviceMac);
-control.syncHealthData();
-```
+### Set LeftRightHand
 
 ```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (OtherDeviceProfile.ACTION_SYNC_HEALTH_DATA.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                // 0: start, 1: stop, 2: doing, 3: success, 4: fail
-                int status = obj.getInt(OtherDeviceProfile.OPERATION_STATUS);
-                if (2 == status || 3 == status || 4 == status) {
-                    int progress = obj.getInt(OtherDeviceProfile.PROGRESS);
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        } else if (OtherDeviceProfile.ACTION_SYNC_HEALTH_DATA_SPORT.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                JSONArray arr = obj.getJSONArray("items");
-                int year  = obj.getInt("year");
-                Int month = obj.getInt("month");
-                int day   = obj.getInt("day");
-                for (int i = 0; i < arr.length(); i++) {
-                    int step = arr.getJSONObject(i).getInt("stepCount");
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        } else if (OtherDeviceProfile.ACTION_SYNC_HEALTH_DATA_SLEEP.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                JSONArray arr = obj.getJSONArray("items");
-                int year  = obj.getInt("year");
-                Int month = obj.getInt("month");
-                int day   = obj.getInt("day");
-                int sleepEndedTimeHour = obj.getInt("sleepEndedTimeH");
-                int sleepEndedTimeMinute = obj.getInt("sleepEndedTimeM");
-                int lightSleepMinutes = obj.getInt("lightSleepMinutes");
-                int totalSleepMinutes = obj.getInt("totalSleepMinutes");
-                for (int i = 0; i < arr.length(); i++) {
-                    int durationMinute = arr.getJSONObject(i).getInt("offsetMinute");
-                    int sleepStatus = arr.getJSONObject(i).getInt("sleepStatus");
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        } else if (OtherDeviceProfile.ACTION_SYNC_HEALTH_DATA_HEART_RATE.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                JSONArray arr = obj.getJSONArray("items");
-                int offsetMinute = obj.getInt("offsetMinute");
-                int year  = obj.getInt("year");
-                Int month = obj.getInt("month");
-                int day   = obj.getInt("day");
-                for (int i = 0; i < arr.length(); i++) {
-                    int offsetMinute = arr.getJSONObject(i).getInt("offsetMinute");
-                    int heartRaveValue = arr.getJSONObject(i).getInt("HeartRaveValue");
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
+/**
+ * SetLeftRightHand
+ @param leftRightHand
+ example code:
+ IDOSetLeftOrRightInfoBuletoothModel * leftOrRightModel = [IDOSetLeftOrRightInfoBuletoothModel currentModel];
+ 
+ Whether to wear right hand     leftOrRightModel.isRight  0:left 1:right
+ 
+ * @param setLeftRightHandResult  YES:success  NO:failed
+ * @param disposeErrorBlock error code
+ */
+-(void)commandSetLeftRightHand:(IDOSetLeftOrRightInfoBuletoothModel*)leftRightHand  setResult:(DisposeAM5SetLeftRightHand)setLeftRightHandResult DiaposeErrorBlock:(DisposeAM5ErrorBlock)disposeErrorBlock;
 ```
+
+### Set HrInterval
+
+```java
+/**
+ * SetHrInterval
+ @param hrInterval
+ example code:
+ IDOSetHrIntervalInfoBluetoothModel * hrIntervalInfo = [IDOSetHrIntervalInfoBluetoothModel currentModel];
+ 
+ Fat burning threshold   hrIntervalInfo.burnFat
+ Aerobic threshold       hrIntervalInfo.aerobic
+ Threshold limit         hrIntervalInfo.limitValue
+ Maximum heart rate      hrIntervalInfo.userMaxHr
+ 
+ * @param setHrIntervalResult YES:success  NO:failed
+ * @param disposeErrorBlock error code
+ */
+-(void)commandSetHrInterval:(IDOSetHrIntervalInfoBluetoothModel*)hrInterval  setResult:(DisposeAM5SetHrInterval)setHrIntervalResult DiaposeErrorBlock:(DisposeAM5ErrorBlock)disposeErrorBlock;
+```
+
+### Set HrMode
+
+```java
+/**
+ * SetHrMode
+ @param hrMode
+ example code:
+ IDOSetHrModeInfoBluetoothModel * hrModeInfo = [IDOSetHrModeInfoBluetoothModel currentModel];
+ Heart rate pattern        hrModeInfo.modeType   0: turn off heart rate monitoring function 1: manual mode 2: automatic mode (default: automatic mode)
+ Is there an interval      hrModeInfo.isHasTimeRange
+ Start(Hour)               hrModeInfo.startHour
+ Start(minutes)            hrModeInfo.startMinute
+ End(Hour)                 hrModeInfo.endHour
+ End(minutes)              hrModeInfo.endMinute
+ 
+ * @param setHrModeResult YES:success  NO:failed
+ * @param disposeErrorBlock error code
+ */
+-(void)commandSetHrMode:(IDOSetHrModeInfoBluetoothModel*)hrMode  setResult:(DisposeAM5SetHrMode)setHrModeResult DiaposeErrorBlock:(DisposeAM5ErrorBlock)disposeErrorBlock;
+```
+
+### Set NoDisturbMode
+
+```java
+/**
+ * SetNoDisturbMode
+ @param noDisturbMode
+ example code:
+ IDOSetNoDisturbModeInfoBluetoothModel * noDisturbModeInfo = [IDOSetNoDisturbModeInfoBluetoothModel currentModel];
+ 
+ Is there an interval      noDisturbModeInfo.isOpen
+ Start(Hour)               noDisturbModeInfo.startHour
+ Start(minutes)            noDisturbModeInfo.startMinute
+ End(Hour)                 noDisturbModeInfo.endHour
+ End(minutes)              noDisturbModeInfo.endMinute
+ 
+ * @param setNoDisturbModeResult YES:success  NO:failed
+ * @param disposeErrorBlock error code
+ */
+-(void)commandSetNoDisturbMode:(IDOSetNoDisturbModeInfoBluetoothModel*)noDisturbMode  setResult:(DisposeAM5SetNoDisturbMode)setNoDisturbModeResult DiaposeErrorBlock:(DisposeAM5ErrorBlock)disposeErrorBlock;
+```
+
+### Set SportModeSelect
+
+```java
+/**
+ * SetSportModeSelect
+ @param sportModeSelect
+ example code:
+ IDOSetSportShortcutInfoBluetoothModel * sportShortcutInfo = [IDOSetSportShortcutInfoBluetoothModel currentModel];
+ sportShortcutInfo.isWalk
+ sportShortcutInfo.isRun
+ sportShortcutInfo.isByBike
+ sportShortcutInfo.isOnFoot
+ sportShortcutInfo.isMountainClimbing
+ sportShortcutInfo.isBadminton
+ sportShortcutInfo.isSpinning
+ sportShortcutInfo.isTreadmill
+ sportShortcutInfo.isFitness
+ sportShortcutInfo.isYoga
+ sportShortcutInfo.isBasketball
+ sportShortcutInfo.isTennis
+ sportShortcutInfo.isDance
+ sportShortcutInfo.isFootball
+ 
+ * @param setSportModeSelectResult YES:success  NO:failed
+ * @param disposeErrorBlock error code
+ */
+-(void)commandSetSportModeSelect:(IDOSetSportShortcutInfoBluetoothModel*)sportModeSelect  setResult:(DisposeAM5SetSportModeSelect)setSportModeSelectResult DiaposeErrorBlock:(DisposeAM5ErrorBlock)disposeErrorBlock;
+```
+
+### Set SwitchNotice
+
+```java
+/**
+ * SetSwitchNotice
+ @param switchNotice
+ example code:
+ IDOSetNoticeInfoBuletoothModel* noticeInfo = [IDOSetNoticeInfoBuletoothModel currentModel];
+ noticeInfo.isPairing
+ noticeInfo.isOnChild
+ * @param setSwitchNoticeResult  YES:success  NO:failed
+ * @param disposeErrorBlock error code
+ */
+-(void)commandSetSwitchNotice:(IDOSetNoticeInfoBuletoothModel*)switchNotice  setResult:(DisposeAM5SetSwitchNotice)setSwitchNoticeResult DiaposeErrorBlock:(DisposeAM5ErrorBlock)disposeErrorBlock;
+```
+
+### Sync ConfigComplete
+
+```java
+/**
+ * syncConfigComplete
+ 
+ * @param syncConfigCompleteResult YES:success  NO:failed
+ * @param disposeErrorBlock error code
+ */
+-(void)commandSyncConfigComplete:(DisposeGetAM5SyncConfigComplete)syncConfigCompleteResult DiaposeErrorBlock:(DisposeAM5ErrorBlock)disposeErrorBlock;
+```
+
+### SyncData
+
+```java
+/**
+ * syncData
+ 
+ * @param heartRateData  heartRateData
+ * @param sleepData  sleepData
+ * @param activityData  activityData
+ * @param syncprogress  data progress
+ * @param syncDataSuccess  sync finish
+ * @param disposeErrorBlock error code
+ */
+-(void)commandSyncData:(DisposeGetAM5SyncHeartRateData)heartRateData syncSleepData:(DisposeGetAM5SyncSleepData)sleepData syncActivityData:(DisposeGetAM5SyncActivityData)activityData syncDataProgress:(DisposeAM5SyncDataProgress)syncprogress syncDataSuccess:(DisposeAM5SyncDataSuccess)syncDataSuccess DiaposeErrorBlock:(DisposeAM5ErrorBlock)disposeErrorBlock;
+```
+
+### Set AppReboot
+
+```java
+/**
+ * setAppReboot
+ 
+ * @param setAppRebootResult  YES:success  NO:failed
+ * @param disposeErrorBlock error code
+ */
+-(void)commandSetAppReboot:(DisposeAM5SetAppReboot)setAppRebootResult DiaposeErrorBlock:(DisposeAM5ErrorBlock)disposeErrorBlock;
+```
+
+### Set HandUp
+
+```java
+/**
+ * SetHandUp
+ @param setHandUp
+ example code:
+ IDOSetHandUpInfoBuletoothModel * handUpModel= [IDOSetHandUpInfoBuletoothModel currentModel];
+ handUpModel.isOpen   YES:open  NO:close
+ * @param setHandUpResult  YES:success  NO:failed
+ * @param disposeErrorBlock error code
+ */
+-(void)commandSetHandUp:(IDOSetHandUpInfoBuletoothModel*)setHandUp setResult:(DisposeAM5SetHandUp)setHandUpResult DiaposeErrorBlock:(DisposeAM5ErrorBlock)disposeErrorBlock;
+```
+### Disconnect
+
+```java
+/**
+ * Disconnect AM5 connection.
+ */
+-(void)commandAM5Disconnect;
+```
+
+

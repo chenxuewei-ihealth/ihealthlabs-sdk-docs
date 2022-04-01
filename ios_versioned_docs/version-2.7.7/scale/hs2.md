@@ -14,52 +14,28 @@ sidebar_position: 1
 ### 1.Listen to device notify
 
 ```java
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    
-    @Override
-    public void onScanDevice(String mac, String deviceType, int rssi, Map manufactorData) { }
 
-    @Override
-    public void onDeviceConnectionStateChange(String mac, String deviceType, int status, int errorID, Map manufactorData){ }
+[[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(DeviceDiscover:) name:HS2Discover object:nil];
 
-    @Override
-    public void onScanError(String reason, long latency) { }
+[[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(DeviceConnectFail:) name:HS2ConnectFailed object:nil];
 
-    @Override
-    public void onScanFinish() { }
+[[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(DeviceConnect:) name:HS2ConnectNoti object:nil];
 
-    @Override
-    public void onDeviceNotify(String mac, String deviceType,
-                                String action, String message) { }
-}
-int callbackId = iHealthDevicesManager.getInstance().registerClientCallback(miHealthDevicesCallback);
-iHealthDevicesManager.getInstance().addCallbackFilterForDeviceType(callbackId, iHealthDevicesManager.TYPE_HS2);
-iHealthDevicesManager.getInstance().addCallbackFilterForAddress(callbackId, String... macs)
+[[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(DeviceDisConnect:) name:HS2DisConnectNoti object:nil];
+
+[HS2Controller shareIHHs2Controller];
 ```
 
 ### 2.Scan for HS2 devices
 
 ```java
-iHealthDevicesManager.getInstance().startDiscovery(DiscoveryTypeEnum.HS2);
-```
-
-```java
-// Return
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    
-    @Override
-    public void onScanDevice(String mac, String deviceType, int rssi, Map manufactorData) { 
-        Log.i(TAG, "onScanDevice - mac:" + mac + " - deviceType:" + deviceType + " - rssi:" + rssi + " - manufactorData:" + manufactorData);
-    }
-}
+[[ScanDeviceController commandGetInstance] commandScanDeviceType:HealthDeviceType_HS2];
 ```
 
 ### 3.Connect to HS2 devices
 
 ```java
-iHealthDevicesManager.getInstance().connectDevice("", mac, iHealthDevicesManager.TYPE_HS2)
-
-Hs2Control control = iHealthDevicesManager.getInstance().getHs2Control(mDeviceMac);
+[[ConnectDeviceController commandGetInstance] commandContectDeviceWithDeviceType:HealthDeviceType_HS2 andSerialNub:deviceMac];
 ```
 
 ## API reference
@@ -67,106 +43,62 @@ Hs2Control control = iHealthDevicesManager.getInstance().getHs2Control(mDeviceMa
 ### Get the battery info
 
 ```java
-Hs2Control control = iHealthDevicesManager.getInstance().getHs2Control(mDeviceMac);
-control.getBattery();
-```
+/**
+ *Get HS2 Battery
 
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (HsProfile.ACTION_BATTERY_HS.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                int battery = obj.getInt(HsProfile.BATTERY_HS);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
+ * @param HS2battery HS2battery [Range:0～100]%
+ * @param disposeErrorBlock error code
+ */
+-(void)commandGetHS2Battery:(DisposeHS2BatteryBlock)HS2battery DiaposeErrorBlock:(DisposeHS2ErrorBlock)disposeErrorBlock;
 ```
 
 ### Get offline data
 
 ```java
-Hs2Control control = iHealthDevicesManager.getInstance().getHs2Control(mDeviceMac);
-control.getOfflineData() 
-```
+/**
+ * Upload memory data
+ 
+ * Return parameters:
+ * @param  startTransmission -Start Memory transmission.
+ * @param  progress         -Memory transmission progress，[Range:0.0～1.0].
+ * @param  memorryData      -Record data including weight (kg), measurement time，coordinated key：weight，date.[Range of weight 0~180(kg)] （If it exceeds 180kg, it will display er1 error, but the SDK interface will also return data. More than 180kg of data is not recommended.）
+ * @param  finishTransmission -Finish memory transmission.
+ * @param  disposeErrorBlock  -Record the error code in uploading process.
+ * Error code definition: refer to ”error” : HS2 error instruction.
+ */
 
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (HsProfile.ACTION_HISTORICAL_DATA_COMPLETE_HS.equals(action)) {
-            try {
-                JSONArray historyArr = new JSONArray(message);
-                for (int i = 0; i < historyArr.length(); i++) {
-                    JSONObject obj = historyArr.getJSONObject(i);
-                    String measureTs = obj.getString(HsProfile.MEASUREMENT_DATE_HS);
-                    String weight    = obj.getString(HsProfile.WEIGHT_HS);
-                 
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
+-(void)commandHS2TransferMemorryData:(StartHS2Transmission)startTransmission DisposeProgress:(DisposeProgress)progress MemorryData:(MemorryData)memorryData FinishTransmission:(FinishHS2Transmission)finishTransmission DisposeErrorBlock:(DisposeHS2ErrorBlock)disposeErrorBlock;
 ```
 
 ### Specify Online Users
 
 ```java
-Hs2Control control = iHealthDevicesManager.getInstance().getHs2Control(mDeviceMac);
-/*
- * @param unit 1 kg; 2 lb; 3 st
- * @param userId user identify number
+/**
+ 
+ * Establish memory and measurement connection
+ 
+ * Import parameter:
+ * @param tempUnit  -Unit displayed on HS2: HSUnit_Kg、HSUnit_LB、HSUnit_ST。
+ 
+ * Return parameters:
+ The measurement via SDK will be operated in the case of 1-4, and will be terminated if any of 5-8 occurs. The interface needs to be re-called after analyzing the return parameters.
+ 
+ * @param unStableWeight     - Current weight, (Kg) [Value Range:0~180]
+ * @param stableWeight       - Stable weight, (Kg) [Value Range:0~180]
+ * @param disposeErrorBlock  - error code
+ * Error code definition：
+ *  refer to “error” : HS2 error instruction.
  */
-control.measureOnline(int unit, int userId)
-```
 
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (HsProfile.ACTION_LIVEDATA_HS.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                String weight = obj.getString(HsProfile.DATA_LIVEDATA_HSWEIGHT);
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        } else if (HsProfile.ACTION_ONLINE_RESULT_HS.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                String weight = obj.getString(HsProfile.WEIGHT_HS);
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        } 
-    }
-}
+-(void)commandHS2MeasureWithUint:(HSUnit)tempUnit Weight:(UnStableWeight)unStableWeight StableWeight:(StableWeight)stableWeight DisposeErrorBlock:(DisposeHS2ErrorBlock)disposeErrorBlock;
 ```
 
 ### Disconnect the HS2
 
 ```java
-Hs2Control control = iHealthDevicesManager.getInstance().getHs2Control(mDeviceMac);
-control.disconnect();
-```
+/**
+ Disconnect current device
+ */
 
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-     @Override
-    public void onDeviceConnectionStateChange(String mac, String deviceType, int status, int errorID, Map manufactorData) { 
-        
-    }
-}
+-(void)commandDisconnectDevice;
 ```

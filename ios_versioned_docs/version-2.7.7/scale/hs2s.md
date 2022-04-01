@@ -18,52 +18,28 @@ sidebar_position: 2
 ### 1.Listen to device notify
 
 ```java
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    
-    @Override
-    public void onScanDevice(String mac, String deviceType, int rssi, Map manufactorData) { }
 
-    @Override
-    public void onDeviceConnectionStateChange(String mac, String deviceType, int status, int errorID, Map manufactorData){ }
+[[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(DeviceDiscover:) name:HS2SDiscover object:nil];
 
-    @Override
-    public void onScanError(String reason, long latency) { }
+[[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(DeviceConnectFail:) name:HS2SConnectFailed object:nil];
 
-    @Override
-    public void onScanFinish() { }
+[[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(DeviceConnect:) name:HS2SConnectNoti object:nil];
 
-    @Override
-    public void onDeviceNotify(String mac, String deviceType,
-                                String action, String message) { }
-}
-int callbackId = iHealthDevicesManager.getInstance().registerClientCallback(miHealthDevicesCallback);
-iHealthDevicesManager.getInstance().addCallbackFilterForDeviceType(callbackId, iHealthDevicesManager.TYPE_HS2S);
-iHealthDevicesManager.getInstance().addCallbackFilterForAddress(callbackId, String... macs)
+[[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(DeviceDisConnect:) name:HS2SDisConnectNoti object:nil];
+            
+[HS2SController shareIHHS2SController];
 ```
 
 ### 2.Scan for HS2S devices
 
 ```java
-iHealthDevicesManager.getInstance().startDiscovery(DiscoveryTypeEnum.HS2S);
-```
-
-```java
-// Return
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    
-    @Override
-    public void onScanDevice(String mac, String deviceType, int rssi, Map manufactorData) { 
-        Log.i(TAG, "onScanDevice - mac:" + mac + " - deviceType:" + deviceType + " - rssi:" + rssi + " - manufactorData:" + manufactorData);
-    }
-}
+[[ScanDeviceController commandGetInstance] commandScanDeviceType:HealthDeviceType_HS2S];
 ```
 
 ### 3.Connect to HS2S devices
 
 ```java
-iHealthDevicesManager.getInstance().connectDevice("", mac, iHealthDevicesManager.TYPE_HS2S)
-
-Hs2sControl control = iHealthDevicesManager.getInstance().getHs2sControl(mDeviceMac);
+[[ConnectDeviceController commandGetInstance] commandContectDeviceWithDeviceType:HealthDeviceType_HS2S andSerialNub:deviceMac];
 ```
 
 ## API reference
@@ -71,415 +47,441 @@ Hs2sControl control = iHealthDevicesManager.getInstance().getHs2sControl(mDevice
 ### Get the device info
 
 ```java
-Hs2sControl control = iHealthDevicesManager.getInstance().getHs2sControl(mDeviceMac);
-control.getDeviceInfo();
-```
-
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (Hs2sProfile.ACTION_GET_DEVICE_INFO.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                int userCount = obj.getInt(Hs2sProfile.HS_USER_COUNT)
-                int unit = obj.getInt(Hs2sProfile.HS_UNIT_CURRENT)
-                int bettery = obj.getInt(Hs2sProfile.BATTERY_HS)
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
+/**
+ *Get HS2S DeviceInfo (After the HS2S device is successfully connected, the interface must be called to synchronize the device time. Otherwise, the offline data measurement time error will be caused)
+ 
+ * @param deviceInfo Contains  device IDPS info(FirmwareVersion,HardwareVersion,Manufacture,ModelNumber,ProtocolString,SerialNumber),user count ,HS2S current unit(1:Kg,2:LB,3:ST),battery
+ * Example:
+ * {
+           Battary = 70;
+           DeviceName = HS2S;
+           FirmwareVersion = "0.5.4";
+           HardwareVersion = "1.0.0";
+           Manufacture = iHealth;
+           ModelNumber = "HS2S 11070";
+           ProtocolString = "com.jiuan.BFSV22";
+           SerialNumber = 004D320CA04D;
+           Unit = 1;
+           UserCount = 1;
+ * }
+ * @param disposeErrorBlock  - error code
+ * Error code definition：
+ *  refer to “error” : HS2S error instruction.
+ */
+-(void)commandGetHS2SDeviceInfo:(DisposeHS2SDeviceInfo)deviceInfo DiaposeErrorBlock:(DisposeHS2SErrorBlock)disposeErrorBlock;
 ```
 
 ### Get the battery info
 
 ```java
-Hs2sControl control = iHealthDevicesManager.getInstance().getHs2sControl(mDeviceMac);
-control.getBattery();
-```
-
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (Hs2sProfile.ACTION_BATTERY_HS.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                int battery = obj.getInt(Hs2sProfile.BATTERY_HS)
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
+/**
+ *Get HS2S battery
+ 
+ * @param battary HS2Sbattery [Range:0～100]%
+ * @param disposeErrorBlock  - error code
+ * Error code definition：
+ *  refer to “error” : HS2S error instruction.
+ */
+-(void)commandGetHS2SBattery:(DisposeHS2SBatteryBlock)battary DiaposeErrorBlock:(DisposeHS2SErrorBlock)disposeErrorBlock;
 ```
 
 ### Set the unit of device
 
 ```java
-Hs2sControl control = iHealthDevicesManager.getInstance().getHs2sControl(mDeviceMac);
+/**
+ 
+ * SetUnit
+ 
+ * Import parameter:
+ * @param tempUnit  -Unit displayed on HS2S: HSUnit_Kg、HSUnit_LB、HSUnit_ST。
+ * Return parameters:
+ * @param result   YES:Success  NO:Failed
+ * @param disposeErrorBlock  - error code
+ * Error code definition：
+ *  refer to “error” : HS2S error instruction.
+ */
 
-//  Hs2sProfile#UNIT_LB}  <br>  {@link Hs2sProfile#UNIT_ST
-control.setUnit(Hs2sProfile.UNIT_KG);
-```
-
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (Hs2sProfile.ACTION_SET_UNIT_SUCCESS.equals(action)) {
-            
-        }
-    } 
-}
+-(void)commandSetHS2SUnit:(HSUnit)tempUnit result:(DisposeHS2SResult)result  DisposeErrorBlock:(DisposeHS2SErrorBlock)disposeErrorBlock;
 ```
 
 ### Get the info of user in hs2s
 
 ```java
-Hs2sControl control = iHealthDevicesManager.getInstance().getHs2sControl(mDeviceMac);
-control.getUserInfo();
-```
-
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (Hs2sProfile.ACTION_GET_USER_INFO.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                int userCount = obj.getInt(Hs2sProfile.USER_INFO_COUNT);
-                JSONArray userArr = obj.gegetJSONArray(Hs2sProfile.USER_INFO_ARRAY);
-                for (int i = 0; i < userCount; i++) {
-                    JSONObject user = userArr.getJSONObject(i);
-
-                    String    userId = user.getString(Hs2sProfile.USER_INFO_USER_ID);
-                    long        time = user.getLong(Hs2sProfile.USER_INFO_CREATE_TIME);
-                    String    weigth = user.getString(Hs2sProfile.USER_INFO_WEIGHT);
-                    int       gender = user.getInt(Hs2sProfile.USER_INFO_GENDER);
-                    int          age = user.getInt(Hs2sProfile.USER_INFO_AGE);
-                    int       height = user.getInt(Hs2sProfile.USER_INFO_HEIGHT);
-                    int bodybuilding = user.getInt(Hs2sProfile.USER_INFO_BODYBUILDING);
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
+/**
+ * Get HS2S UserInfo
+ * Return parameters:
+ * @param userInfo  NSDictionary type,contains: UserCount and UserInfo
+ * Example:
+ * {
+        UserCount = 1;
+        UserInfo =(
+            {
+              "UserInfo_Age" = 20;
+              "UserInfo_Height" = 100;
+              "UserInfo_CreatTS" = 1558406503;                      //User creat time
+              "UserInfo_ID" = <69486561 6c746831 32333435 36373839>;
+              "UserInfo_ImpedanceMark" = 1;                         //0 Don't measure 1 Measure
+              "UserInfo_SEX" = 1;                                   //0 female 1 male,
+              "UserInfo_Weight" = "79.5";
+              "UserInfo_Fitness" = 1;                               //0:Don't fitness 1:fitness
             }
-        }
-    } 
-}
+         );
+ * }
+ * @param disposeErrorBlock  - error code
+ * Error code definition：
+ *  refer to “error” : HS2S error instruction.
+ */
+-(void)commandGetHS2SUserInfo:(DisposeHS2SUserInfo)userInfo DiaposeErrorBlock:(DisposeHS2SErrorBlock)disposeErrorBlock;
 ```
 
 ### Create or update user info in device
 
 ```java
-Hs2sControl control = iHealthDevicesManager.getInstance().getHs2sControl(mDeviceMac);
-/*
- * @param id           User id  (The length of ID must be 16)
- * @param weight       weight   (unit kg     range: 20kg-180kg)
- * @param gender       0:women      1:man
- * @param age          age    18-99  (If it is not within this range, it is impossible to measure the constitution correctly.)
- * @param height       height  90-220 cm    (If it is not within this range, it is impossible to measure the constitution correctly.)
- * @param impedance    0:No body fat measurement    1:body fat measurement
- * @param bodybuilding 0:No   Bodybuilding          1:Bodybuilding
+/**
+ * Create or Update HS2S UserInfo (The HS2S device only supports the creation of a maximum of 8 users)
+ * Import parameter:
+ * @param user (user information must be entered in accordance with the reference range, otherwise it may be impossible to measure the accurate body fat information)
+ 
+ * contains:
+ * hs2SUserID:NSData type,The user ID must be 16 bytes or the user creation fails,
+ * createTS:NSInteger type,The unit of time is seconds ,
+ * weight:NSNumber type,range:20-150kg,
+ * age:NSNumber type,range:18-99 years,
+ * height:NSNumber type,range:90-220cm
+ * sex:0 female 1 male,
+ * impedanceMark: 0 Don't measure 1 Measure
+ * fitnessMark:0 Don't fitness 1:fitness
+ * Return parameters:
+ * @param result   YES:Success  NO:Failed
+ * @param disposeErrorBlock  - error code
+ * Error code definition：
+ *  refer to “error” : HS2S error instruction.
  */
-control.createOrUpdateUserInfo(String id, float weight, int gender, int age, int height, int impedance, int bodybuilding);
-```
-
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (Hs2sProfile.ACTION_CREATE_OR_UPDATE_USER_INFO.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                int status = obj.getInt(Hs2sProfile.OPERATION_STATUS);
-                String description = obj.getString(Hs2sProfile.OPERATION_DESCRIBE);
-                
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
+-(void)commandUpdateHS2SUserInfoWithUser:(HealthUser*)user result:(DisposeHS2SResult)result DiaposeErrorBlock:(DisposeHS2SErrorBlock)disposeErrorBlock;
 ```
 
 ### Delete user info in device
 
 ```java
-Hs2sControl control = iHealthDevicesManager.getInstance().getHs2sControl(mDeviceMac);
-control.deleteUserInfo(String id);
-```
-
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (Hs2sProfile.ACTION_DELETE_USER_INFO.equals(action)) {
-            try {
-               JSONObject obj = new JSONObject(message);
-               int status = obj.getInt(Hs2sProfile.OPERATION_STATUS);
-               String description = obj.getString(Hs2sProfile.OPERATION_DESCRIBE);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
-```
-
-### Specify tourist users
-
-```java
-Hs2sControl control = iHealthDevicesManager.getInstance().getHs2sControl(mDeviceMac);
-control.specifyTouristUsers();
-```
-
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (Hs2sProfile.ACTION_SPECIFY_USERS.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                int status = obj.getInt(Hs2sProfile.OPERATION_STATUS);
-                String description = obj.getString(Hs2sProfile.OPERATION_DESCRIBE);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        } else if (Hs2sProfile.ACTION_ONLINE_REAL_TIME_WEIGHT.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                Double weight = obj.getDouble(Hs2sProfile.DATA_WEIGHT);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        } else if (Hs2sProfile.ACTION_ONLINE_RESULT.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                String dataId = obj.getInt(Hs2sProfile.DATA_ID);
-                int status = obj.getInt(Hs2sProfile.OPERATION_STATUS);
-                Double weight = obj.getDouble(Hs2sProfile.DATA_WEIGHT);
-                String description = obj.getString(Hs2sProfile.OPERATION_DESCRIBE);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
-```
-
-### Specify Online Users
-
-```java
-Hs2sControl control = iHealthDevicesManager.getInstance().getHs2sControl(mDeviceMac);
-/*
- * @param id           User id  (The length of ID must be 16)
- * @param weight       weight   (unit kg     range: 20kg-180kg)
- * @param gender       0:women      1:man
- * @param age          age    18-99  (If it is not within this range, it is impossible to measure the constitution correctly.)
- * @param height       height  90-220 cm    (If it is not within this range, it is impossible to measure the constitution correctly.)
- * @param impedance    0:No body fat measurement    1:body fat measurement
- * @param bodybuilding 0:No   Bodybuilding          1:Bodybuilding
+/**
+ *  Delete HS2S User
+ * Import parameter:
+ * @param userID :NSData type,The user ID must be 16 bytes or the user creation fails,
+ * Return parameters:
+ * @param result   YES:Success  NO:Failed
+ * @param disposeErrorBlock  - error code
+ * Error code definition：
+ *  refer to “error” : HS2S error instruction.
  */
-control.specifyOnlineUsers(String id, 
-                           float weight, 
-                           int gender,
-                           int age, 
-                           int height, 
-                           int impedance,
-                           int bodybuilding)
-```
-
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (Hs2sProfile.ACTION_SPECIFY_USERS.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                int status = obj.getInt(Hs2sProfile.OPERATION_STATUS);
-                String description = obj.getString(Hs2sProfile.OPERATION_DESCRIBE);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        } else if (Hs2sProfile.ACTION_ONLINE_REAL_TIME_WEIGHT.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                Double weight = obj.getDouble(Hs2sProfile.DATA_WEIGHT);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        } else if (Hs2sProfile.ACTION_ONLINE_RESULT.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                String dataId = obj.getInt(Hs2sProfile.DATA_ID);
-                int status = obj.getInt(Hs2sProfile.OPERATION_STATUS);
-                Double weight = obj.getDouble(Hs2sProfile.DATA_WEIGHT);
-                String description = obj.getString(Hs2sProfile.OPERATION_DESCRIBE);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        } else if (Hs2sProfile.ACTION_ONLINE_RESULT.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                String dataId = obj.getInt(Hs2sProfile.DATA_ID);
-                int status = obj.getInt(Hs2sProfile.OPERATION_STATUS);
-                Double weight = obj.getDouble(Hs2sProfile.DATA_WEIGHT);
-                String description = obj.getString(Hs2sProfile.OPERATION_DESCRIBE);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        } else if (Hs2sProfile.DATA_BODY_FAT_RESULT.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                int status = obj.getInt(Hs2sProfile.OPERATION_STATUS);
-                Double weight = obj.getDouble(Hs2sProfile.OPERATION_DESCRIBE);
-                String dataId = obj.getString(Hs2sProfile.DATA_ID);
-                Double description = obj.getDouble(Hs2sProfile.DATA_WEIGHT);
-                int userCount = obj.getString(Hs2sProfile.DATA_USER_NUM);
-                int gender = obj.getString(Hs2sProfile.DATA_GENDER);
-                int age = obj.getString(Hs2sProfile.DATA_AGE);
-                int height = obj.getString(Hs2sProfile.DATA_HEIGHT);
-                long measureTs = obj.getLong(Hs2sProfile.DATA_MEASURE_TIME);
-                int bodyBuilding = obj.getInt(Hs2sProfile.DATA_BODYBUILDING);
-                int type = obj.getInt(Hs2sProfile.DATA_INSTRUCTION_TYPE);
-
-                JSONObject objResult = obj.getJSONObject(Hs2sProfile.DATA_BODY_FAT_RESULT);
-                String bodyFit = obj.getString(Hs2sProfile.DATA_BODY_FIT_PERCENTAGE);
-                String muscleMass = obj.getString(Hs2sProfile.DATA_MUSCLE_MASS);
-                String boneSaltContent = obj.getString(Hs2sProfile.DATA_BONE_SALT_CONTENT);
-                String bodyWater = obj.getString(Hs2sProfile.DATA_BODY_WATER_RATE);
-                String protein = obj.getString(Hs2sProfile.DATA_PROTEIN_RATE);
-                String skeletalMuscleMass = obj.getString(Hs2sProfile.DATA_SKELETAL_MUSCLE_MASS);
-                String visceralFat = obj.getString(Hs2sProfile.DATA_VISCERAL_FAT_GRADE);
-                String physicalAge = obj.getString(Hs2sProfile.DATA_PHYSICAL_AGE);
-                String standardWeight = obj.getString(Hs2sProfile.DATA_STANDARD_WEIGHT);
-                String weightControl = obj.getString(Hs2sProfile.DATA_WEIGHT_CONTROL);
-                String muscleControl = obj.getString(Hs2sProfile.DATA_MUSCLE_CONTROL);
-                String fatControl = obj.getString(Hs2sProfile.DATA_FAT_CONTROL);
-                String fatWeight = obj.getString(Hs2sProfile.DATA_FAT_WEIGHT);
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-}
+-(void)commandDeleteHS2SUserWithUserID:(NSData*)userID result:(DisposeHS2SResult)result DiaposeErrorBlock:(DisposeHS2SErrorBlock)disposeErrorBlock;
 ```
 
 ### Get off line data count
 
 ```java
-Hs2sControl control = iHealthDevicesManager.getInstance().getHs2sControl(mDeviceMac);
-control.getOfflineDataCount(String... IDArray);
-```
-
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (Hs2sProfile.ACTION_HISTORY_DATA_NUM.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                int userCount = obj.getInt(Hs2sProfile.HISTORY_DATA_USER_COUNT);
-                JSONArray countArr = obj.gegetJSONArray(Hs2sProfile.HISTORY_DATA_COUNT_ARRAY);
-                for (int i = 0; i < userCount; i++) {
-                    JSONObject countObj = userArr.getJSONObject(i);
-                    int count = countObj.getInt(Hs2sProfile.HISTORY_DATA_COUNT);
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
+/**
+ *  Get HS2S Memory data count
+ * Import parameter:
+ * @param userID :NSData type,The user ID must be 16 bytes or the user creation fails,
+ * Return parameters:
+ * @param count  NSNumber Type,memory count
+ * @param disposeErrorBlock  - error code
+ * Error code definition：
+ *  refer to “error” : HS2S error instruction.
+ */
+-(void)commandGetHS2SMemoryDataCountWithUserID:(NSData*)userID memoryCount:(DisposeHS2SMemoryCountBlock)count DiaposeErrorBlock:(DisposeHS2SErrorBlock)disposeErrorBlock;
 ```
 
 ### Get offline data
 
 ```java
-Hs2sControl control = iHealthDevicesManager.getInstance().getHs2sControl(mDeviceMac);
-control.getOfflineData(String id) 
-```
-
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (Hs2sProfile.ACTION_HISTORY_DATA.equals(action)) {
-            try {
-                JSONArray historyArr = new JSONArray(message);
-                for (int i = 0; i < historyArr.length(); i++) {
-                    JSONObject obj = historyArr.getJSONObject(i);
-                    int status = obj.getInt(Hs2sProfile.OPERATION_STATUS);
-                    Double weight = obj.getDouble(Hs2sProfile.OPERATION_DESCRIBE);
-                    String dataId = obj.getString(Hs2sProfile.DATA_ID);
-                    Double description = obj.getDouble(Hs2sProfile.DATA_WEIGHT);
-                    int userCount = obj.getString(Hs2sProfile.DATA_USER_NUM);
-                    int gender = obj.getString(Hs2sProfile.DATA_GENDER);
-                    int age = obj.getString(Hs2sProfile.DATA_AGE);
-                    int height = obj.getString(Hs2sProfile.DATA_HEIGHT);
-                    long measureTs = obj.getLong(Hs2sProfile.DATA_MEASURE_TIME);
-                    int bodyBuilding = obj.getInt(Hs2sProfile.DATA_BODYBUILDING);
-                    int type = obj.getInt(Hs2sProfile.DATA_INSTRUCTION_TYPE);
-
-                    JSONObject objResult = obj.getJSONObject(Hs2sProfile.DATA_BODY_FAT_RESULT);
-                    String bodyFit = obj.getString(Hs2sProfile.DATA_BODY_FIT_PERCENTAGE);
-                    String muscleMass = obj.getString(Hs2sProfile.DATA_MUSCLE_MASS);
-                    String boneSaltContent = obj.getString(Hs2sProfile.DATA_BONE_SALT_CONTENT);
-                    String bodyWater = obj.getString(Hs2sProfile.DATA_BODY_WATER_RATE);
-                    String protein = obj.getString(Hs2sProfile.DATA_PROTEIN_RATE);
-                    String skeletalMuscleMass = obj.getString(Hs2sProfile.DATA_SKELETAL_MUSCLE_MASS);
-                    String visceralFat = obj.getString(Hs2sProfile.DATA_VISCERAL_FAT_GRADE);
-                    String physicalAge = obj.getString(Hs2sProfile.DATA_PHYSICAL_AGE);
-                    String standardWeight = obj.getString(Hs2sProfile.DATA_STANDARD_WEIGHT);
-                    String weightControl = obj.getString(Hs2sProfile.DATA_WEIGHT_CONTROL);
-                    String muscleControl = obj.getString(Hs2sProfile.DATA_MUSCLE_CONTROL);
-                    String fatControl = obj.getString(Hs2sProfile.DATA_FAT_CONTROL);
-                    String fatWeight = obj.getString(Hs2sProfile.DATA_FAT_WEIGHT);
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
+/**
+ *  Get HS2S Memory data
+ 
+ Lean mass calculation formula: result = weight * (1 - body fat percentage)
+ BMI calculation formula: result = weight / (height * height)
+ BMR calculation formula:
+ If no fat is measured
+ {
+ For men:
+ P = 13.397* weight + 4.799* height – 5.677* age + 88.362
+ For women:
+ P = 9.247* weight + 3.098* height – 4.330* age + 447.593
+ If the user enters the sport level in the app, correct the P:
+ Sport level=1, P = P*1.0
+ Sport level = 2, P = P*1.05
+ Sport level = 3, P = P*1.10
+ }
+ When fat is measured:
+ {
+ P=370 + 21.6*Lean mass(kg )
+ }
+ * Import parameter:
+ * @param userID :NSData type,The user ID must be 16 bytes or the user creation fails,
+ * Return parameters:
+ * @param memoryData NSArray Type,memory data
+ * Example:
+ * (
+ 
+          {
+               DeviceMac = 004D320CA04D;                      //device mac
+               HS2SBodyAge = 10;                              //body age
+               HS2SBodyWaterPercentAge = "39.3";              //body moisture rate
+               HS2SBoneMineral = "1.9";                       //Bone salt
+               HS2SFatControl = 0;                            //Fat Control
+               HS2SFatWeight = 0;                             //Fat weight
+               HS2SFitness = 1;                               //0:Don't fitness 1:fitness
+               HS2SImpedance = ();                            //NSArray type ,Impedance
+               HS2SIsRightTS = 1;                             //0:Incorrect, unsynchronized time on measured data 1:Correct, synchronize the measured data after the time
+               HS2SMeasureTS = "2019-05-18 08:56:38 +0000";
+               HS2SMuscle = "13.1";                           //Muscle mass
+               HS2SMuscleControl = 0;                         //Muscle Control
+               HS2SProteinPercentAge = "9.8";                 //Protein rate
+               HS2SResultBodyFatPercentAge = "44.2";          //Body fat rate
+               HS2SBodyWeightFlag = 0;                        //0:Body fat was not measured 1:Measure body fat
+               HS2SSkeletalMuscle = 0;                        //Skeletal Muscle
+               HS2SStandardWeight = 0;                        //Standard Weight
+               HS2SVFR = 29;                                  //Visceral fat grade
+               HS2SWeightControl = 0;                         //Weight Control
+               HS2SWeigthResult = "79.5";
+               "UserInfo_Age" = 18;
+               "UserInfo_Height" = 100;
+               "UserInfo_SEX" = 1;
+          }
+ * )
+ * @param disposeErrorBlock  - error code
+ * Error code definition：
+ *  refer to “error” : HS2S error instruction.
+ */
+-(void)commandGetHS2SMemoryDataWithUserID:(NSData*)userID memoryData:(DisposeHS2SMemoryDataBlock)memoryData DiaposeErrorBlock:(DisposeHS2SErrorBlock)disposeErrorBlock;
 ```
 
 ### Delete offline data
 
 ```java
-Hs2sControl control = iHealthDevicesManager.getInstance().getHs2sControl(mDeviceMac);
-control.deleteOfflineData(String id);
+/**
+ *  Delete HS2S Memory data
+ * Import parameter:
+ * @param userID :NSData type,The user ID must be 16 bytes or the user creation fails,
+ * Return parameters:
+ * @param result   YES:Success  NO:Failed
+ * @param disposeErrorBlock  - error code
+ * Error code definition：
+ *  refer to “error” : HS2S error instruction.
+ */
+-(void)commandDeleteHS2SMemoryDataWithUserID:(NSData*)userID result:(DisposeHS2SResult)result DiaposeErrorBlock:(DisposeHS2SErrorBlock)disposeErrorBlock;
+
 ```
 
+### Get Anonymous Memory data count
+
 ```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (Hs2sProfile.ACTION_DELETE_HISTORY_DATA.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                int status = obj.getInt(Hs2sProfile.OPERATION_STATUS)
-                String description = obj.getString(Hs2sProfile.OPERATION_DESCRIBE)
-               
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+/**
+ *  Get HS2S Anonymous Memory data count
+ * Return parameters:
+ * @param count memory count
+ * @param disposeErrorBlock  - error code
+ * Error code definition：
+ *  refer to “error” : HS2S error instruction.
+ */
+-(void)commandGetHS2SAnonymousMemoryDataCount:(DisposeHS2SAnonymousMemoryCountBlock)count DiaposeErrorBlock:(DisposeHS2SErrorBlock)disposeErrorBlock;
+
+```
+
+### Get Anonymous Memory data
+
+```java
+/**
+ *  Get HS2S Anonymous Memory data
+ * Return parameters:
+ * @param memoryData  NSArray type,Each result dictionary contains: HS2SIsRightTS(Time correctness identification,0:Incorrect, unsynchronized time on measured data 1:Correct, synchronize the measured data after the time),HS2SMeasureTS(Measure Time,NSdate type),HS2SWeigthResult(Weigth Result)
+ * Example:
+ * (
+        {
+           HS2SIsRightTS = 0;    //Time correctness identification
+           HS2SMeasureTS = "2019-05-18 07:18:36 +0000";
+           HS2SWeigthResult = "43.7";
         }
-    } 
-}
+ * )
+ * @param disposeErrorBlock  - error code
+ * Error code definition：
+ *  refer to “error” : HS2S error instruction.
+ */
+-(void)commandGetHS2SAnonymousMemoryData:(DisposeHS2SAnonymousMemoryDataBlock)memoryData DiaposeErrorBlock:(DisposeHS2SErrorBlock)disposeErrorBlock;
+
+```
+
+### Delete Anonymous Memory data
+
+```java
+/**
+ *  Delete HS2S Anonymous Memory data
+ * Return parameters:
+ * @param result   YES:Success  NO:Failed
+ * @param disposeErrorBlock  - error code
+ * Error code definition：
+ *  refer to “error” : HS2S error instruction.
+ */
+-(void)commandDeleteHS2SAnonymousMemoryData:(DisposeHS2SResult)result DiaposeErrorBlock:(DisposeHS2SErrorBlock)disposeErrorBlock;
+
+```
+
+### Measure
+
+```java
+/**
+ *  Measure HS2S Data
+ * Import parameter:
+ * @param user (user information must be entered in accordance with the reference range, otherwise it may be impossible to measure the accurate body fat information)
+ 
+       Lean mass calculation formula: result = weight * (1 - body fat percentage)
+       BMI calculation formula: result = weight / (height * height)
+       BMR calculation formula:
+       If no fat is measured
+      {
+          For men:
+          P = 13.397* weight + 4.799* height – 5.677* age + 88.362
+          For women:
+          P = 9.247* weight + 3.098* height – 4.330* age + 447.593
+          If the user enters the sport level in the app, correct the P:
+          Sport level=1, P = P*1.0
+          Sport level = 2, P = P*1.05
+          Sport level = 3, P = P*1.10
+      }
+       When fat is measured:
+      {
+           P=370 + 21.6*Lean mass(kg )
+      }
+ * contains:
+ * userType :  0 guest  1 normal
+ * hs2SUserID:NSData type,The user ID must be 16 bytes or the user creation fails,
+ * createTS:NSInteger type,The unit of time is seconds ,
+ * weight:NSNumber type,range:20-150kg,
+ * age:NSNumber type,range:18-99 years,
+ * height:NSNumber type,range:90-220cm
+ * sex:0 female 1 male,
+ * impedanceMark: 0 Don't measure 1 Measure
+ * fitnessMark:0 Don't fitness 1:fitness
+ * Return parameters:
+ * @param unStableWeight     - Current weight, (Kg) [Value Range:0~180]
+ * @param stableWeight       - Stable weight, (Kg) [Value Range:0~180]
+ * @param weightAndBodyInfo  Weight and body fat information   guest user not return weightAndBodyInfo
+ * Example:
+ * {
+       DeviceMac = 004D320CA04D;                      //device mac
+       HS2SBodyAge = 10;                              //body age
+       HS2SBodyWaterPercentAge = "39.3";              //body moisture rate
+       HS2SBoneMineral = "1.9";                       //Bone salt
+       HS2SFatControl = 0;                            //Fat Control
+       HS2SFatWeight = 0;                             //Fat weight
+       HS2SFitness = 1;                               //0:Don't fitness 1:fitness
+       HS2SImpedance = ();                            //NSArray type ,Impedance
+       HS2SMeasureTS = "2019-05-18 08:56:38 +0000";
+       HS2SMuscle = "13.1";                           //Muscle mass
+       HS2SMuscleControl = 0;                         //Muscle Control
+       HS2SProteinPercentAge = "9.8";                 //Protein rate
+       HS2SResultBodyFatPercentAge = "44.2";          //Body fat rate
+       HS2SBodyWeightFlag = 0;                        //0:Body fat was not measured 1:Measure body fat
+       HS2SSkeletalMuscle = 0;                        //Skeletal Muscle
+       HS2SStandardWeight = 0;                        //Standard Weight
+       HS2SVFR = 29;                                  //Visceral fat grade
+       HS2SWeightControl = 0;                         //Weight Control
+       HS2SWeigthResult = "79.5";
+       "UserInfo_Age" = 18;
+       "UserInfo_Height" = 100;
+       "UserInfo_SEX" = 1;
+ * }
+ * @param measureFinish  If HS2S is measuring weight, the call to the online measurement interface will fail at the beginning, and the call to the interface will succeed when the return measurement is completed.
+ * @param disposeErrorBlock  - error code
+ * Error code definition：
+ *  refer to “error” : HS2S error instruction.
+ */
+-(void)commandStartHS2SMeasureWithUser:(HealthUser*)user weight:(DisposeHS2SUnStableWeight)unStableWeight stableWeight:(DisposeHS2SStableWeight)stableWeight weightAndBodyInfo:(DisposeHS2SWeightAndBodyInfo)weightAndBodyInfo  disposeHS2SMeasureFinish:(DisposeHS2SMeasureFinish)measureFinish DiaposeErrorBlock:(DisposeHS2SErrorBlock)disposeErrorBlock;
+
+```
+### Reset device
+
+```java
+/**
+ *  Reset HS2S device
+ * Return parameters:
+ * @param result   YES:Success  NO:Failed
+ * @param disposeErrorBlock  - error code
+ * Error code definition：
+ *  refer to “error” : HS2S error instruction.
+ */
+-(void)commandResetHS2SDevice:(DisposeHS2SResult)result DiaposeErrorBlock:(DisposeHS2SErrorBlock)disposeErrorBlock;
+
+```
+
+### HS2S Light up bluetooth
+
+```java
+/**
+ *   HS2S Light up bluetooth
+ * Return parameters:
+ * @param result   YES:Success  NO:Failed
+ * @param disposeErrorBlock  - error code
+ * Error code definition：
+ *  refer to “error” : HS2S error instruction.
+ */
+-(void)commandSetHS2SDeviceLightUp:(DisposeHS2SResult)result DiaposeErrorBlock:(DisposeHS2SErrorBlock)disposeErrorBlock;
+
+```
+### Enter heart rate measurement mode
+
+
+```java
+
+(hardwareVersion must be greater than or equal to 6.0.0)
+
+/**
+ *   HS2S  Enter heart rate measurement mode
+ * Return parameters:
+ * @param result
+ *  heartResultDic:{
+    HeartValue = 0;
+    ResultStatus = 1;(0: success,
+                 1: failed 1, no real-time data received in 6s
+                 2: Failure 2, the algorithm judges that the user is weighing down
+                 3: Failure 3, calculation failed
+                 4: Failure 4: 30s timeout)
+  }
+
+ * @param status  ( 1: User on the scale
+                  2: User referred below
+                  3: The user's heartbeat signal is detected)
+ * @param disposeErrorBlock  - error code
+ * Error code definition：
+ *  refer to “error” : HS2S error instruction.
+ */
+-(void)commandEnterHS2SHeartRateMeasurementMode:(DisposeHS2SHeartResult)result measurementStatus:(DisposeHS2SMeasurementStatus)status  DiaposeErrorBlock:(DisposeHS2SErrorBlock)disposeErrorBlock;
+```
+### Exit heart rate measurement mode
+
+```java
+
+(hardwareVersion must be greater than or equal to 6.0.0)
+
+/**
+ *   HS2S  Exit heart rate measurement mode
+ * Return parameters:
+ * @param result   YES:Success  NO:Failed
+ * @param disposeErrorBlock  - error code
+ * Error code definition：
+ *  refer to “error” : HS2S error instruction.
+ */
+-(void)commandExitHS2SHeartRateMeasurementMode:(DisposeHS2SResult)result DiaposeErrorBlock:(DisposeHS2SErrorBlock)disposeErrorBlock;
+
+```
+
+### Disconnect  device
+
+```java
+/**
+ Disconnect current device
+ */
+
+-(void)commandDisconnectDevice;
+
 ```

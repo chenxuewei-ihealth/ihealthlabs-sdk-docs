@@ -10,501 +10,305 @@ sidebar_position: 3
 ### 1.Listen to device notify
 
 ```java
-int callbackId = iHealthDevicesManager.getInstance().registerClientCallback(new iHealthDevicesCallback() {
-    
-    @Override
-    public void onScanDevice(String mac, String deviceType, int rssi, Map manufactorData) {
 
-    }
+[[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(DeviceDiscover:) name:AM4Discover object:nil];
+            
+[[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(DeviceConnectFail:) name:AM4ConnectFailed object:nil];
+            
+[[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(DeviceConnect:) name:AM4ConnectNoti object:nil];
+            
+[[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(DeviceDisConnect:) name:AM4DisConnectNoti object:nil];
+            
+[AM4Controller shareIHAM4Controller];
 
-    @Override
-    public void onDeviceConnectionStateChange(String mac, String deviceType, int status, int errorID, Map manufactorData) {
-
-    }
-
-    @Override
-    public void onScanError(String reason, long latency) {
-        
-    }
-
-    @Override
-    public void onScanFinish() {
-       
-    }
-});
-
-iHealthDevicesManager.getInstance().addCallbackFilterForDeviceType(mClientCallbackId, iHealthDevicesManager.TYPE_AM3);
-iHealthDevicesManager.getInstance().addCallbackFilterForAddress(int clientCallbackId, String... macs)
 ```
 
-### 2.Scan for AM3 devices
+### 2.Scan for AM4 devices
 
 ```java
-iHealthDevicesManager.getInstance().startDiscovery(DiscoveryTypeEnum.AM3);
+[[ScanDeviceController commandGetInstance] commandScanDeviceType:HealthDeviceType_AM4];
 ```
 
-### 3.Connect to AM3 devices
+### 3.Connect to AM4 devices
 
 ```java
-iHealthDevicesManager.getInstance().connectDevice("", mac, iHealthDevicesManager.TYPE_AM3)
-
-Am3Control control = iHealthDevicesManager.getInstance().getAm3Control(mDeviceMac);
+[[ConnectDeviceController commandGetInstance] commandContectDeviceWithDeviceType:HealthDeviceType_AM4 andSerialNub:deviceMac];
 ```
 
 ## API reference
 
-### Get AM device's IDPS information
+### Get device userID
 
 ```java
-Am3Control control = iHealthDevicesManager.getInstance().getAm3Control(mDeviceMac);
-control.getBattery();
+/**
+ * Get device userID
+ * @param getDeviceUserIDBlock  get userID
+ * @param errorBlock Communication error codes, see AM4 error descriptions.
+ */
+-(void)commandAM4GetDeviceUserID:(DisposeAM4GetDeviceUserIDBlock)getDeviceUserIDBlock withErrorBlock:(DisposeAM4ErrorBlock)errorBlock;
 ```
 
+### Set RandomNumber
+
 ```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (PoProfile.ACTION_BATTERY_PO.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                int battery = obj.getInt(PoProfile.BATTERY_PO);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
+/**
+ Set RandomNumber
+
+ @param setRandomNumberBlock randomNumber
+ @param errorBlock Communication error codes, see AM4 error descriptions.
+ */
+-(void)commandAM4SetRandomNumber:(DisposeAM4SetRandomNumberBlock)setRandomNumberBlock withErrorBlock:(DisposeAM4ErrorBlock)errorBlock;
 ```
 
-### Reset the device
+### Sync time
 
 ```java
-Am3Control control = iHealthDevicesManager.getInstance().getAm3Control(mDeviceMac);
-control.getBattery();
+/**
+ * Sync time
+ * @param syncTimeBlock True: Success， False: Failed.
+ * @param errorBlock Communication error codes, see AM4 error descriptions.
+ */
+-(void)commandAM4SyncTime:(DisposeAM4SyncTimeBlock)syncTimeBlock withErrorBlock:(DisposeAM4ErrorBlock)errorBlock;
 ```
 
+### Set time format and nation
+
 ```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (PoProfile.ACTION_BATTERY_PO.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                int battery = obj.getInt(PoProfile.BATTERY_PO);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
+/**
+ * Set time format and nation
+ * @param timeFormatAndNation AM4TimeFormat_hh,AM4TimeFormat_HH,AM4TimeFormat_NoEuropeAndhh,AM4TimeFormat_EuropeAndhh,AM4TimeFormat_NoEuropeAndHH,AM4TimeFormat_EuropeAndHH
+ * @param setTimeFormatBlock True: Success， False: Failed.
+ * @param errorBlock Communication error codes, see AM4 error descriptions.
+ */
+-(void)commandAM4SetTimeFormatAndNation:(AM4TimeFormatAndNation)timeFormatAndNation withFinishResult:(DisposeAM4TimeFormatAndNationSettingBlock)setTimeFormatBlock withErrorBlock:(DisposeAM4ErrorBlock)errorBlock;
 ```
 
-### Get user id
+### Binding AM4
 
 ```java
-Am3Control control = iHealthDevicesManager.getInstance().getAm3Control(mDeviceMac);
-control.getBattery();
+/**
+ * Binding AM4 to user,Account binding requires an active internet connection.
+ * @param userID userID, ranging from 1 – 2147483647.
+ * @param finishResultBlock True: Success， False: Failed.
+ * @param errorBlock Communication error codes, see AM4 error descriptions.
+ */
+-(void)commandAM4SetUserID:(NSNumber*)userID withFinishResult:(DisposeAM4SetDeviceUserIDBlock)finishResultBlock withErrorBlock:(DisposeAM4ErrorBlock)errorBlock;
 ```
 
+### SetUserInfo
+
 ```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (PoProfile.ACTION_BATTERY_PO.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                int battery = obj.getInt(PoProfile.BATTERY_PO);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
+/**
+ * AM4 initialization,Must be called the first time to ensure that the AM4 has correct user information, goals, time, battery checks, etc.
+ * @param user User information, needs to include the following：age(int)、height(cm,1-255)、weight(kg,1-255)、bmr(user basal metabolic)、sex(UserSex_Female or UserSex_Male)、activityLevel (activityLevel=1, Sedentary,spend most of day sitting.activityLevel=2, Active,spend a good part of day doing some physical activity.activityLevel=3, Very Active,spend most of day doing heavy physical activity.)
+ * @param unit AM4KmUnit_mile or AM4KmUnit_km
+ * @param activeGoalNumber User goal number of steps,ranging from 4 – 2147483647. Default is 10,000
+ * @param swimmingGoal User goal number of swimming.ranging from 1–1439. Default is 30min
+ * @param setUserInfoFinishBlock True: Success， False: Failed.
+ * @param setBMRfinishResultBlock True: Success， False: Failed.
+ * @param errorBlock Communication error codes, see AM4 error descriptions.
+ */
+
+-(void)commandAM4SetUserInfo:(HealthUser *)user withUnit:(AM4KmUnit)unit withActiveGoal:(NSNumber *)activeGoalNumber withSwimmingGoal:(NSNumber *)swimmingGoal withSetUserInfoFinishResult:(DisposeAM4SetUserInfoBlock)setUserInfoFinishBlock withSetBMR:(DisposeAM4SetBMRBlock)setBMRfinishResultBlock withErrorBlock:(DisposeAM4ErrorBlock)errorBlock;
 ```
 
-### Get alarms' count
+### Set swimming
 
 ```java
-Am3Control control = iHealthDevicesManager.getInstance().getAm3Control(mDeviceMac);
-control.getBattery();
+/**
+ * Set swimming
+ * @param swimmingIsOpen YES:open swimming function NO:close swimming function default:no
+ * @param swimmingPoolLength swimming Pool Length,ranging from 0 – 255.
+ * @param noSwimmingDate automatic drop out swim duration
+ * @param unit swim unit (AM4SwimmingUnit_m or AM4SwimmingUnit_km)
+ * @param finishResultBlock True: Success， False: Failed.
+ * @param errorBlock Communication error codes, see AM4 error descriptions.
+ */
+-(void)commandAM4SetSwimmingState:(BOOL)swimmingIsOpen withSwimmingPoolLength:(NSNumber *)swimmingPoolLength withNOSwimmingTime:(NSDate *)noSwimmingDate withUnit:(AM4SwimmingUnit)unit withFinishResult:(DisposeAM4SettingSwimmingBlock)finishResultBlock withErrorBlock:(DisposeAM4ErrorBlock)errorBlock;
 ```
 
+### Upload AM4 data
+
 ```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (PoProfile.ACTION_BATTERY_PO.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                int battery = obj.getInt(PoProfile.BATTERY_PO);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
+/**
+ * Upload AM4 data,Data type: 5 minutes of active data, total number of steps for the day, and total calories.Also includes the number of steps for the 5 minutes of motion data, total calories for the current time, calories of the steps, and total calories.
+ * @param activeTransmissionBlock activeTransmission: Start uploading motion data, including parameters：Start date，yyyy-MM-dd(ActiveHistoryDateYear,ActiveHistoryDateMonth,ActiveHistoryDateDay)，ActiveStepSize：Length of each step，ActiveHistoryTotoalNum：Number of records.
+ * @param activeHistoryDataBlock active data，including the following parameters：AMDate、AMCalorie、AMstepNum、AMstepSize、dataID、Start. AMDate：Workout time,AMCalorie: Current time total calories,AMStepNum：Total number of steps,dataID：data ID,Start：represents the beginning of a movement.
+ * @param activeFinishTransmissionBlock Upload complete.
+ * @param errorBlock Communication error codes, see AM4 error descriptions.
+ */
+-(void)commandAM4StartSyncActiveData:(DisposeAM4ActiveStartTransmission)activeTransmissionBlock
+               withActiveHistoryData:(DisposeAM4ActiveHistoryData)activeHistoryDataBlock
+        withActiveFinishTransmission:(DisposeAM4ActiveFinishTransmission)activeFinishTransmissionBlock withErrorBlock:(DisposeAM4ErrorBlock)errorBlock;
 ```
 
-### Get alarm information by id
+### Upload AM4 5 minutes of sleep data
 
 ```java
-Am3Control control = iHealthDevicesManager.getInstance().getAm3Control(mDeviceMac);
-control.getBattery();
+/**
+ * Upload AM4 data,Data type: 5 minutes of sleep data
+ * @param sleepTransmissionBlock sleepTransmission:Start uploading sleep data,, including parameters：SleepHistoryDate、AM4SleepHistoryTotoalNum.SleepHistoryDate：Sleep start time，yyyy-MM-dd HH:mm:ss(SleepHistoryDateYear,SleepHistoryDateMonth,SleepHistoryDateDay,SleepHistoryDateHour,SleepHistoryDateMinute,SleepHistoryDateSeconds).SleepHistoryTotoalNum: Number of records
+  * @param sleepHistoryDataBlock Sleep data, including the following parameters:：AMDate、SleepData、dataID.AMDate：Sleep time, SleepData: Sleep grade, 0: awake, 1: light sleep, 2: deep sleep ,dataID: data ID.
+ * @param sleepFinishTransmissionBlock Upload complete.
+ * @param errorBlock Communication error codes, see AM4 error descriptions.
+ */
+-(void)commandAM4StartSyncSleepData:(DisposeAM4SleepStartTransmission)sleepTransmissionBlock withSleepHistoryData:(DisposeAM4SleepHistoryData)sleepHistoryDataBlock
+        withSleepFinishTransmission:(DisposeAM4SleepFinishTransmission)sleepFinishTransmissionBlock withErrorBlock:(DisposeAM4ErrorBlock)errorBlock;
 ```
 
+### Upload AM4 current active data
+
 ```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (PoProfile.ACTION_BATTERY_PO.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                int battery = obj.getInt(PoProfile.BATTERY_PO);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
+/**
+ * Upload AM4 data,Data type: Sync current active data
+ * @param currentActiveInfoBlock Total calories and steps for today, including parameters：Step、Calories、TotalCalories.Step：Number of steps taken today.Calories：Number of calories burned today.TotalCalories：Sum calories burned and bmr today.
+ * @param errorBlock Communication error codes, see AM4 error descriptions.
+ */
+-(void)commandAM4StartSyncCurrentActiveData:(DisposeAM4GetCurrentActiveInfo)currentActiveInfoBlock withErrorBlock:(DisposeAM4ErrorBlock)errorBlock;
 ```
 
-### Set/Unset alarm
+### Upload AM4 report data
 
 ```java
-Am3Control control = iHealthDevicesManager.getInstance().getAm3Control(mDeviceMac);
-control.getBattery();
+/**
+ * Upload AM4 report data.
+ * @param stageDataBlock Report data, including parameters:ReportStage_Swimming(0)、ReportStage_Work_out(1)、ReportStage_Sleep_summary(2).ReportStage_Swimming:Report Stage Swimming.including parameters:SwimmingMeasureDate(swimming Measure date)、SwimmingTimeNumber(swimming time number)、SwimmingTimes(swimming times)、Swimmingcalories(swimming calories)、SwimmingAct(swimming action)、SwimmingCircleCount(swimming circle count)、SwimmingPoollength(swimming pool length)、EnterSwimmingTime(enter swimming time)、OutSwimmingTime（out swimming time）、SwimmingProcessMark（swimming process mark）、SwimStartTimeStamp（swim start time stamp）、dataID(data ID).ReportStage_Work_out:Report Stage active,including parameters:Work_outCalories(Workout calories burned)、Work_outLengthNumber(Workout distance)、Work_outMeasureDate(Start time)、Work_outStepNumber(Workout number of steps)、Work_outTimeNumber(Length of workout)、dataID(data ID).ReportStage_Sleep_summary:Report Stage sleep,including parameters:Sleep_summaryMeasureDate（Sleep start time）、Sleep_summarySleepTime（Sleep duration）、Sleep_summarysleepAddMinute（Correct sleep duration length）、Sleep_summarysleepEfficiency（Sleep efficiency percentage, range is 0-100）
+ * @param stageDataFinishTransmissionBlock YES: Success，NO: Failed.
+ * @param errorBlock Communication error codes, see AM4 error descriptions.
+ */
+-(void)commandAM4StartSyncStageData:(DisposeAM4StageMeasureDataBlock)stageDataBlock withStageDataFinishTransmission:(DisposeAM4StageMeasureFinishBlock)stageDataFinishTransmissionBlock withErrorBlock:(DisposeAM4ErrorBlock)errorBlock;
 ```
 
+### Get totoal alarm infomation
+
 ```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (PoProfile.ACTION_BATTERY_PO.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                int battery = obj.getInt(PoProfile.BATTERY_PO);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
+/**
+ * Get totoal alarm infomation
+ * @param totoalAlarmInfoBlock Alarm array contains up to 3 alarms, each one needs the following parameters：AlarmId、Time、Week.AlarmId：1, 2, 3.Time：HH:mm.Week(Sun、Mon、Tue、Wed、Thu、Fri、Sat)True: On, False: Off
+ * @param errorBlock Communication error codes, see AM4 error descriptions.
+ */
+-(void)commandAM4GetTotoalAlarmInfo:(DisposeAM4TotoalAlarmData)totoalAlarmInfoBlock withErrorBlock:(DisposeAM4ErrorBlock)errorBlock;
+
 ```
 
-### Delete alarm by id
+### Set alarm
 
 ```java
-Am3Control control = iHealthDevicesManager.getInstance().getAm3Control(mDeviceMac);
-control.getBattery();
+/**
+ * Set alarm.
+ * @param alarmDic Alarm information, include parameters：AlarmId(1、2、3)、Time、IsRepeat、Switch、Week（Sun、Mon、Tue、Wed、Thu、Fri、Sat)
+ * @param finishResultBlock True: Alarm set successfully，False: Failed.
+ * @param errorBlock Communication error codes, see AM4 error descriptions.
+ */
+-(void)commandAM4SetAlarmDictionary:(NSDictionary *)alarmDic withFinishResult:(DisposeAM4SetAlarmBlock)finishResultBlock withErrorBlock:(DisposeAM4ErrorBlock)errorBlock;
 ```
 
+### Delete alarm
+
 ```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (PoProfile.ACTION_BATTERY_PO.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                int battery = obj.getInt(PoProfile.BATTERY_PO);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
+/**
+ * Delete alarm.
+ * @param alarmID alarmID：1, 2, 3.
+ * @param finishResultBlock True: Delete successful，False: Failed
+ * @param errorBlock Communication error codes, see AM4 error descriptions.
+ */
+-(void)commandAM4DeleteAlarmID:(NSNumber *)alarmID withFinishResult:(DisposeAM4DeleteAlarmBlock)finishResultBlock withErrorBlock:(DisposeAM4ErrorBlock)errorBlock;
 ```
 
-### Get activity remind setting
+### Get reminder
 
 ```java
-NT13BControl control = iHealthDevicesManager.getInstance().getNT13BControl(mDeviceMac);
-control.getBattery();
+/**
+ * Get reminder.
+ * @param remindInfoBlock Array containing following parameters：ReminderID、Time、Switch.ReminderID：Reminder ID.Time：format HH:mm, time between reminders (HH*60+mm) minutes.Switch：Reminder on/off，True: On， False: Off.
+ * @param errorBlock Communication error codes, see AM4 error descriptions.
+ */
+-(void)commandAM4GetReminderInfo:(DisposeAM4RemindInfoBlock)remindInfoBlock withErrorBlock:(DisposeAM4ErrorBlock)errorBlock;
 ```
 
+### Set reminders
+
 ```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (PoProfile.ACTION_BATTERY_PO.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                int battery = obj.getInt(PoProfile.BATTERY_PO);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
+/**
+ * Set reminders.
+ * @param reminderDic Array containing collowing parameters：Time、Switch。
+ * @param finishResultBlock YES: Successfully set, NO: Failed.
+ * @param errorBlock Communication error codes, see AM4 error descriptions.
+ */
+-(void)commandAM4SetReminderDictionary:(NSDictionary *)reminderDic withFinishResult:(DisposeAM4SetReminderBlock)finishResultBlock withErrorBlock:(DisposeAM4ErrorBlock)errorBlock;
 ```
 
-### Set/Unset activity remind
+### Get device state infomation
 
 ```java
-Am3Control control = iHealthDevicesManager.getInstance().getAm3Control(mDeviceMac);
-control.getBattery();
+/**
+ * Get device state infomation
+ * @param deviceStateInfoBlock AM status，State_wrist  (AM4 being worn on the wrist)，State_waist (AM4 worn with belt clip).
+ * @param batteryBlock AM battery percentage, from 0～100.
+ * @param errorBlock Communication error codes, see AM4 error descriptions.
+ */
+-(void)commandAM4GetDeviceStateInfo:(DisposeAM4StateInfoBlock)deviceStateInfoBlock withBattery:(DisposeAM4BatteryBlock)batteryBlock withErrorBlock:(DisposeAM4ErrorBlock)errorBlock;
 ```
 
+### Restore factory settings
+
 ```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (PoProfile.ACTION_BATTERY_PO.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                int battery = obj.getInt(PoProfile.BATTERY_PO);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
+/**
+ * Restore factory settings.
+ * @param resetDeviceBlock True: Success， False: Failed.
+ * @param errorBlock Communication error codes, see AM4 error descriptions.
+ */
+-(void)commandAM4ResetDevice:(DisposeAM4ResetDeviceBlock)resetDeviceBlock withErrorBlock:(DisposeAM4ErrorBlock)errorBlock;
 ```
 
-### Get device state and battery information
+### Get time format and nation
 
 ```java
-Am3Control control = iHealthDevicesManager.getInstance().getAm3Control(mDeviceMac);
-control.getBattery();
+/**
+ * Get time format and nation
+ * @param timeAndNationBlock  (AM4TimeFormat_hh,AM4TimeFormat_HH,AM4TimeFormat_NoEuropeAndhh,AM4TimeFormat_EuropeAndhh,AM4TimeFormat_NoEuropeAndHH,AM4TimeFormat_EuropeAndHH)
+ * @param errorBlock Communication error codes, see AM4 error descriptions.
+ */
+-(void)commandAM4GetTimeFormatAndNation:(DisposeAM4TimeFormatAndNationBlock)timeAndNationBlock withErrorBlock:(DisposeAM4ErrorBlock)errorBlock;
 ```
+### Get user infomation
 
 ```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (PoProfile.ACTION_BATTERY_PO.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                int battery = obj.getInt(PoProfile.BATTERY_PO);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
+/**
+ * Get user infomation
+ * @param userInfoBlock including parameters:Age,Step,Height,Gender,Weight,Unit,goal(TotalStep1、TotalStep2、TotalStep3)
+ * @param errorBlock Communication error codes, see AM4 error descriptions.
+ */
+-(void)commandAM4GetUserInfo:(DisposeAM4UserInfoBlock)userInfoBlock withErrorBlock:(DisposeAM4ErrorBlock)errorBlock;
 ```
-
-### Set user ID
+### Get swimming infomation
 
 ```java
-Am3Control control = iHealthDevicesManager.getInstance().getAm3Control(mDeviceMac);
-control.getBattery();
+/**
+ * Get swimming infomation
+ * @param swimmingInfoBlock including parameters:swimmingIsOpen,swimmingLaneLength,NOSwimmingTime,unit
+ * @param errorBlock Communication error codes, see AM4 error descriptions.
+ */
+-(void)commandAM4GetSwimmingInfo:(DisposeAM4SwimmingBlock)swimmingInfoBlock withErrorBlock:(DisposeAM4ErrorBlock)errorBlock;
 ```
+### Set BMR
 
 ```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (PoProfile.ACTION_BATTERY_PO.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                int battery = obj.getInt(PoProfile.BATTERY_PO);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
+/**
+ * Set BMR
+ * @param bmr ranging from 0 – 5000.
+ * @param finishResultBlock True: Delete successful，False: Failed
+ * @param errorBlock Communication error codes, see AM4 error descriptions.
+ */
+-(void)commandAM4SetBMR:(NSNumber *)bmr withFinishResult:(DisposeAM4SetBMRBlock)finishResultBlock withErrorBlock:(DisposeAM4ErrorBlock)errorBlock;
 ```
-
-### Get user information
-
-```java
-Am3Control control = iHealthDevicesManager.getInstance().getAm3Control(mDeviceMac);
-control.getBattery();
-```
+### Disconnect AM4 connection
 
 ```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (PoProfile.ACTION_BATTERY_PO.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                int battery = obj.getInt(PoProfile.BATTERY_PO);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
-```
-
-### Set user's BMR
-
-```java
-Am3Control control = iHealthDevicesManager.getInstance().getAm3Control(mDeviceMac);
-control.getBattery();
-```
-
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (PoProfile.ACTION_BATTERY_PO.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                int battery = obj.getInt(PoProfile.BATTERY_PO);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
-```
-
-### Get the activity data
-
-```java
-Am3Control control = iHealthDevicesManager.getInstance().getAm3Control(mDeviceMac);
-control.getBattery();
-```
-
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (PoProfile.ACTION_BATTERY_PO.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                int battery = obj.getInt(PoProfile.BATTERY_PO);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
-```
-
-### Get current time activity data
-
-```java
-Am3Control control = iHealthDevicesManager.getInstance().getAm3Control(mDeviceMac);
-control.getBattery();
-```
-
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (PoProfile.ACTION_BATTERY_PO.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                int battery = obj.getInt(PoProfile.BATTERY_PO);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
-```
-
-### Get sleep data
-
-```java
-Am3Control control = iHealthDevicesManager.getInstance().getAm3Control(mDeviceMac);
-control.getBattery();
-```
-
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (PoProfile.ACTION_BATTERY_PO.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                int battery = obj.getInt(PoProfile.BATTERY_PO);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
-```
-
-### Set the system time to AM device
-
-```java
-Am3Control control = iHealthDevicesManager.getInstance().getAm3Control(mDeviceMac);
-control.getBattery();
-```
-
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (PoProfile.ACTION_BATTERY_PO.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                int battery = obj.getInt(PoProfile.BATTERY_PO);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
-```
-
-### Set hour mode
-
-```java
-Am3Control control = iHealthDevicesManager.getInstance().getAm3Control(mDeviceMac);
-control.getBattery();
-```
-
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (PoProfile.ACTION_BATTERY_PO.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                int battery = obj.getInt(PoProfile.BATTERY_PO);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
-```
-
-### Get hour mode
-
-```java
-Am3Control control = iHealthDevicesManager.getInstance().getAm3Control(mDeviceMac);
-control.getBattery();
-```
-
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (PoProfile.ACTION_BATTERY_PO.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                int battery = obj.getInt(PoProfile.BATTERY_PO);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
+/**
+ * Disconnect AM4 connection.
+ * @param disconnectBlock  True: Success，False: Failed.
+ * @param errorBlock Communication error codes, see AM4 error descriptions.
+ */
+-(void)commandAM4Disconnect:(DisposeAM4DisconnectBlock)disconnectBlock withErrorBlock:(DisposeAM4ErrorBlock)errorBlock;
 ```
