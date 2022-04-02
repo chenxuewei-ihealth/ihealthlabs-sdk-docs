@@ -4,6 +4,11 @@ sidebar_position: 1
 ---
 ## WorkFlow
 
+1. Scan and connect ECG3.
+
+2. ECG3 support online  measurement.
+
+
 ## Connection to device
 
 ### 1.Listen to device notify

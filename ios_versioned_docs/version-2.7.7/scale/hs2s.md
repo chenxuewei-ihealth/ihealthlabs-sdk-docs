@@ -5,11 +5,11 @@ sidebar_position: 2
 
 ## WorkFlow
 
-1. Scan and connect Hs2s scale.
+1. Scan and connect HS2s scale.
 
 2. Get device info, if don't have any user info, create a user info and take a measure directly.
 
-3. Get user info, if have this user info, get data stored in hs2s. if don't have this user info, create a user info.
+3. Get user info, if have this user info, get data stored in HS2S. if don't have this user info, create a user info.
 
 4. Get offline data and take measurement.
 
@@ -104,7 +104,7 @@ sidebar_position: 2
 -(void)commandSetHS2SUnit:(HSUnit)tempUnit result:(DisposeHS2SResult)result  DisposeErrorBlock:(DisposeHS2SErrorBlock)disposeErrorBlock;
 ```
 
-### Get the info of user in hs2s
+### Get the info of user in HS2S
 
 ```java
 /**

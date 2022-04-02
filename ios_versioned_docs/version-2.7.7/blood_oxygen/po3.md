@@ -106,7 +106,7 @@ sidebar_position: 2
 -(void)commandPO3EndMeasureWithSpo2:(NSNumber*)spo2  bpm:(NSNumber*)bpm height:(NSNumber*)height disposePO3EndMeasureResult:(DisposePO3EndMeasure)disposePO3EndMeasureResult withErrorBlock:(DisposePO3ErrorBlock)errorBlock;
 ```
 
-### Disconnect the HS2
+### Disconnect the PO3
 
 ```java
 /**

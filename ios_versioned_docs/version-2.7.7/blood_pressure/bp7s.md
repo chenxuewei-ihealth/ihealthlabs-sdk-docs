@@ -7,7 +7,7 @@ sidebar_position: 5
 
 1. Scan and connect BP7S blood pressure monitor.
 
-2. BP7S support offline measurement.
+2. BP7S only support offline measurement.
 
 ## Connection to device
 
@@ -50,7 +50,7 @@ sidebar_position: 5
 -(void)commandEnergy:(BlockEnergyValue)energyValue errorBlock:(BlockError)error;
 ```
 
-### Set the BP5S display unit
+### Set the BP7S display unit
 
 ```java
 /**

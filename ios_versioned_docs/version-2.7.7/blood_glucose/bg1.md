@@ -5,7 +5,7 @@ sidebar_position: 1
 
 ## WorkFlow
 
-1. Scan and connect BG1 blood pressure monitor.
+1. Scan and connect BG1 blood glucose monitor.
 
 2. BG1 only support online measurement.
 

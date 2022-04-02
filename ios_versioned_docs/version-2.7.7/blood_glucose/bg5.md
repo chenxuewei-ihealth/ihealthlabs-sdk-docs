@@ -11,7 +11,7 @@ sidebar_position: 3
 
 If you use these devices, please contact us before submitting the Apple Store. We will generate a ppid based on the information you provided to help your app pass the review.
 
-If you're using BG5, you need to add protocol:protocol:com.jiuan.BGV31
+If you're using BG5, you need to add protocol:com.jiuan.BGV31
 
 ## Connection to device
 
@@ -35,7 +35,7 @@ BG5 is a classic bluetooth device, you need to manually pair and connect in the 
 ### 3.Connect to BG5 devices
 
 ```java
-BG5 is a classic bluetooth device, you need to manually pair and connect in the bluetooth of the iOS device, no need to call the scan command
+BG5 is a classic bluetooth device, you need to manually pair and connect in the bluetooth of the iOS device, no need to call the connect command
 ```
 
 ## API reference
@@ -54,7 +54,7 @@ BG5 is a classic bluetooth device, you need to manually pair and connect in the 
     DisposeBGErrorBlock:(DisposeBGErrorBlock)disposeBGErrorBlock;
 ```
 
-### Set unit to Bg5 device
+### Set unit to BG5 device
 
 ```java
 /**
@@ -68,7 +68,7 @@ BG5 is a classic bluetooth device, you need to manually pair and connect in the 
     DisposeBGErrorBlock:(DisposeBGErrorBlock)disposeBGErrorBlock;
 ```
 
-### Get the Bg5 battery status
+### Get the BG5 battery status
 
 ```java
 /**

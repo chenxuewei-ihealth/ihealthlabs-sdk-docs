@@ -54,7 +54,7 @@ sidebar_position: 4
 
 ```
 
-### Set time to BG5 device
+### Set time to BG5S device
 
 ```java
 /**
