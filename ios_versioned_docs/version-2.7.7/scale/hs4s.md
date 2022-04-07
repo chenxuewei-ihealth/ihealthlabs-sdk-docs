@@ -9,56 +9,34 @@ sidebar_position: 4
 
 2. HS4S support online measurement and offline measurement.
 
+3. For iOS system, HS4 and HS4S interface API is the same
+
 ## Connection to device
 
 ### 1.Listen to device notify
 
 ```java
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    
-    @Override
-    public void onScanDevice(String mac, String deviceType, int rssi, Map manufactorData) { }
+[[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(DeviceDiscover:) name:HS4Discover object:nil];
 
-    @Override
-    public void onDeviceConnectionStateChange(String mac, String deviceType, int status, int errorID, Map manufactorData){ }
+[[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(DeviceConnectFail:) name:HS4ConnectFailed object:nil];
 
-    @Override
-    public void onScanError(String reason, long latency) { }
+[[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(DeviceConnect:) name:HS4ConnectNoti object:nil];
 
-    @Override
-    public void onScanFinish() { }
+[[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(DeviceDisConnect:) name:HS4DisConnectNoti object:nil];
 
-    @Override
-    public void onDeviceNotify(String mac, String deviceType,
-                                String action, String message) { }
-}
-int callbackId = iHealthDevicesManager.getInstance().registerClientCallback(miHealthDevicesCallback);
-iHealthDevicesManager.getInstance().addCallbackFilterForDeviceType(callbackId, iHealthDevicesManager.TYPE_HS4S);
-iHealthDevicesManager.getInstance().addCallbackFilterForAddress(callbackId, String... macs)
+[HS4Controller shareIHHs4Controller];
 ```
 
 ### 2.Scan for HS4S devices
 
 ```java
-iHealthDevicesManager.getInstance().startDiscovery(DiscoveryTypeEnum.HS4);
-```
-
-```java
-// Return
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    
-    @Override
-    public void onScanDevice(String mac, String deviceType, int rssi, Map manufactorData) { 
-        Log.i(TAG, "onScanDevice - mac:" + mac + " - deviceType:" + deviceType + " - rssi:" + rssi + " - manufactorData:" + manufactorData);
-    }
-}
+[[ScanDeviceController commandGetInstance] commandScanDeviceType:HealthDeviceType_HS4];
 ```
 
 ### 3.Connect to HS4S devices
 
 ```java
-iHealthDevicesManager.getInstance().connectDevice("", mac, iHealthDevicesManager.TYPE_HS4S)
-Hs4sControl control = iHealthDevicesManager.getInstance().getHs4sControl(mDeviceMac);
+[[ConnectDeviceController commandGetInstance] commandContectDeviceWithDeviceType:HealthDeviceType_HS4 andSerialNub:deviceMac];
 ```
 
 ## API reference
@@ -66,82 +44,42 @@ Hs4sControl control = iHealthDevicesManager.getInstance().getHs4sControl(mDevice
 ### Get offline data
 
 ```java
-Hs4sControl control = iHealthDevicesManager.getInstance().getHs4sControl(mDeviceMac);
-control.getOfflineData() 
-```
-
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (HsProfile.ACTION_HISTORICAL_DATA_COMPLETE_HS.equals(action)) {
-            try {
-                JSONArray historyArr = new JSONArray(message);
-                for (int i = 0; i < historyArr.length(); i++) {
-                    JSONObject obj = historyArr.getJSONObject(i);
-                    String measureTs = obj.getString(HsProfile.MEASUREMENT_DATE_HS);
-                    String weight    = obj.getString(HsProfile.WEIGHT_HS);
-                 
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
+/**
+ Upload memory data
+ 
+ Return parameters:
+ @param startTransmission Start Memory transmission.
+ @param progress Memory transmission progress，[Range:0.0～1.0].
+ @param memorryData Record data including weight (kg), measurement time，coordinated key：weight，date.[Range of weight 0.0~180.0(kg)]
+ @param finishTransmission Finish memory transmission.
+ @param disposeErrorBlock Record the error code in uploading process.
+ */
+-(void)commandTransferMemorryData:(StartHS4Transmission)startTransmission DisposeProgress:(DisposeProgress)progress MemorryData:(MemorryData)memorryData FinishTransmission:(FinishHS4Transmission)finishTransmission DisposeErrorBlock:(DisposeHS4ErrorBlock)disposeErrorBlock;
 ```
 
 ### Start a online measurement
 
 ```java
-Hs2Control control = iHealthDevicesManager.getInstance().getHs2Control(mDeviceMac);
-/*
- * @param unit 1 kg; 2 lb; 3 st
- * @param userId user identify number
+/**
+ Establish memory and measurement connection
+Import parameter:
+ @param tempUnit Unit displayed on HS4: HSUnit_Kg、HSUnit_LB、HSUnit_ST。
+ Return parameters:
+ The measurement via SDK will be operated in the case of 1-4, and will be terminated if any of 5-8 occurs. The interface needs to be re-called after analyzing the return parameters.
+ @param unStableWeight Current weight, (Kg) [Value Range:0~180]
+ @param stableWeight Stable weight, (Kg) [Value Range:0~180]
+ @param disposeErrorBlock  error code
  */
-control.measureOnline(int unit, int userId)
+-(void)commandMeasureWithUint:(HSUnit)tempUnit Weight:(UnStableWeight)unStableWeight StableWeight:(StableWeight)stableWeight DisposeErrorBlock:(DisposeHS4ErrorBlock)disposeErrorBlock;
 ```
+
+### Disconnect the HS4
 
 ```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (HsProfile.ACTION_LIVEDATA_HS.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                String weight = obj.getString(HsProfile.DATA_LIVEDATA_HSWEIGHT);
+/**
+ Disconnect current device
+ */
 
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        } else if (HsProfile.ACTION_ONLINE_RESULT_HS.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                String weight = obj.getString(HsProfile.WEIGHT_HS);
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        } 
-    }
-}
+-(void)commandDisconnectDevice;
 ```
 
-### Disconnect the HS4S
-
-```java
-Hs4sControl control = iHealthDevicesManager.getInstance().getHs4Control(mDeviceMac);
-control.disconnect();
-```
-
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-     @Override
-    public void onDeviceConnectionStateChange(String mac, String deviceType, int status, int errorID, Map manufactorData) { 
-        
-    }
-}
-```

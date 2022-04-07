@@ -14,41 +14,28 @@ sidebar_position: 2
 ### 1.Listen to device notify
 
 ```java
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    
-    @Override
-    public void onScanDevice(String mac, String deviceType, int rssi, Map manufactorData) { }
 
-    @Override
-    public void onDeviceConnectionStateChange(String mac, String deviceType, int status, int errorID, Map manufactorData){ }
+[[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(DeviceDiscover:) name:BG1SDiscover object:nil];
 
-    @Override
-    public void onScanError(String reason, long latency) { }
+[[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(DeviceConnectFail:) name:BG1SConnectFailed object:nil];
 
-    @Override
-    public void onScanFinish() { }
+[[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(DeviceConnect:) name:BG1SConnectNoti object:nil];
 
-    @Override
-    public void onDeviceNotify(String mac, String deviceType,
-                                String action, String message) { }
-}
-int callbackId = iHealthDevicesManager.getInstance().registerClientCallback(miHealthDevicesCallback);
-iHealthDevicesManager.getInstance().addCallbackFilterForDeviceType(callbackId, iHealthDevicesManager.TYPE_BG1S);
-iHealthDevicesManager.getInstance().addCallbackFilterForAddress(callbackId, String... macs)
+[[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(DeviceDisConnect:) name:BG1SDisConnectNoti object:nil];
+            
+[BG1SController shareIHBG1SController];
 ```
 
 ### 2.Scan for BG1S devices
 
 ```java
-iHealthDevicesManager.getInstance().startDiscovery(DiscoveryTypeEnum.BG1S);
+[[ScanDeviceController commandGetInstance] commandScanDeviceType:HealthDeviceType_BG1S];
 ```
 
-### 3.Connect to BP3L devices
+### 3.Connect to BG1S devices
 
 ```java
-iHealthDevicesManager.getInstance().connectDevice("", mac, iHealthDevicesManager.TYPE_BG1S)
-
-Bp3lControl control = iHealthDevicesManager.getInstance().getBp3lControl(mDeviceMac);
+[[ConnectDeviceController commandGetInstance] commandContectDeviceWithDeviceType:HealthDeviceType_BG1S andSerialNub:deviceMac];
 ```
 
 ## API reference
@@ -56,110 +43,64 @@ Bp3lControl control = iHealthDevicesManager.getInstance().getBp3lControl(mDevice
 ### Get the measure mode of BG1S
 
 ```java
-Bg1sControl control = iHealthDevicesManager.getInstance().getBg1sControl(mDeviceMac);
-control.getDeviceStatus();
-```
-
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (Bg1sProfile.ACTION_GET_DEVICE_INFO.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                int battery = obj.getInt(Bg1sProfile.INFO_BATTERY_BG1S);
-                int bloodCode = obj.getInt(Bg1sProfile.INFO_VERSION_CODE_BLOOD_BG1S);
-                int ctlCode = obj.getInt(Bg1sProfile.INFO_VERSION_CODE_CTL_BG1S);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
+/**
+ * Get device battary
+ * @param function  A block to return the function and states that the device supports.
+ * @param disposeBGErrorBlock  A block to refer ‘error’ in ‘Establish measurement connection’ in BG1S.
+ */
+-(void)commandFunction:(BlockBG1SDeviceFunction)function DisposeBGErrorBlock:(BlockBG1SError)disposeBGErrorBlock;
 ```
 
 ### Set the measure mode of BG1S
 
 ```java
 /**
- * set the measure mode of Bg1s :
- * <ul><li>0:Blood mode</li></ul>
- * <ul><li>1:CTL mode.</li></ul> 
- **/
-Bg1sControl control = iHealthDevicesManager.getInstance().getBg1sControl(mDeviceMac);
-control.setMeasureMode(int mode);
-```
-
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (Bg1sProfile.ACTION_SET_MEASURE_MODE.equals(action)) {
-           try {
-                JSONObject obj = new JSONObject(message);
-                int status = obj.getInt(Bg1sProfile.OPERATION_STATUS);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
+ * Button-pressing booting mode
+ * @param testMode  Set the measurement mode,must be the same as the testType in send code method, BGMeasureMode_Blood means blood measurement mode, BGMeasureMode_NoBlood means control solution measurement mode.
+ * @param disposeBGStripInBlock  This block returns yes means strip slides in.
+ * @param disposeBGBloodBlock This block returns yes means the blood drop has beed sensed from the strip.
+ * @param disposeBGResultBlock  This block returns the measurement by the unit of mg/dL, range from 20-600.
+ * @param disposeBGErrorBlock   This block returns error codes,please refer to error codes list in BGMacroFile.
+ */
+-(void)commandCreateBG1STestModel:(BGMeasureMode)testMode
+          DisposeBGStripInBlock:(DisposeBG1SStripInBlock)disposeBGStripInBlock
+            DisposeBGBloodBlock:(DisposeBGBloodBlock)disposeBGBloodBlock
+           DisposeBGResultBlock:(DisposeBGResultBlock)disposeBGResultBlock
+            DisposeBGErrorBlock:(BlockBG1SError)disposeBGErrorBlock;
 ```
 
 ### Get the device code of BG1S
 
 ```java
-Bg1sControl control = iHealthDevicesManager.getInstance().getBg1sControl(mDeviceMac);
-control.queryDeviceCode();
-```
-
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (Bg1sProfile.ACTION_CHECK_CODE.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                int bloodCodeCheckResult = obj.getInt(Bg1sProfile.BLOOD_CHECK_CODE_RESULT);
-                int bloodCode = obj.getInt(Bg1sProfile.BLOOD_CODE);
-                int bloodCodeCRC = obj.getInt(Bg1sProfile.BLOOD_CODE_CRC);
-                int ctlCheckResult = obj.getInt(Bg1sProfile.CTL_CHECK_CODE_RESULT);
-                int ctlCode = obj.getInt(Bg1sProfile.CTL_CODE);
-                int ctlCodeCRC = obj.getInt(Bg1sProfile.CTL_CODE_CRC);
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
+/**
+* Read the information of the strip from the BG meter
+* @param  disposeBGCodeDic  This block returns the information of the strip, Strips means the number of strips which has been used, Date means expired date.
+* @param  disposeBGErrorBlock  This block returns error codes,please refer to error codes list in BGMacroFile.
+*/
+-(void)commandReadBGCodeDic:(DisposeBGCodeDic)disposeBGCodeDic
+        DisposeBGErrorBlock:(BlockBG1SError)disposeBGErrorBlock;
 ```
 
 ### Set the device code of BG1S
 
 ```java
-Bg1sControl control = iHealthDevicesManager.getInstance().getBg1sControl(mDeviceMac);
-control.setDeviceCode(byte[] code);
+/**
+ * Send code
+
+ * @param encodeString  The code String gets by scanning the QR code. Only used when codetype is GOD
+ 
+ * @param disposeBGSendCodeBlock  YES means success, NO means fail.
+
+ * @param disposeBGErrorBlock This block returns error codes,please refer to error codes list in BGMacroFile.
+ */
+-(void)commandSendBGCodeWithCodeString:(NSString*)encodeString DisposeBGSendCodeBlock:(DisposeBGSendCodeBlock)disposeBGSendCodeBlock DisposeBGErrorBlock:(BlockBG1SError)disposeBGErrorBlock;
 ```
 
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (Bg1sProfile.ACTION_CHECK_CODE.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                int status = obj.getInt(Bg1sProfile.STRIP_INSERTION_STATUS);
-                String describe = obj.getString(Bg1sProfile.OPERATION_DESCRIBE);
+### Disconnect
 
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
+```java
+/**
+ * Disconnect current device
+ */
+-(void)commandDisconnectDevice;
 ```

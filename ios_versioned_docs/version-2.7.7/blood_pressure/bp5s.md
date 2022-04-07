@@ -14,41 +14,28 @@ sidebar_position: 3
 ### 1.Listen to device notify
 
 ```java
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    
-    @Override
-    public void onScanDevice(String mac, String deviceType, int rssi, Map manufactorData) { }
 
-    @Override
-    public void onDeviceConnectionStateChange(String mac, String deviceType, int status, int errorID, Map manufactorData){ }
+[[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(DeviceDiscover:) name:BP5SDiscover object:nil];
 
-    @Override
-    public void onScanError(String reason, long latency) { }
+[[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(DeviceConnectFail:) name:BP5SConnectFailed object:nil];
 
-    @Override
-    public void onScanFinish() { }
+[[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(DeviceConnect:) name:BP5SConnectNoti object:nil];
 
-    @Override
-    public void onDeviceNotify(String mac, String deviceType,
-                                String action, String message) { }
-}
-int callbackId = iHealthDevicesManager.getInstance().registerClientCallback(miHealthDevicesCallback);
-iHealthDevicesManager.getInstance().addCallbackFilterForDeviceType(callbackId, iHealthDevicesManager.TYPE_BP5S);
-iHealthDevicesManager.getInstance().addCallbackFilterForAddress(callbackId, String... macs)
+[[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(DeviceDisConnect:) name:BP5SDisConnectNoti object:nil];
+        
+[BP5SController sharedController];
 ```
 
 ### 2.Scan for BP5S devices
 
 ```java
-iHealthDevicesManager.getInstance().startDiscovery(DiscoveryTypeEnum.BP5S);
+[[ScanDeviceController commandGetInstance] commandScanDeviceType:HealthDeviceType_BP5S];
 ```
 
 ### 3.Connect to BP5S devices
 
 ```java
-iHealthDevicesManager.getInstance().connectDevice("", mac, iHealthDevicesManager.TYPE_BP5S)
-
-Bp5sControl control = iHealthDevicesManager.getInstance().getBp5sControl(mDeviceMac);
+[[ConnectDeviceController commandGetInstance] commandContectDeviceWithDeviceType:HealthDeviceType_BP5S andSerialNub:deviceMac];
 ```
 
 ## API reference
@@ -56,260 +43,107 @@ Bp5sControl control = iHealthDevicesManager.getInstance().getBp5sControl(mDevice
 ### Get the device battery
 
 ```java
-Bp5sControl control = iHealthDevicesManager.getInstance().getBp5sControl(mDeviceMac);
-control.getBattery();
-```
-
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (BpProfile.ACTION_BATTERY_BP.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                int battery = obj.getInt(BpProfile.BATTERY_BP);
-                int status = obj.getInt(BpProfile.BATTERY_STATUS);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
+/**
+ * Query battery remaining energy
+ * @param energyValue  A block to return the device battery remaining energy percentage, ‘80’ stands for 80%.
+ * @param energyState 1:Not charging 2:charging 3:charging finish
+ * @param error  A block to return the error in ‘Establish measurement connection’.
+ */
+-(void)commandEnergy:(BlockEnergyValue)energyValue energyState:(BlockEnergyState)energyState errorBlock:(BlockError)error;
 ```
 
 ### Get function of BP5S device
 
 ```java
-Bp5sControl control = iHealthDevicesManager.getInstance().getBp5sControl(mDeviceMac);
-control.getFunctionInfo();
-```
 
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (BpProfile.ACTION_FUNCTION_INFORMATION_BP.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                int lastOperationStatus     = obj.getInt(BpProfile.FUNCTION_OPERATING_STATE);
-                boolean upAirMeasureFlg     = obj.getBoolean(BpProfile.FUNCTION_IS_UPAIR_MEASURE);
-                boolean armMeasureFlg       = obj.getBoolean(BpProfile.FUNCTION_IS_ARM_MEASURE);
-                boolean haveAngleSensorFlg  = obj.getBoolean(BpProfile.FUNCTION_HAVE_ANGLE_SENSOR);
-                boolean havePowerOffFlg     = obj.getBoolean(BpProfile.FUNCTION_HAVE_POWER_OFF);
-                boolean haveOfflineFlg      = obj.getBoolean(BpProfile.FUNCTION_HAVE_OFFLINE);
-                boolean userCanDeleteMemoryFlg = obj.getBoolean(BpProfile.FUNCTION_USER_CAN_DELETE_MEMORY);
-                boolean haveHSDFlg             = obj.getBoolean(BpProfile.FUNCTION_HAVE_HSD);
-                boolean haveBodyMovementFlg    = obj.getBoolean(BpProfile.FUNCTION_HAVE_BODY_MOVEMENT);
-                boolean memoryGroup            = obj.getBoolean(BpProfile.FUNCTION_MEMORY_GROUP);
-                
-                boolean haveReconnectFlg = obj.getBoolean(BpProfile.FUNCTION_HAVE_RECONNECT);
-                boolean ReonnectOpenFlg  = obj.getBoolean(BpProfile.FUNCTION_RECONNECT_OPEN);
-
-                boolean haveOfflineMeasureSettingFlg = obj.getBoolean(BpProfile.FUNCTION_HAVE_MEASURE_OFFLINE);
-                boolean OfflineMeasureOpenFlg        = obj.getBoolean(BpProfile.FUNCTION_MEASURE_OFFLINE_OPEN);
-                boolean haveUnitSettingFlg           = obj.getBoolean(BpProfile.FUNCTION_HAVE_SHOW_UNIT_SETTING);
-                boolean unitSettingFlg               = obj.getBoolean(BpProfile.FUNCTION_SHOW_UNIT);
-                boolean blueToothOpenFlg             = obj.getBoolean(BpProfile.FUNCTION_BLUETOOTH_OPEN_MODE);
-                boolean ifABIFlg                     = obj.getBoolean(BpProfile.FUNCTION_IF_ABI_MACHINE);
-                boolean upperOrLowerMachineFlg       = obj.getBoolean(BpProfile.FUNCTION_LOWER_OR_UPPER_MACHINE);
-                boolean limbsSimultaneousMeasureFlg  = obj.getBoolean(BpProfile.FUNCTION_LIMBS_SIMULTANEOUS_MEASURE);
-                boolean leftOrRightMachineFlg        = obj.getBoolean(BpProfile.FUNCTION_LEFT_OR_RIGHT_LIMB_MACHINE);
-
-                int maxMemoryCapacity = obj.getInt(BpProfile.FUNCTION_MAX_MEMORY_CAPACITY);
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
+/**
+ * * Synchronize time and return the function and states that the device supports
+ * @param function  A block to return the function and states that the device supports,judge if the device supports the function of up Air Measurement, arm Measurement,the last operation status,the max memory capacity, HSD, Offline Memory, mutable Groups Upload, Self Upgrade. ‘True’ means yes or on, ‘False’ means no or off.
+ * @param error  A block to refer ‘error’ in ‘Establish measurement connection’ in BP5S.
+ */
+-(void)commandFunction:(BlockDeviceFunction)function errorBlock:(BlockError)error;
 ```
 
 ### Set the BP5S mode
 
 ```java
-Bp5sControl control = iHealthDevicesManager.getInstance().getBp5sControl(mDeviceMac);
 /**
- * BpProfile.STATUS_MODE_TO_B: On-line measurement only, connecting bluetooth manually.
- * BpProfile.STATUS_MODE_TO_C: On-line and off-line measurement,connecting bluetooth often.
+ * set up offline detection
+ * @param open  True means on; False means off.
+ * @param successBlock  A block to refer ‘set success’.
+ * @param errorBlock  A block to refer ‘set failed’.
  */
-control.setMode(int mode);
-```
-
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (BpProfile.ACTION_SET_MODE.equals(action)) {
-            
-        }
-    } 
-}
+-(void)commandSetOffline:(BOOL)open success:(BlockSuccess)successBlock error:(BlockError)errorBlock;
 ```
 
 ### Set the BP5S display unit
 
 ```java
-Bp5sControl control = iHealthDevicesManager.getInstance().getBp5sControl(mDeviceMac);
 /**
- * BpProfile.STATUS_UNIT_DISPLAY_MMHG
- * BpProfile.STATUS_UNIT_DISPLAY_KPA
+ * set unit display
+ * @param UnitName mmHg, kPa
+ * @param setResult  A block to refer ‘set success’.
+ * @param error  A block to refer ‘set failed’.
  */
-control.setUnitDisplay(int type);
-```
-
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (BpProfile.ACTION_SHOW_UNIT_DISPLAY.equals(action)) {
-            
-        }
-    } 
-}
+-(void)commandSetUnit:(NSString *)UnitName disposeSetReslut:(BlockSuccess)setResult errorBlock:(BlockError)error;
 ```
 
 ### Get the number of history data
 
 ```java
-Bp5sControl control = iHealthDevicesManager.getInstance().getBp5sControl(mDeviceMac);
-control.getOfflineNum();
-```
-
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (BpProfile.ACTION_HISTORICAL_NUM_BP.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                int count = obj.getInt(BpProfile.HISTORICAL_NUM_BP);
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
+/**
+ * Upload offline data total Count.
+ * @param  totalCount item quantity of total data.
+ * @param error  A block to return the error.
+ */
+-(void)commandTransferMemoryTotalCount:(BlockBachCount)totalCount errorBlock:(BlockError)error;
 ```
 
 ### Get history data
 
 ```java
-Bp5sControl control = iHealthDevicesManager.getInstance().getBp5sControl(mDeviceMac);
-control.getOfflineData();
-```
-
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (BpProfile.ACTION_HISTORICAL_NUM_BP.equals(action)) {
-            try {
-                JSONArray historyArr = new JSONArray(message);
-                for (int i = 0; i < historyArr.length(); i++) {
-                    JSONObject obj = historyArr.getJSONObject(i);
-                    String dateStr = obj.getString(BpProfile.MEASUREMENT_DATE_BP);
-                    int sys = obj.getString(BpProfile.HIGH_BLOOD_PRESSURE_BP);
-                    int dia = obj.getString(BpProfile.LOW_BLOOD_PRESSURE_BP);
-                    int pulse = obj.getString(BpProfile.PULSE_BP);
-                    int ahr = obj.getString(BpProfile.MEASUREMENT_AHR_BP);
-                    int hsd = obj.getString(BpProfile.MEASUREMENT_HSD_BP);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
+/**
+ * Upload offline data.
+ *  @Notice   By the first time of new user register via SDK, ‘iHealth disclaimer’ will pop up automatically, and require the user agrees to continue. SDK application requires Internet connection; there is 10-day tryout if SDK cannot connect Internet, SDK is fully functional during tryout period, but will be terminated without verification through Internet after 10 days.
+ * @param  totalCount item quantity of total data
+ * @param  progress upload completion ratio , from 0.0 to 1.0 or 0%~100％, 100% means upload completed.
+ * @param  uploadDataArray    offline data set, including measurement time, systolic pressure, diastolic pressure, pulse rate, irregular judgment,scheme ID,body movement flag. corresponding KEY as time, sys, dia, heartRate, irregular,schemeID,bodyMovementFlg.
+ * @param error   error codes.
+ */
+-(void)commandTransferMemoryDataWithTotalCount:(BlockBachCount)totalCount progress:(BlockBachProgress)progress dataArray:(BlockBachArray)uploadDataArray errorBlock:(BlockError)error;
 ```
 
 ### Start a measurement
 
 ```java
-Bp5sControl control = iHealthDevicesManager.getInstance().getBp5sControl(mDeviceMac);
-control.startMeasure();
-```
-
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (BpProfile.ACTION_ZOREING_BP.equals(action)) {
-           
-        } else if (BpProfile.ACTION_ZOREOVER_BP.equals(action)) {
-            
-        } else if (BpProfile.ACTION_ONLINE_PRESSURE_BP.equals(action)) {
-            try {
-                int pressure = obj.getInt(BpProfile.BLOOD_PRESSURE_BP);
-            } catch(JSONException e) {
-                e.printStackTrace();
-            }
-            
-        } else if (BpProfile.ACTION_ONLINE_PULSEWAVE_BP.equals(action)) {
-            try {
-               JSONObject obj = new JSONObject(message);
-               int pressure = obj.getInt(BpProfile.BLOOD_PRESSURE_BP);
-               Sting wave = obj.getString(BpProfile.PULSEWAVE_BP);
-               Boolean heartbeat = obj.getBoolean(BpProfile.FLAG_HEARTBEAT_BP);
-            } catch(JSONException e) {
-                e.printStackTrace();
-            }
-            
-        } else if (BpProfile.ACTION_ONLINE_RESULT_BP.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                int highBloodPressure = obj.getInt(BpProfile.HIGH_BLOOD_PRESSURE_BP);
-                int lowBloodPressure  = obj.getInt(BpProfile.LOW_BLOOD_PRESSURE_BP);
-                int pulse = obj.getInt(BpProfile.PULSE_BP);
-                int ahr   = obj.getBoolean(BpProfile.MEASUREMENT_AHR_BP);
-                int hsd   = obj.getBoolean(BpProfile.MEASUREMENT_HSD_BP);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        } 
-    } 
-}
+/**
+ * Establish measurement connection and start BP measurement.
+ * @param blockZeroState Zeroing state
+ * @param pressure  Pressure value in the process of measurement, the unit is ‘mmHg’.
+ * @param blockWaveletWithHeartbeat   Wavelet data set with heart beat.
+ * @param blockWaveletWithoutHeartbeat   Wavelet data set without heart beat.
+ * @param result   result of the measurement, including systolic pressure, diastolic pressure, pulse rate and irregular judgment. Relevant key: time, sys, dia, heartRate, irregular. irregular will be 0 or 1.
+ * @param error   Return error codes.
+ */
+-(void)commandStartMeasureWithZeroingState:(BlockZero)blockZeroState pressure:(BlockPressure)pressure waveletWithHeartbeat:(BlockWavelet)blockWaveletWithHeartbeat waveletWithoutHeartbeat:(BlockWavelet)blockWaveletWithoutHeartbeat  result:(BlockMeasureResult)result errorBlock:(BlockError)error;
 ```
 
 ### Stop measurement
 
 ```java
-Bp5sControl control = iHealthDevicesManager.getInstance().getBp5sControl(mDeviceMac);
-control.getDeviceInfo();
-```
-
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (BpProfile.ACTION_INTERRUPTED_BP.equals(action)) {
-            
-        }
-    } 
-}
+/**
+ * Measurement termination and stop BP measurement
+ * @param success  The block return means measurement has been terminated.
+ * @param error  A block to return the error in ‘Establish measurement connection’ in BP.
+ */
+-(void)stopBPMeassureSuccessBlock:(BlockSuccess)success errorBlock:(BlockError)error;
 ```
 
 ### Disconnect BP5S device
 
 ```java
-Bp5sControl control = iHealthDevicesManager.getInstance().getBp5sControl(mDeviceMac);
-control.disconnect();
-```
-
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-     @Override
-    public void onDeviceConnectionStateChange(String mac, String deviceType, int status, int errorID, Map manufactorData) { 
-        
-    }
-}
+/**
+ * Disconnect current device
+ */
+-(void)commandDisconnectDevice;
 ```

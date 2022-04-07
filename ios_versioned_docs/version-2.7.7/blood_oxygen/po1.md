@@ -14,51 +14,28 @@ sidebar_position: 1
 ### 1.Listen to device notify
 
 ```java
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    
-    @Override
-    public void onScanDevice(String mac, String deviceType, int rssi, Map manufactorData) { }
 
-    @Override
-    public void onDeviceConnectionStateChange(String mac, String deviceType, int status, int errorID, Map manufactorData){ }
+[[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(DeviceDiscover:) name:PO1Discover object:nil];
 
-    @Override
-    public void onScanError(String reason, long latency) { }
+[[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(DeviceConnectFail:) name:PO1ConnectFailed object:nil];
 
-    @Override
-    public void onScanFinish() { }
+[[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(DeviceConnect:) name:PO1ConnectNoti object:nil];
 
-    @Override
-    public void onDeviceNotify(String mac, String deviceType,
-                                String action, String message) { }
-}
-int callbackId = iHealthDevicesManager.getInstance().registerClientCallback(miHealthDevicesCallback);
-iHealthDevicesManager.getInstance().addCallbackFilterForDeviceType(callbackId, iHealthDevicesManager.TYPE_PO1);
-iHealthDevicesManager.getInstance().addCallbackFilterForAddress(callbackId, String... macs)
+[[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(DeviceDisConnect:) name:PO1DisConnectNoti object:nil];
+            
+[PO1Controller shareIHPO1Controller];
 ```
 
 ### 2.Scan for PO1 devices
 
 ```java
-iHealthDevicesManager.getInstance().startDiscovery(DiscoveryTypeEnum.PO1);
-```
-
-```java
-// Return
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    
-    @Override
-    public void onScanDevice(String mac, String deviceType, int rssi, Map manufactorData) { 
-        Log.i(TAG, "onScanDevice - mac:" + mac + " - deviceType:" + deviceType + " - rssi:" + rssi + " - manufactorData:" + manufactorData);
-    }
-}
+[[ScanDeviceController commandGetInstance] commandScanDeviceType:HealthDeviceType_PO1];
 ```
 
 ### 3.Connect to PO1 devices
 
 ```java
-iHealthDevicesManager.getInstance().connectDevice("", mac, iHealthDevicesManager.TYPE_PO1)
-Po1Control control = iHealthDevicesManager.getInstance().getPo1Control(mDeviceMac);
+[[ConnectDeviceController commandGetInstance] commandContectDeviceWithDeviceType:HealthDeviceType_PO1 andSerialNub:deviceMac];
 ```
 
 ## API reference
@@ -66,83 +43,71 @@ Po1Control control = iHealthDevicesManager.getInstance().getPo1Control(mDeviceMa
 ### Open buzzer for PO1 device
 
 ```java
-Po1Control control = iHealthDevicesManager.getInstance().getPo1Control(mDeviceMac);
-control.openBuzzer(boolean isopened);
-```
-
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (Po1Profile.ACTION_SET_BUZZER.equals(action)) {
-        
-        }
-    } 
-}
+/**
+ * Get device IDPS
+ * @param function  A block to return the function and states that the device supports.
+ * {
+     MAC = 60A4232504ED;
+     accessoryName = "Pulse Oximeter";
+     firmwareVersion = "1.0.0";
+     hardwareVersion = "1.0.0";
+     manufaturer = iHealth;
+     modelNumber = "PO1 11070";
+     protocol = "com.jiuan.PO1";
+ }
+ * @param errorBlock  A block to refer ‘error’ in ‘Establish measurement connection’ in PO1.
+ */
+-(void)commandFunction:(DisposePO1DeviceFunctionBlock)function DisposeErrorBlock:(DisposePO1ErrorBlock)errorBlock;
 ```
 
 ### Get battery for PO1 device
 
 ```java
-Po1Control control = iHealthDevicesManager.getInstance().getPo1Control(mDeviceMac);
-control.getBattery() 
-```
-
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (Po1Profile.ACTION_GET_BATTERY.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                int battery = obj.getInt(Po1Profile.BATTERY);
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
+/**
+ * Query power status
+ * @param batteryBlock Battery，from 0～100
+ * @param errorBlock Communication error codes
+ */
+-(void)commandPO1GetDeviceBattery:(DisposePO1BatteryBlock)batteryBlock withErrorBlock:(DisposePO1ErrorBlock)errorBlock;
 ```
 
 ### Data Notify
 
 ```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (Po1Profile.ACTION_BO_MEASUREMENT.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                int blood_oxygen = obj.getInt(Po1Profile.BLOOD_OXYGEN);
-                int pulse = obj.getInt(Po1Profile.PULSE);
-                float pulse_porce = obj.getFloat(Po1Profile.PULSE_FORCE);
-                int pi = obj.getInt(Po1Profile.PI);
+/**
+Measure data  Notification
 
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        } 
-    }
+ PO1NotificationMeasureData
+
+You need to listen to this message to get real-time measurements
+ 
+ The unit of PI is %.
+
+Content of measurement results：
+{
+    PI = "5.8";
+    bpm = 90;
+    height = 4;
+    spo2 = 98;
+    wave =     (
+        42,
+        41,
+        41,
+        41,
+        40
+    );
 }
+ */
+
 ```
 
 ### Disconnect the PO1
 
 ```java
-Po1Control control = iHealthDevicesManager.getInstance().getPo1Control(mDeviceMac);
-control.disconnect();
-```
 
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-     @Override
-    public void onDeviceConnectionStateChange(String mac, String deviceType, int status, int errorID, Map manufactorData) { 
-        
-    }
-}
+/*
+ Disconnect current device
+ */
+
+-(void)commandDisconnectDevice;
 ```
