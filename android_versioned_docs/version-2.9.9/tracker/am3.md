@@ -3,11 +3,11 @@ title: AM3
 sidebar_position: 1
 ---
 
-## WorkFlow
+## Connection workflow
 
-## Connection to device
+![am3 connection](/am3_connection_workflow_android.png)
 
-### 1.Listen to device notify
+### 1.Add device notify listener
 
 ```java
 int callbackId = iHealthDevicesManager.getInstance().registerClientCallback(new iHealthDevicesCallback() {
@@ -37,19 +37,23 @@ iHealthDevicesManager.getInstance().addCallbackFilterForDeviceType(mClientCallba
 iHealthDevicesManager.getInstance().addCallbackFilterForAddress(int clientCallbackId, String... macs)
 ```
 
-### 2.Scan for AM3 devices
+### 2.Scan for AM3 device
 
 ```java
 iHealthDevicesManager.getInstance().startDiscovery(DiscoveryTypeEnum.AM3);
 ```
 
-### 3.Connect to AM3 devices
+### 3.Connect to AM3 device
 
 ```java
 iHealthDevicesManager.getInstance().connectDevice("", mac, iHealthDevicesManager.TYPE_AM3)
 
 Am3Control control = iHealthDevicesManager.getInstance().getAm3Control(mDeviceMac);
 ```
+
+## Measurement workflow
+
+
 
 ## API reference
 
@@ -79,7 +83,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
     @Override
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
         if (AmProfile.ACTION_RESET_AM.equals(action)) {
-            
+            int confirm = obj.getInt(AmProfile.ACTION_RESET_AM);
         }
     } 
 }
@@ -195,8 +199,8 @@ control.setAlarmClock(int id, int hour, int min, boolean isRepeat, int[] weeks, 
 private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
     @Override
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if ( AmProfile.ACTION_SET_ALARMINFO_SUCCESS_AM.equals(action)) {
-            
+        if (AmProfile.ACTION_SET_ALARMINFO_SUCCESS_AM.equals(action)) {
+            Log.i("", "set alarm info success");
         }
     } 
 }
@@ -218,7 +222,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
     @Override
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
         if (AmProfile.ACTION_DELETE_ALARM_SUCCESS_AM.equals(action)) {
-            
+            Log.i("", "delete alarm success");
         }
     } 
 }
@@ -228,7 +232,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 
 ```java
 Am3Control control = iHealthDevicesManager.getInstance().getAm3Control(mDeviceMac);
-control.getBattery();
+control.getActivityRemind();
 ```
 
 ```java
@@ -236,10 +240,11 @@ control.getBattery();
 private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
     @Override
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (PoProfile.ACTION_BATTERY_PO.equals(action)) {
+        if (AmProfile.ACTION_GET_ACTIVITY_REMIND_AM.equals(action)) {
             try {
                 JSONObject obj = new JSONObject(message);
-                int battery = obj.getInt(PoProfile.BATTERY_PO);
+                int time = obj.getString(AmProfile.GET_ACTIVITY_REMIND_TIME_AM);
+                int isOpen = obj.getBoolean(AmProfile.GET_ACTIVITY_REMIND_ISON_AM);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -267,7 +272,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
     @Override
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
         if (AmProfile.ACTION_SET_ACTIVITYREMIND_SUCCESS_AM.equals(action)) {
-          
+          Log.i("", "set remind success");
         }
     } 
 }
@@ -285,12 +290,11 @@ control.queryAMState();
 private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
     @Override
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (PoProfile.ACTION_BATTERY_PO.equals(action)) {
+        if (AmProfile.ACTION_QUERY_STATE_AM.equals(action)) {
             try {
                 JSONObject obj = new JSONObject(message);
                 int state   = obj.getInt(AmProfile.QUERY_STATE_AM);
-                int battery = obj.getInt(AmProfile.QUERY_BATTERY_AM);
-                int battery = obj.getInt(AmProfile.QUERY_STATE_AM);
+                int battery = obj.getInt(AmProfile.QUERY_BATTERY_PERCENT_AM);
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -304,7 +308,10 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 
 ```java
 Am3Control control = iHealthDevicesManager.getInstance().getAm3Control(mDeviceMac);
-control.getBattery();
+/**
+ * @param id new user id
+ */
+control.setUserId(int id);
 ```
 
 ```java
@@ -312,13 +319,8 @@ control.getBattery();
 private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
     @Override
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (PoProfile.ACTION_BATTERY_PO.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                int battery = obj.getInt(PoProfile.BATTERY_PO);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+        if (AmProfile.ACTION_SET_USERID_SUCCESS_AM.equals(action)) {
+            Log.i("", "set userid success");
         }
     } 
 }
@@ -328,7 +330,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 
 ```java
 Am3Control control = iHealthDevicesManager.getInstance().getAm3Control(mDeviceMac);
-control.getBattery();
+control.getUserInfo();
 ```
 
 ```java
@@ -336,10 +338,18 @@ control.getBattery();
 private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
     @Override
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (PoProfile.ACTION_BATTERY_PO.equals(action)) {
+        if (AmProfile.ACTION_GET_USERINFO_AM.equals(action)) {
             try {
                 JSONObject obj = new JSONObject(message);
-                int battery = obj.getInt(PoProfile.BATTERY_PO);
+                int age = obj.getInt(AmProfile.GET_USER_AGE_AM);
+                int step = obj.getInt(AmProfile.GET_USER_STEP_AM);
+                int height = obj.getInt(AmProfile.GET_USER_HEIGHT_AM);
+                int gender = obj.getInt(AmProfile.GET_USER_SEX_AM);
+                int weight = obj.getInt(AmProfile.GET_USER_WEIGHT_AM);
+                int unit = obj.getInt(AmProfile.GET_USER_UNIT_AM);
+                int target1 = obj.getInt(AmProfile.GET_USER_TARGET1_AM);
+                int target2 = obj.getInt(AmProfile.GET_USER_TARGET2_AM);
+                int target3 = obj.getInt(AmProfile.GET_USER_TARGET3_AM);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -352,7 +362,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 
 ```java
 Am3Control control = iHealthDevicesManager.getInstance().getAm3Control(mDeviceMac);
-control.getBattery();
+control.setUserBmr(int bmr);
 ```
 
 ```java
@@ -360,7 +370,7 @@ control.getBattery();
 private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
     @Override
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (PoProfile.ACTION_BATTERY_PO.equals(action)) {
+        if (AmProfile.ACTION_SET_BMR_SUCCESS_AM.equals(action)) {
             try {
                 JSONObject obj = new JSONObject(message);
                 int battery = obj.getInt(PoProfile.BATTERY_PO);
@@ -376,7 +386,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 
 ```java
 Am3Control control = iHealthDevicesManager.getInstance().getAm3Control(mDeviceMac);
-control.getBattery();
+control.syncActivityData();
 ```
 
 ```java
@@ -384,7 +394,7 @@ control.getBattery();
 private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
     @Override
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (PoProfile.ACTION_BATTERY_PO.equals(action)) {
+        if (PoProfile.ACTION_SYNC_ACTIVITY_DATA_AM.equals(action)) {
             try {
                 JSONObject obj = new JSONObject(message);
                 int battery = obj.getInt(PoProfile.BATTERY_PO);
