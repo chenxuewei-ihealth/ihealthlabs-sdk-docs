@@ -3,6 +3,15 @@ title: AM5
 sidebar_position: 4
 ---
 
+## WorkFlow
+
+
+![integrate ios](/iOS_AM5_1.png)
+
+![integrate ios](/iOS_AM5_2.png)
+
+![integrate ios](/iOS_AM5_3.png)
+
 ### 1.Listen to device notify
 
 ```java

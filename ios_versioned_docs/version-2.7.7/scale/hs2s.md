@@ -13,6 +13,12 @@ sidebar_position: 2
 
 4. Get offline data and take measurement.
 
+
+![integrate ios](/iOS_HS2S_1.png)
+
+
+![integrate ios](/iOS_HS2S_2.png)
+
 ## Connection to device
 
 ### 1.Listen to device notify

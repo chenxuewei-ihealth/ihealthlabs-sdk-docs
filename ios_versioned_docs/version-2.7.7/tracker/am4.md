@@ -5,6 +5,13 @@ sidebar_position: 3
 
 ## WorkFlow
 
+
+![integrate ios](/iOS_AM4_1.png)
+
+![integrate ios](/iOS_AM4_2.png)
+
+![integrate ios](/iOS_AM4_3.png)
+
 ## Connection to device
 
 ### 1.Listen to device notify

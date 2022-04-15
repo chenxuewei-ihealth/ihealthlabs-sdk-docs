@@ -9,6 +9,9 @@ sidebar_position: 1
 
 2. HS2 support online measurement and offline measurement.
 
+
+![integrate ios](/iOS_HS2_1.png)
+
 ## Connection to device
 
 ### 1.Listen to device notify

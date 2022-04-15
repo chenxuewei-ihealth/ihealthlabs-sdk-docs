@@ -9,6 +9,9 @@ sidebar_position: 3
 
 2. BP5S support online measurement and offline measurement.
 
+
+![integrate ios](/iOS_BP5S_1.png)
+
 ## Connection to device
 
 ### 1.Listen to device notify

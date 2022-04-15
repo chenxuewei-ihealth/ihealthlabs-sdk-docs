@@ -11,6 +11,9 @@ sidebar_position: 5
 
 3. HS5 support online measurement and offline measurement.
 
+
+![integrate ios](/iOS_HS5_1.png)
+
 ## Connection to device
 
 ### 1.Listen to device notify

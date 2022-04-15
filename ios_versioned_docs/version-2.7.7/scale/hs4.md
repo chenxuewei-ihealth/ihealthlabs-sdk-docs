@@ -9,6 +9,9 @@ sidebar_position: 3
 
 2. HS4 support online measurement and offline measurement.
 
+
+![integrate ios](/iOS_HS4_1.png)
+
 ## Connection to device
 
 ### 1.Listen to device notify

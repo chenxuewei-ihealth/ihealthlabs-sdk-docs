@@ -13,6 +13,9 @@ If you use these devices, please contact us before submitting the Apple Store. W
 
 If you're using BP7, you need to add protocol:com.jiuan.BPV20、com.jiuan.BPV23
 
+
+![integrate ios](/iOS_BP7_1.png)
+
 ## Connection to device
 
 ### 1.Listen to device notify

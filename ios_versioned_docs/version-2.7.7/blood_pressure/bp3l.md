@@ -9,6 +9,9 @@ sidebar_position: 1
 
 2. BP3L only support online measurement.
 
+
+![integrate ios](/iOS_BP3L_1.png)
+
 ## Connection to device
 
 #### 1.Listen to device notify

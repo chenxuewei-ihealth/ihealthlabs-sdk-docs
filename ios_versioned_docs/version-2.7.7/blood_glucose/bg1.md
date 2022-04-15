@@ -9,6 +9,9 @@ sidebar_position: 1
 
 2. BG1 only support online measurement.
 
+
+![integrate ios](/iOS_BG1_1.png)
+
 ## Connection to device
 
 ### 1.Listen to device notify

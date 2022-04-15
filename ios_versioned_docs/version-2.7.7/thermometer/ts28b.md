@@ -9,6 +9,9 @@ sidebar_position: 2
 
 2. TS28B support online measurement.
 
+
+![integrate ios](/iOS_TS28B_1.png)
+
 ## Connection to device
 
 ### 1.Listen to device notify
