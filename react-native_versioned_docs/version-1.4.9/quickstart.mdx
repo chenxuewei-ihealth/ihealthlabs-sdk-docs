@@ -43,3 +43,42 @@ import { iHealthDeviceManagerModule } from '@ihealth/ihealthlibrary-react-native
 const filename = 'license.pem';
 iHealthDeviceManagerModule.sdkAuthWithLicense(filename);
 ```
+
+## iOS Development environment configuration steps：
+
+1，First initialize your project
+Scaffold a clean react native project: npx react-native init testapp
+
+2，The second step is to install the latest version of ihealth SDK
+Install iHealth: cd testapp &&npm install @ihealth/ihealthlibrary-react-native
+
+3，The third step is to initialize the pod of the project
+install pods: cd ios &&pod install
+
+4，Then open the pod project file that has been initialized
+ open the project in Xcode : cd .. && xed ios
+
+5，The last step to run the project
+ run the project
+
+ #### If an error is reported when running the project, please check the following points：
+
+![integrate ios](/RN_ios_1.png)
+
+
+In this case, the static library files of the iHealth SDK are not added to the project and need to be manually added to the project. You can add them step by step in the order of the pictures.
+
+You check if your .a file has been added to the project, if not, you manually add it, as in my screenshot
+
+![integrate ios](/RN_ios_2.png)
+
+Below this folder is the .a file
+
+![integrate ios](/RN_ios_3.png)
+
+![integrate ios](/RN_ios_4.png)
+
+After adding successfully
+
+
+![integrate ios](/RN_ios_5.png)
