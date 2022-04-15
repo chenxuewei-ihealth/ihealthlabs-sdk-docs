@@ -53,8 +53,6 @@ Am3Control control = iHealthDevicesManager.getInstance().getAm3Control(mDeviceMa
 
 ## Measurement workflow
 
-
-
 ## API reference
 
 ### Get AM device's IDPS information

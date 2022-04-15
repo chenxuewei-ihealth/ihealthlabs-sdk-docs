@@ -3,52 +3,77 @@ title: BG1
 sidebar_position: 1
 ---
 
-## WorkFlow
+## Connection workflow
 
-1. Scan and connect BG1 blood pressure monitor.
+![bg1 connection](/bg1_connection_workflow_android.png)
 
-2. BG1 only support online measurement.
-
-## Connection to device
-
-### 1.Listen to device notify
+### 1. Register Broadcast
 
 ```java
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    
-    @Override
-    public void onScanDevice(String mac, String deviceType, int rssi, Map manufactorData) { }
+private void registerBroadcast() {
+    IntentFilter filter = new IntentFilter();
+    filter.addAction(Intent.ACTION_HEADSET_PLUG);
 
-    @Override
-    public void onDeviceConnectionStateChange(String mac, String deviceType, int status, int errorID, Map manufactorData){ }
+    filter.addAction(Bg1Profile.ACTION_BG1_DEVICE_READY);
+    filter.addAction(Bg1Profile.ACTION_BG1_IDPS);
+    filter.addAction(Bg1Profile.ACTION_BG1_CONNECT_RESULT);
+    filter.addAction(Bg1Profile.ACTION_BG1_SENDCODE_RESULT);
 
-    @Override
-    public void onScanError(String reason, long latency) { }
-
-    @Override
-    public void onScanFinish() { }
-
-    @Override
-    public void onDeviceNotify(String mac, String deviceType,
-                                String action, String message) { }
+    filter.addAction(Bg1Profile.ACTION_BG1_MEASURE_ERROR);
+    filter.addAction(Bg1Profile.ACTION_BG1_MEASURE_STRIP_IN);
+    filter.addAction(Bg1Profile.ACTION_BG1_MEASURE_STRIP_OUT);
+    filter.addAction(Bg1Profile.ACTION_BG1_MEASURE_GET_BLOOD);
+    filter.addAction(Bg1Profile.ACTION_BG1_MEASURE_RESULT);
+    filter.addAction(Bg1Profile.ACTION_BG1_MEASURE_STANDBY);
+    this.registerReceiver(mBroadcastReceiver, filter);
 }
-int callbackId = iHealthDevicesManager.getInstance().registerClientCallback(miHealthDevicesCallback);
-iHealthDevicesManager.getInstance().addCallbackFilterForDeviceType(callbackId, iHealthDevicesManager.TYPE_BG1);
-iHealthDevicesManager.getInstance().addCallbackFilterForAddress(callbackId, String... macs)
 ```
 
-### 2.Scan for BG1 devices
+### 2. The BG1 device plug your 3.5mm headphone jack and connect bg1 connect
 
 ```java
-iHealthDevicesManager.getInstance().startDiscovery(DiscoveryTypeEnum.BG1);
-```
 
-### 3.Connect to BG1 devices
+BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        String action = intent.getAction();
+        if (action.equals(Intent.ACTION_HEADSET_PLUG)) {
+            if (intent.hasExtra("state")) {
+                if (intent.getIntExtra("state", 0) == 0) {
+                    mBg1Control.disconnect();
+                    Log.i("", "move out from 3.5mm headphone jack");           
+                }
+                if (intent.getIntExtra("state", 0) == 1) {
+                    Log.i("", "plug in 3.5mm headphone jack");  
+                    mBg1Control.connect();
+                }
+            }
+        }
+        else if (action.equals(Bg1Profile.ACTION_BG1_DEVICE_READY)) {
+            Log.i("", "device handshake");  
 
-```java
-iHealthDevicesManager.getInstance().connectDevice("", mac, iHealthDevicesManager.TYPE_BG1)
+        } else if (action.equals(Bg1Profile.ACTION_BG1_IDPS)) {
+            String idps = intent.getStringExtra(Bg1Profile.BG1_IDPS);
+            Log.i("", "idps: "+idps);
 
-Bg1Control control = iHealthDevicesManager.getInstance().getBg1Control(mDeviceMac);
+        } else if (action.equals(Bg1Profile.ACTION_BG1_CONNECT_RESULT)) {
+            int flag = intent.getIntExtra(Bg1Profile.BG1_CONNECT_RESULT, -1);
+            Log.i("", "conect flag: " + flag);
+            if (flag == 0) {
+                Log.i("", "connect success, please send code");
+                // If you use control solution.
+                // mBg1Control.sendCode(QRCode, Bg1Profile.CODE_GOD, Bg1Profile.MEASURE_CTL);
+                
+                // If you work on the real measurement.
+                // mBg1Control.sendCode(QRCode, Bg1Profile.CODE_GOD, Bg1Profile.MEASURE_BLOOD);
+
+            } else {
+                Log.i("", "connect failed");
+                mBg1Control.disconnect();
+            }
+        }
+    }
+}
 ```
 
 ## API reference
@@ -77,9 +102,9 @@ BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
             int flag = intent.getIntExtra(Bg1Profile.BG1_SENDCODE_RESULT, -1);
             Log.i( "sendCode flag = " + flag);
             if (flag == 0) {
-                Log.i( "sendCode success,ready to measure");
+                Log.i("sendCode success,ready to measure");
             } else {
-                Log.i( "sendCode failed");
+                Log.i("sendCode failed");
                 mBg1Control.disconnect();
             }
         }
@@ -87,7 +112,7 @@ BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
 }
 ```
 
-### Start a measurement
+### Notify a measurement
 
 ```java
 // Return value

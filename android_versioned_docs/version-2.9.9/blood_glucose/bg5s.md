@@ -298,7 +298,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 ### Correct the measurement time of the offline data according to the flag and return in format JSON String
 
 ```java
-Bg5Control control = iHealthDevicesManager.getInstance().getBg5Control(mDeviceMac);
+Bg5sControl control = iHealthDevicesManager.getInstance().getBg5sControl(mDeviceMac);
 
 // Return value
 String message = control.adjustOfflineData(String timeString, String originData);
