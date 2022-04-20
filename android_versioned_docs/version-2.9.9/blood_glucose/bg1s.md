@@ -3,13 +3,11 @@ title: BG1S
 sidebar_position: 2
 ---
 
-## WorkFlow
+## Connection workflow
 
 1. Scan and connect BG1S blood glucose monitor.
 
 2. BG1S only support online measurement.
-
-## Connection to device
 
 ### 1.Listen to device notify
 
@@ -48,8 +46,10 @@ iHealthDevicesManager.getInstance().startDiscovery(DiscoveryTypeEnum.BG1S);
 ```java
 iHealthDevicesManager.getInstance().connectDevice("", mac, iHealthDevicesManager.TYPE_BG1S)
 
-Bp3lControl control = iHealthDevicesManager.getInstance().getBp3lControl(mDeviceMac);
+Bg1sControl control = iHealthDevicesManager.getInstance().getBg1sControl(mDeviceMac);
 ```
+
+## Connection to device
 
 ## API reference
 

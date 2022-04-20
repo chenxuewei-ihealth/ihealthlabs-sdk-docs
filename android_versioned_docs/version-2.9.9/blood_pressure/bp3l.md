@@ -3,15 +3,11 @@ title: BP3L
 sidebar_position: 1
 ---
 
-## WorkFlow
+## Connection workflow
 
-1. Scan and connect BP3L blood pressure monitor.
+![bp3l connection](/bp3l_connection_workflow_android.png)
 
-2. BP3L only support online measurement.
-
-## Connection to device
-
-#### 1.Listen to device notify
+### 1.Listen to device notify
 
 ```java
 private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
@@ -79,6 +75,19 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 
 ### Start a measurement
 
+When you call function **startMeasure()**, you will receive a series of actions:
+
+1. **BpProfile.ACTION_ZOREING_BP**
+
+2. **BpProfile.ACTION_ZOREOVER_BP**
+
+3. **BpProfile.ACTION_ONLINE_PRESSURE_BP**
+
+4. **BpProfile.ACTION_ONLINE_PULSEWAVE_BP**
+
+5. **BpProfile.ACTION_ONLINE_RESULT_BP**
+
+
 ```java
 Bp3lControl control = iHealthDevicesManager.getInstance().getBp3lControl(mDeviceMac);
 control.startMeasure();
@@ -90,9 +99,11 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
     @Override
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
         if (BpProfile.ACTION_ZOREING_BP.equals(action)) {
-           
+           Log.i("The Bp monitor is proparing for measurement.");
+
         } else if (BpProfile.ACTION_ZOREOVER_BP.equals(action)) {
-            
+           Log.i("The Bp monitor is ready for measurement.");
+
         } else if (BpProfile.ACTION_ONLINE_PRESSURE_BP.equals(action)) {
             try {
                 int pressure = obj.getInt(BpProfile.BLOOD_PRESSURE_BP);
