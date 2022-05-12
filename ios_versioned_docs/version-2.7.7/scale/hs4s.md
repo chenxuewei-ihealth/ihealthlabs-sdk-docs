@@ -76,7 +76,7 @@ Import parameter:
 -(void)commandMeasureWithUint:(HSUnit)tempUnit Weight:(UnStableWeight)unStableWeight StableWeight:(StableWeight)stableWeight DisposeErrorBlock:(DisposeHS4ErrorBlock)disposeErrorBlock;
 ```
 
-### Disconnect the HS4
+### Disconnect the HS4S
 
 ```java
 /**
