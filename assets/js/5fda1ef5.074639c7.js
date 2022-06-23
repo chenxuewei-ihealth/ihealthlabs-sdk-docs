@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkdocusaurus=self.webpackChunkdocusaurus||[]).push([[1264],{4228:function(s){s.exports=JSON.parse('{"label":"hello","permalink":"/ihealthlabs-sdk-docs/blog/tags/hello","allTagsPath":"/ihealthlabs-sdk-docs/blog/tags","count":2}')}}]);
