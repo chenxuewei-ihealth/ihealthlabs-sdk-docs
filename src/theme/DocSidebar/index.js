@@ -1,9 +1,3 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
 import React, { useState } from 'react';
 import clsx from 'clsx';
 import {
@@ -11,10 +5,10 @@ import {
   useAnnouncementBar,
   MobileSecondaryMenuFiller,
   ThemeClassNames,
+	useWindowSize,
+	useScrollPosition
 } from '@docusaurus/theme-common';
-import useWindowSize from '@theme/hooks/useWindowSize';
-import useScrollPosition from '@theme/hooks/useScrollPosition';
-import { DocSidebarItems } from '@theme/DocSidebarItem';
+import DocSidebarItems from '@theme/DocSidebarItems';
 import styles from './styles.module.css';
 
 import Link from '@docusaurus/Link';
@@ -59,8 +53,8 @@ const getDocId = () => {
 
 const DocManager = () => {
   const docId = getDocId();
+	console.log("DocManager", docId)
   if (docId === 'default') {
-    // don't show docs for `/docs` or `/`
     return null;
   }
 

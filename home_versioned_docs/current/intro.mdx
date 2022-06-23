@@ -1,0 +1,108 @@
+---
+title: iHealthlabs SDK
+sidebar_position: 1
+---
+
+import GridLink from '@site/src/components/GridLink';
+import {  AndroidIcon, AppleIcon, ReactIcon, KotlinIcon } from '@site/src/assets/icons';
+import { HashChange } from '@site/src/components/HashChange';
+
+<HashChange
+  onLoad={() => {
+    const topLink = document.querySelector(
+      'a.menu__link[href="/docs/home/intro"]'
+    );
+    if (topLink) {
+      topLink.onclick = (e) => {
+        document
+          .querySelectorAll('a.menu__link')
+          ?.forEach((link) => link?.classList.remove('menu__link--active'));
+        e.target.classList.add('menu__link--active');
+      };
+    }
+  }}
+  onChange={() => {
+    const { hash } = window.location;
+    if (hash < 2) return;
+    document
+      .querySelectorAll('a.menu__link')
+      ?.forEach((link) => link.classList.remove('menu__link--active'));
+    let link =
+      document.querySelector(`a.menu__link[href="${hash}"]`) ??
+      document.querySelector('a.menu__link[href="/docs/home/introduction"]');
+    link?.classList.add('menu__link--active');
+  }}
+/>
+
+## Introduction
+
+iHealth SDK is a API for connection and managing iHealth devices in mobile applications, and help you easy to connect and operate iHealth devices, integrate iHealth SDK into your applications rapidly.
+
+<div className="grid xl:grid-cols-3">
+  <div className="xl:col-span-1">
+    <img src="https://raw.githubusercontent.com/chenxuewei-ihealth/ihealthlabs-sdk-docs/master/static/doc_index_2.png" style={{ width: 200, height: 150 }} />
+  </div>
+  <div className="xl:col-span-1">
+    <img src="https://raw.githubusercontent.com/chenxuewei-ihealth/ihealthlabs-sdk-docs/master/static/doc_index_3.png" style={{ width: 200, height: 150 }} />
+  </div>
+  <div className="xl:col-span-1">
+    <img src="https://raw.githubusercontent.com/chenxuewei-ihealth/ihealthlabs-sdk-docs/master/static/doc_index_1.png" style={{ width: 200, height: 150 }} />
+  </div>
+</div>
+
+<div className="grid xl:grid-cols-3">
+  <div className="xl:col-span-1">
+    <h3>Easy to Measurement</h3>
+    <p>iHealth SDK was designed for connecting iHealth devices easily and use it quickly.</p>
+  </div>
+  <div className="xl:col-span-1">
+    <h3>Focus on What Matters</h3>
+    <p>iHealth SDK lets you focus on your app, and don&apos;t to know the device low-level interaction.</p>
+  </div>
+  <div className="xl:col-span-1">
+    <h3>Support Multi-platform</h3>
+    <p>iHealth SDK support multi-platform Android iOS and React Native.</p>
+  </div>
+</div>
+
+:::info
+
+To get started, check out the following resources:
+
+* A **Get started** is for a comprehensive overview from registe iHealth dev account to how to run devices, and usage examples.
+* The **API reference** is for a reference of our APIs including a detailed overview of their inputs and outputs.
+
+:::
+
+## Pick a platform or framework
+
+<div className="grid xl:grid-cols-6 gap-4">
+
+<GridLink
+  to="/ihealthlabs-sdk-docs/android/quickstart"
+  title="Android"
+  subtitle="Java"
+  className="xl:col-span-3"
+  Icon={<AndroidIcon className="h-10 mr-4" />}
+/>
+
+<GridLink
+  to="/ihealthlabs-sdk-docs/android/quickstart"
+  title="iOS"
+  subtitle="Objective C"
+  className="xl:col-span-3"
+  Icon={<AppleIcon className="h-10 mr-4" />}
+/>
+
+<GridLink
+  to="/ihealthlabs-sdk-docs/android/quickstart"
+  title="React Native"
+  subtitle="Android + iOS"
+  className="xl:col-span-3"
+  Icon={<ReactIcon className="h-10 mr-4" />}
+/>
+
+</div>
+
+
+

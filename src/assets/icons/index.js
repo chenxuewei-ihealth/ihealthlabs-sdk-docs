@@ -1,3 +1,4 @@
+
 import clsx from 'clsx';
 import React from 'react';
 import PropTypes from 'prop-types';
@@ -16,19 +17,7 @@ AppleIcon.propTypes = AndroidIcon.propTypes = {
   className: PropTypes.string,
 };
 
-export { SDKIcon } from './SDKIcon';
-export { APIIcon } from './APIIcon';
-
-export { BlogIcon } from './BlogIcon';
-
 export { ReactIcon } from './ReactIcon';
-export { FlutterIcon } from './FlutterIcon';
-export { JSIcon } from './JSIcon';
-export { DiscordIcon } from './DiscordIcon';
+export { KotlinIcon } from './KotlinIcon';
 
 export { AndroidIcon, AppleIcon };
-
-export { ReactRevolveIcon } from './ReactRevolveIcon';
-export { KotlinIcon } from './KotlinIcon';
-export { SwiftIcon } from './SwiftIcon';
-export { ReactNativeIcon } from './ReactNativeIcon';
