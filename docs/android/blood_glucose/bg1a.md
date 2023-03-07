@@ -180,3 +180,49 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
     } 
 }
 ```
+
+### Error message
+
+No need to call any API, just listen to the error event.
+
+```java
+/**
+  * Error id and error description
+  * 1: The caculation result is zero
+  * 2: Abnormal low current
+  * 3: Algorithm connection error
+  * 4: Blood-sucking timeout
+  * 5: Missing XM1 error
+  * 10: Self-inspection error
+  * 11: Unrecognized test paper type error
+  * 12: Waste test strip
+  * 14: Low power alarm (<2.6V)
+  * 15: High voltage alarm (>4V)
+  * 16: Temperature low out of range
+  * 17: Temperature high out of range
+  * 18: Flash write failed
+  * 20: No calibration inspection mark
+  * 21: No calibration recheck inspection mark
+  * 21: No test paper socket inspection mark
+  * 22: Early blood-sucking
+  **/
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Bg1aProfile.ACTION_ERROR_BG1A.equals(action)) {
+           try {
+                JSONObject obj = new JSONObject(message);
+                int error_id          = obj.getInt(Bg1aProfile.ERROR_NUM_BG1A);
+                int error_description = obj.getInt(Bg1aProfile.ERROR_DESCRIPTION_BG1A);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } else if (iHealthDevicesManager.IHEALTH_COMM_TIMEOUT.equasls(action)) {
+            // Ble connection timeout, Please send the current command again.
+        }
+    } 
+}
+```
+
+
