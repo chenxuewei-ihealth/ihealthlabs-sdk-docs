@@ -156,26 +156,26 @@ notifyListener = DeviceEventEmitter.addListener(HS2SModule.Event_Notify,  (event
         let arr = event["history_data"];
         arr.forEach(function(result) {
             console.log(result["fat_weight"]);
-            console.log(result["fat_control"];
-            console.log(result["weight_control"];
-            console.log(result["standard_weight"];
-            console.log(result["skeletal_muscle_mass"];
-            console.log(result["body_water_rate"];
-            console.log(result["muscle_mas"];
-            console.log(result["instruction_type"];
-            console.log(result["body_building"];
-            console.log(result["height"];
-            console.log(result["gender"];
-            console.log(result["muscle_control"];
-            console.log(result["physical_age"];
-            console.log(result["visceral_fat_grade"];
-            console.log(result["protein_rate"];
-            console.log(result["bone_salt_content"];
-            console.log(result["visceral_fat_grade"];
-            console.log(result["measure_time"];
-            console.log(result["age"];
-            console.log(result["impedance"];
-            console.log(result["weight"];
+            console.log(result["fat_control"]);
+            console.log(result["weight_control"]);
+            console.log(result["standard_weight"]);
+            console.log(result["skeletal_muscle_mass"]);
+            console.log(result["body_water_rate"]);
+            console.log(result["muscle_mas"]);
+            console.log(result["instruction_type"]);
+            console.log(result["body_building"]);
+            console.log(result["height"]);
+            console.log(result["gender"]);
+            console.log(result["muscle_control"]);
+            console.log(result["physical_age"]);
+            console.log(result["visceral_fat_grade"]);
+            console.log(result["protein_rate"]);
+            console.log(result["bone_salt_content"]);
+            console.log(result["visceral_fat_grade"]);
+            console.log(result["measure_time"]);
+            console.log(result["age"]);
+            console.log(result["impedance"]);
+            console.log(result["weight"]);
        })
     }
 }
@@ -217,14 +217,14 @@ notifyListener = DeviceEventEmitter.addListener(HS2SModule.Event_Notify,  (event
     if (event.action === "action_anonymous_data") {
         let arr = event["history_data"];
         arr.forEach(function(result) {
-            console.log(result["instruction_type"];
-            console.log(result["body_building"];
-            console.log(result["height"];
-            console.log(result["gender"];
-            console.log(result["measure_time"];
-            console.log(result["age"];
-            console.log(result["impedance"];
-            console.log(result["weight"];
+            console.log(result["instruction_type"]);
+            console.log(result["body_building"]);
+            console.log(result["height"]);
+            console.log(result["gender"]);
+            console.log(result["measure_time"]);
+            console.log(result["age"]);
+            console.log(result["impedance"]);
+            console.log(result["weight"]);
        })
     }
 }
