@@ -26,7 +26,7 @@ notifyListener = DeviceEventEmitter.addListener(HS2SModule.Event_Notify,  (event
 notifyListener.remove();
 ```
 
-### get device information
+### Get HS2S information
 
 ```js
 HS2SModule.getDeviceInfo(mac);
@@ -40,7 +40,7 @@ notifyListener = DeviceEventEmitter.addListener(HS2SModule.Event_Notify,  (event
 }
 ```
 
-### get device battery
+### Get HS2S battery level
 
 ```js
 HS2SModule.getBattery(mac);
@@ -52,10 +52,16 @@ notifyListener = DeviceEventEmitter.addListener(HS2SModule.Event_Notify,  (event
 }
 ```
 
-### set Unit
+### Set HS2S unit type
 
 ```js
-HS2SModule.setUnit(mac);
+/**
+ * Unit type:
+ * 1: kg
+ * 2: lbs
+ * 3: st
+ **/
+HS2SModule.setUnit(mac, unit);
 
 notifyListener = DeviceEventEmitter.addListener(HS2SModule.Event_Notify,  (event) => {
     if (event.action === "action_set_unit") {
@@ -64,7 +70,7 @@ notifyListener = DeviceEventEmitter.addListener(HS2SModule.Event_Notify,  (event
 }
 ```
 
-### get user information
+### Get user profile in HS2S
 
 ```js
 HS2SModule.getUserInfo(mac);
@@ -85,10 +91,20 @@ notifyListener = DeviceEventEmitter.addListener(HS2SModule.Event_Notify,  (event
 }
 ```
 
-### create user
+### Create or update user profile in HS2S
 
 ```js
-HS2SModule.updateUserInfo(mac);
+/**
+ * userID: User id, the id must be 16 digits.
+ * createTS: Create user or modify timestramp.
+ * weight: user current weight, the unit is kg, range is 20kg~180kg.
+ * age: user age, range is 18-99, if you are not in this range, you may not get the correect body fat result
+ * height: user height, range is 90cm~220cm
+ * gender: 0: female, 1: male
+ * impedanceMark: 0: no need body fat measurement, 1: need fat measurement
+ * fitnessMark: 0: no body building, 1: body building
+ **/
+HS2SModule.updateUserInfo(mac, userID, createTS, weight, age, height, gender, impedanceMark, fitnessMark);
 
 notifyListener = DeviceEventEmitter.addListener(HS2SModule.Event_Notify,  (event) => {
     if (event.action === "action_create_or_update_user_info") {
@@ -97,9 +113,12 @@ notifyListener = DeviceEventEmitter.addListener(HS2SModule.Event_Notify,  (event
 }
 ```
 
-### delete user
+### Delete user profile in HS2S
 
 ```js
+/**
+ * userID: User id.
+ **/
 HS2SModule.deleteUser(mac, userId);
 
 notifyListener = DeviceEventEmitter.addListener(HS2SModule.Event_Notify,  (event) => {
@@ -109,9 +128,12 @@ notifyListener = DeviceEventEmitter.addListener(HS2SModule.Event_Notify,  (event
 }
 ```
 
-### get the number of offline data
+### Get the number of offline measurement result in HS2S
 
 ```js
+/**
+ * userID: User id.
+ **/
 HS2SModule.getMemoryDataCount(mac, userId);
 
 notifyListener = DeviceEventEmitter.addListener(HS2SModule.Event_Notify,  (event) => {
@@ -121,9 +143,12 @@ notifyListener = DeviceEventEmitter.addListener(HS2SModule.Event_Notify,  (event
 }
 ```
 
-### get offline data
+### Get offline data in HS2S
 
 ```js
+/**
+ * userID: User id.
+ **/
 HS2SModule.getMemoryData(mac, userId);
 
 notifyListener = DeviceEventEmitter.addListener(HS2SModule.Event_Notify,  (event) => {
@@ -156,9 +181,12 @@ notifyListener = DeviceEventEmitter.addListener(HS2SModule.Event_Notify,  (event
 }
 ```
 
-### delete offline data by user id
+### Delete offline data in HS2S by user id
 
 ```js
+/**
+ * userID: User id.
+ **/
 HS2SModule.deleteMemoryData(mac, userId);
 
 notifyListener = DeviceEventEmitter.addListener(HS2SModule.Event_Notify,  (event) => {
@@ -168,7 +196,7 @@ notifyListener = DeviceEventEmitter.addListener(HS2SModule.Event_Notify,  (event
 }
 ```
 
-### get the number of anonymous offline data
+### Get the number of guest offline data in HS2S
 
 ```js
 HS2SModule.getAnonymousMemoryDataCount(mac);
@@ -180,7 +208,7 @@ notifyListener = DeviceEventEmitter.addListener(HS2SModule.Event_Notify,  (event
 }
 ```
 
-### get anonymous offline data
+### Get guest offline data in HS2S
 
 ```js
 HS2SModule.getAnonymousMemoryData(mac);
@@ -202,7 +230,7 @@ notifyListener = DeviceEventEmitter.addListener(HS2SModule.Event_Notify,  (event
 }
 ```
 
-### delete anonymous offline data
+### Delete guest offline data
 
 ```js
 HS2SModule.deleteAnonymousMemoryData(mac);
@@ -214,12 +242,22 @@ notifyListener = DeviceEventEmitter.addListener(HS2SModule.Event_Notify,  (event
 }
 ```
 
-### start a online measurement
+### Start a online measurement
 
-The API is asyn function. It will return message until finish measurement.
+The API is async function. It will return message until finish measurement.
 
 ```js
-HS2SModule.measure(mac);
+/**
+ * userID: User id, the id must be 16 digits.
+ * createTS: Create user or modify timestramp.
+ * weight: user current weight, the unit is kg, range is 20kg~180kg.
+ * age: user age, range is 18-99, if you are not in this range, you may not get the correect body fat result
+ * height: user height, range is 90cm~220cm
+ * gender: 0: female, 1: male
+ * impedanceMark: 0: no need body fat measurement, 1: need fat measurement
+ * fitnessMark: 0: no body building, 1: body building
+ **/
+HS2SModule.measure(mac,userID,createTS,weight,age,height,sex,impedanceMark,fitnessMark);
 
 notifyListener = DeviceEventEmitter.addListener(HS2SModule.Event_Notify,  (event) => {
     if (event.action === "action_specify_users") {
@@ -256,11 +294,13 @@ notifyListener = DeviceEventEmitter.addListener(HS2SModule.Event_Notify,  (event
         let impedance = bodyFat["impedance"];
         let weight = bodyFat["weight"];
 
-    } else if (event.action === "action_measure_finish_at_critical") { }
+    } else if (event.action === "action_measure_finish_at_critical") {
+        console.log("measurement finish");
+    }
 });
 ```
 
-### start heart rate measurement mode
+### Start heart rate measurement mode
 
 ```js
 HS2SModule.resetDevice(mac);
@@ -272,7 +312,7 @@ notifyListener = DeviceEventEmitter.addListener(HS2SModule.Event_Notify,  (event
 }
 ```
 
-### stop heart rate measurement mode
+### Stop heart rate measurement mode
 
 ```js
 HS2SModule.resetDevice(mac);
