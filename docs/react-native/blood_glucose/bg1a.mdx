@@ -121,7 +121,7 @@ const notifyListener = DeviceEventEmitter.addListener(BG1SModule.Event_Notify,  
         console.log("put the blood onto the strip");
 
     } else if (event.action === BG1AProfileModule.ACTION_MEASURE_RESULT) {
-        // {"action": "action_measure_result", "mac": "004D32DDC704", "measure_mode": 0, "measure_result": 0, "type": "BG1A"}
+        // {"action": "action_measure_result", "mac": "004D32DDC704", "measure_result": 0, "type": "BG1A"}
         console.log(event[BG1AProfileModule.MEASURE_MODE]);
         console.log(event[BG1AProfileModule.MEASURE_RESULT]);
     }
