@@ -1,0 +1,129 @@
+---
+title: BG1A
+sidebar_position: 5
+---
+
+:::info
+1. BG1A is a low-power Bluetooth glucose meter with indicator lights, but without a screen or buttons.
+2. The BG1A is only trund on by inserting test strip.
+3. BG1A only support online measurement.
+4. Once the device is turned on, it begins Bluetooth broadcasting and can be scanned and connected to by the app.
+5. After blood glucose measurement is completed, or the test strip is removed, the device will shut down and Bluetooth will also disconnect.
+:::
+
+
+## API Reference
+
+### Import BG1A module
+
+```js
+import {
+  BG1AModule,
+  BG1AProfileModule
+} from '@ihealth/ihealthlibrary-react-native';
+```
+
+### Add and remove listener
+
+```js
+// add
+notifyListener = DeviceEventEmitter.addListener(BG1AModule.Event_Notify,  (event) => {
+    console.log(event);
+});
+
+// remove
+notifyListener.remove();
+```
+
+### Get All connected BG1A devices
+
+Return all connected devices.
+
+```js
+BG1AModule.getAllConnectedDevices()
+
+// Response
+const notifyListener = DeviceEventEmitter.addListener(BG1AModule.Event_Notify,  (event) => {
+    if (event.action === BG1AProfileModule.ACTION_GET_ALL_CONNECTED_DEVICES) {
+        // Example: {"action":"action_get_all_connected_devices","devices":["004D32DDC704"]}
+        console.log(event);
+    }
+});
+```
+
+### Get BG1A IDPS information
+
+Return BG1A IDPS information
+
+```js
+BG1AModule.getIDPS(mac);
+
+// Response
+const notifyListener = DeviceEventEmitter.addListener(BG1AModule.Event_Notify,  (event) => {
+    if (event.action === BG1SProfileModule.ACTION_INFO_IDPS) {
+        // Example: {"serialnumber":"","manufacture":"iHealth","modenumber":"BG1A 11070","hardwareversion":"3.0.0","firmwareversion":"1.0.0","accessoryname":"BG1A","protocolstring":"com.jiuan.BGV44","action":"action_info_idps","type":"BG1A","mac":"004D32DDC704"}
+        console.log(event);
+    }
+});
+```
+
+### Get BG1A battery level
+
+Return BG1A battery level
+
+```js
+BG1AModule.getBattery(mac);
+
+// response
+const notifyListener = DeviceEventEmitter.addListener(BG1AModule.Event_Notify,  (event) => {
+    if (event.action === BG1AProfileModule.ACTION_BATTERY_BG1A) {
+        // Example: {battery: 8, type: 'BG1A', mac: '004D32DDC704', action: 'battery_bg1a'}
+        console.log(event);
+    }
+});
+```
+
+### Set BG1A measurement mode
+
+Return BG1A battery level
+
+```js
+/**
+ * mode type
+ * 0: Blood mode
+ * 1: CTL mode
+ * */
+BG1AModule.setMeasureMode(mac, mode);
+
+// response
+const notifyListener = DeviceEventEmitter.addListener(BG1AModule.Event_Notify,  (event) => {
+    if (event.action === BG1AProfileModule.ACTION_BATTERY_BG1A) {
+        // Example: {status: 0, type: 'BG1A', mac: '004D32DDC704', action: 'action_set_measure_mode'}
+        console.log(event);
+    }
+});
+```
+
+### Start a measurement
+
+BG1A don't have power button, when you insert test strip into moniter, BG1A will open and begin Bluetooth broadcasting.
+When BG1A is connected, it will return the strip insertion status.  
+
+```js
+// response
+const notifyListener = DeviceEventEmitter.addListener(BG1SModule.Event_Notify,  (event) => {
+    if (event.action === BG1AProfileModule.ACTION_STRIP_INSERTION_STATUS) {
+        // {"action": "action_strip_insertion_status", "describe": "strip in", "insertion_status": 1, "mac": "004D32DDC704", "type": "BG1A"}
+        console.log("strip in");
+
+    } else if (event.action === BG1AProfileModule.ACTION_GET_BLOOD) {
+        //  {"action": "action_get_blood", "describe": "Blood drop detected", "mac": "004D32DDC704", "type": "BG1A"}
+        console.log("put the blood onto the strip");
+
+    } else if (event.action === BG1AProfileModule.ACTION_MEASURE_RESULT) {
+        // {"action": "action_measure_result", "mac": "004D32DDC704", "measure_mode": 0, "measure_result": 0, "type": "BG1A"}
+        console.log(event[BG1AProfileModule.MEASURE_MODE]);
+        console.log(event[BG1AProfileModule.MEASURE_RESULT]);
+    }
+});
+```
