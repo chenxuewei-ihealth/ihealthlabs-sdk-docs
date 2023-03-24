@@ -5,7 +5,7 @@ sidebar_position: 5
 
 :::info
 1. BG1A is a low-power Bluetooth glucose meter with indicator lights, but without a screen or buttons.
-2. The BG1A is only trund on by inserting test strip.
+2. The BG1A is only turned on by inserting test strip.
 3. BG1A only support online measurement.
 4. Once the device is turned on, it begins Bluetooth broadcasting and can be scanned and connected to by the app.
 5. After blood glucose measurement is completed, or the test strip is removed, the device will shut down and Bluetooth will also disconnect.
@@ -60,7 +60,7 @@ BG1AModule.getIDPS(mac);
 
 // Response
 const notifyListener = DeviceEventEmitter.addListener(BG1AModule.Event_Notify,  (event) => {
-    if (event.action === BG1SProfileModule.ACTION_INFO_IDPS) {
+    if (event.action === BG1AProfileModule.ACTION_INFO_IDPS) {
         // Example: {"serialnumber":"","manufacture":"iHealth","modenumber":"BG1A 11070","hardwareversion":"3.0.0","firmwareversion":"1.0.0","accessoryname":"BG1A","protocolstring":"com.jiuan.BGV44","action":"action_info_idps","type":"BG1A","mac":"004D32DDC704"}
         console.log(event);
     }
@@ -111,7 +111,7 @@ When BG1A is connected, it will return the strip insertion status.
 
 ```js
 // response
-const notifyListener = DeviceEventEmitter.addListener(BG1SModule.Event_Notify,  (event) => {
+const notifyListener = DeviceEventEmitter.addListener(BG1AModule.Event_Notify,  (event) => {
     if (event.action === BG1AProfileModule.ACTION_STRIP_INSERTION_STATUS) {
         // {"action": "action_strip_insertion_status", "describe": "strip in", "insertion_status": 1, "mac": "004D32DDC704", "type": "BG1A"}
         console.log("strip in");
