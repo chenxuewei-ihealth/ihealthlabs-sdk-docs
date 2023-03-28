@@ -9,6 +9,10 @@ sidebar_position: 5
 
 2. BP7S only support offline measurement.
 
+
+
+![integrate ios](/iOS_BP7S_1.png)
+
 ## Connection to device
 
 ### 1.Listen to device notify

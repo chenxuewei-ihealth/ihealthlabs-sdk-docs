@@ -9,6 +9,11 @@ sidebar_position: 3
 
 2. PT3SBT support online measurement and offline measurement.
 
+
+![integrate ios](/iOS_PT3SBT_1.png)
+
+![integrate ios](/iOS_PT3SBT_2.png)
+
 ## Connection to device
 
 ### 1.Listen to device notify

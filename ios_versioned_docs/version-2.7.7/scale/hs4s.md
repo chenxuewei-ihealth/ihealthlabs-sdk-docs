@@ -11,6 +11,9 @@ sidebar_position: 4
 
 3. For iOS system, HS4 and HS4S interface API is the same
 
+
+![integrate ios](/iOS_HS4_1.png)
+
 ## Connection to device
 
 ### 1.Listen to device notify
@@ -73,7 +76,7 @@ Import parameter:
 -(void)commandMeasureWithUint:(HSUnit)tempUnit Weight:(UnStableWeight)unStableWeight StableWeight:(StableWeight)stableWeight DisposeErrorBlock:(DisposeHS4ErrorBlock)disposeErrorBlock;
 ```
 
-### Disconnect the HS4
+### Disconnect the HS4S
 
 ```java
 /**

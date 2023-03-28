@@ -11,7 +11,10 @@ sidebar_position: 2
 
 If you use these devices, please contact us before submitting the Apple Store. We will generate a ppid based on the information you provided to help your app pass the review.
 
-If you're using BP5, you need to add protocol:com.jiuan.BPV20、com.jiuan.BPV23 
+If you're using BP5, you need to add protocol:com.jiuan.BPV20、com.jiuan.BPV23
+
+
+![integrate ios](/iOS_BP5_1.png)
 
 ## Connection to device
 

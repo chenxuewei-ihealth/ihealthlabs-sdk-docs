@@ -9,6 +9,9 @@ sidebar_position: 7
 2. The device does not support 5G wifi signal
 
 
+![integrate ios](/iOS_HS6_1.png)
+
+
 ## API reference
 
 

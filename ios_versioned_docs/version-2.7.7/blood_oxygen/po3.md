@@ -7,7 +7,11 @@ sidebar_position: 2
 
 1. Scan and connect PO3 device.
 
-2. PO3 support online measurement and offline measurement.
+2. PO3/PO3M support online measurement and offline measurement.
+
+
+
+![integrate ios](/iOS_PO3_1.png)
 
 ## Connection to device
 
