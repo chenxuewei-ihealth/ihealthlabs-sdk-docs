@@ -1,3 +1,45 @@
 ---
 sidebar_position: 1
 ---
+
+# Get started
+
+## Installation
+
+```shell
+// use npm
+npm install --save @ihealth/ihealthlibrary-react-native
+// use yarn
+yarn add @ihealth/ihealthlibrary-react-native
+```
+
+## Usage
+
+### Authentication
+
+#### Download license file
+
+1. Sign up iHealth developer webside. [Please sign up here](https://dev.ihealthlabs.com)
+2. Press "Add New App" button, fill in your information of your app. We will get email and active the license for your app.
+3. Download license file, as shown below.
+![Download](/doc_ready_5.png)
+
+#### Integrate license file
+
+For iOS
+As shown below, add your license file to your iOS project.
+![integrate ios](/guide_ios_1.png)
+
+For Android
+As show below, add your license file to your asserts folder.
+![integrate android](/guide_android_1.png)
+
+#### Using license file
+
+```js
+import { iHealthDeviceManagerModule } from '@ihealth/ihealthlibrary-react-native';
+
+// your license file
+const filename = 'license.pem';
+iHealthDeviceManagerModule.sdkAuthWithLicense(filename);
+```

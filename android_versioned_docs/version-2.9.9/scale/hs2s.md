@@ -19,7 +19,7 @@ sidebar_position: 2
 
 ```java
 private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    
+
     @Override
     public void onScanDevice(String mac, String deviceType, int rssi, Map manufactorData) { }
 
@@ -50,9 +50,9 @@ iHealthDevicesManager.getInstance().startDiscovery(DiscoveryTypeEnum.HS2S);
 ```java
 // Return
 private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    
+
     @Override
-    public void onScanDevice(String mac, String deviceType, int rssi, Map manufactorData) { 
+    public void onScanDevice(String mac, String deviceType, int rssi, Map manufactorData) {
         Log.i(TAG, "onScanDevice - mac:" + mac + " - deviceType:" + deviceType + " - rssi:" + rssi + " - manufactorData:" + manufactorData);
     }
 }
@@ -90,7 +90,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
                 e.printStackTrace();
             }
         }
-    } 
+    }
 }
 ```
 
@@ -114,7 +114,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
                 e.printStackTrace();
             }
         }
-    } 
+    }
 }
 ```
 
@@ -133,9 +133,9 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
     @Override
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
         if (Hs2sProfile.ACTION_SET_UNIT_SUCCESS.equals(action)) {
-            
+
         }
-    } 
+    }
 }
 ```
 
@@ -171,7 +171,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
                 e.printStackTrace();
             }
         }
-    } 
+    }
 }
 ```
 
@@ -201,12 +201,12 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
                 JSONObject obj = new JSONObject(message);
                 int status = obj.getInt(Hs2sProfile.OPERATION_STATUS);
                 String description = obj.getString(Hs2sProfile.OPERATION_DESCRIBE);
-                
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
-    } 
+    }
 }
 ```
 
@@ -231,7 +231,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
                 e.printStackTrace();
             }
         }
-    } 
+    }
 }
 ```
 
@@ -273,7 +273,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
                 e.printStackTrace();
             }
         }
-    } 
+    }
 }
 ```
 
@@ -290,11 +290,11 @@ Hs2sControl control = iHealthDevicesManager.getInstance().getHs2sControl(mDevice
  * @param impedance    0:No body fat measurement    1:body fat measurement
  * @param bodybuilding 0:No   Bodybuilding          1:Bodybuilding
  */
-control.specifyOnlineUsers(String id, 
-                           float weight, 
+control.specifyOnlineUsers(String id,
+                           float weight,
                            int gender,
-                           int age, 
-                           int height, 
+                           int age,
+                           int height,
                            int impedance,
                            int bodybuilding)
 ```
@@ -402,7 +402,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
                 e.printStackTrace();
             }
         }
-    } 
+    }
 }
 ```
 
@@ -410,7 +410,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 
 ```java
 Hs2sControl control = iHealthDevicesManager.getInstance().getHs2sControl(mDeviceMac);
-control.getOfflineData(String id) 
+control.getOfflineData(String id)
 ```
 
 ```java
@@ -454,7 +454,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
                 e.printStackTrace();
             }
         }
-    } 
+    }
 }
 ```
 
@@ -475,11 +475,74 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
                 JSONObject obj = new JSONObject(message);
                 int status = obj.getInt(Hs2sProfile.OPERATION_STATUS)
                 String description = obj.getString(Hs2sProfile.OPERATION_DESCRIBE)
-               
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
-    } 
+    }
+}
+```
+
+### Start heart rate measurement mode
+
+'''
+Only Hs2s Pro and Black Hs2s support heart rate measurement
+'''
+
+If you call this function, Hs2s will switch to heart rate measurement mode and the weight measurement is not availabe.
+If you want to start the weight measurement, need to call the stopHeartRateMode function or disconnect the Hs2s BLE's connection with Phone.
+
+```java
+Hs2sControl control = iHealthDevicesManager.getInstance().getHs2sControl(mDeviceMac);
+control.startHeartRateMode();
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Hs2sProfile.ACTION_START_HEARTRATE_MEASURE.equals(action)) {
+					Log.i("", "Heart rate measurement is started");
+
+        } else if (Hs2sProfile.ACTION_HEARTRATE_REALTIME_MEASURE.equals(action)) {
+					Log.i("", "Heart rate measurement is in progress");
+
+				} else if (Hs2sProfile.ACTION_HEARTRATE_RESULT.equals(action)) {
+						try {
+                JSONObject obj = new JSONObject(message);
+                int heartrate = obj.getInt(Hs2sProfile.DATA_HEARTRATE);
+								Log.i("", "The heartrate is " + heartrate);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+				}
+    }
+}
+```
+
+### Stop heart rate measurement mode
+
+'''
+Only Hs2s Pro and Black Hs2s support heart rate measurement
+'''
+
+If you call this function, Hs2s will stop heart rate measurement mode and back to the weight measurement mode.
+
+```java
+Hs2sControl control = iHealthDevicesManager.getInstance().getHs2sControl(mDeviceMac);
+control.stopHeartRateMode();
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Hs2sProfile.ACTION_STOP_HEARTRATE_MEASURE.equals(action)) {
+            Log.i("", "Heart rate measurement is stop");
+        }
+    }
 }
 ```
