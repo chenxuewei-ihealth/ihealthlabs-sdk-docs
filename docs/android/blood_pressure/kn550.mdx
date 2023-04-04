@@ -3,11 +3,11 @@ title: KN550
 sidebar_position: 6
 ---
 
-## WorkFlow
-
+:::info
 1. Scan and connect KN-550BT blood pressure monitor.
-
 2. KN-550BT only support offline measurement.
+:::
+
 
 ## Connection to device
 
@@ -53,9 +53,12 @@ Bp550BTControl control = iHealthDevicesManager.getInstance().getBp550BTControl(m
 
 ## API reference
 
-### Get the device battery
+### Get device battery
 
-The KN-550BT doesn't support this feature above firmware 2.0.0 or later.
+:::info
+The KN-550BT doesn't support this feature on firmware 2.0.0.
+:::
+
 
 ```java
 Bp550BTControl control = iHealthDevicesManager.getInstance().getBp550BTControl(mDeviceMac);
@@ -79,7 +82,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 }
 ```
 
-### Get the number of history data
+### Get number of history data
 
 ```java
 Bp550BTControl control = iHealthDevicesManager.getInstance().getBp550BTControl(mDeviceMac);
@@ -106,6 +109,11 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 
 ### Get history data
 
+:::info
+When user use KN-550BT first time and don't set time yet, the device time is not correct. 
+and the returned data will contain whether the time need to be set. Version 2.0.1 or above support this feature.
+:::
+
 ```java
 Bp550BTControl control = iHealthDevicesManager.getInstance().getBp550BTControl(mDeviceMac);
 control.getOfflineData();
@@ -127,6 +135,9 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
                     int heartRate = obj.getInt(BpProfile.PULSE_BP)
                     int ahr = obj.getInt(BpProfile.MEASUREMENT_AHR_BP)
                     int hsd = obj.getInt(BpProfile.MEASUREMENT_HSD_BP)
+                    // only support firmware 2.0.1 or later
+                    int timeCalibration = obj.getInt(BpProfile.TIME_CALIBRATION)
+
 
                 }
             } catch (JSONException e) {
@@ -169,7 +180,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 }
 ```
 
-### Get the KN-550BT display status
+### Get KN-550BT display status
 
 ```java
 Bp550BTControl control = iHealthDevicesManager.getInstance().getBp550BTControl(mDeviceMac);
@@ -195,7 +206,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 }
 ```
 
-### Set the KN-550BT display status
+### Set KN-550BT display status
 
 ```java
 Bp550BTControl control = iHealthDevicesManager.getInstance().getBp550BTControl(mDeviceMac);
@@ -209,6 +220,61 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
         if (BpProfile.ACTION_SET_STATUS_DISPLAY_SUCCESS.equals(action)) {
             Log.i("set display success");
+        }
+    } 
+}
+```
+
+### Get KN-550BT time
+
+```java
+Bp550BTControl control = iHealthDevicesManager.getInstance().getBp550BTControl(mDeviceMac);
+control.getTime();
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (BpProfile.ACTION_GET_TIME.equals(action)) {
+            try {
+               JSONObject obj = new JSONObject(message);
+               String time = obj.getString("Time");
+               
+            } catch(JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    } 
+}
+```
+
+### History data transfer finished
+
+:::info
+After history data transfer is finised, this API will help you to clear the history data.
+Only Firmware 2.0.1 and above supprt this feature. other frimware KN-550BT can clear history data automatically.
+:::
+
+```java
+Bp550BTControl control = iHealthDevicesManager.getInstance().getBp550BTControl(mDeviceMac);
+control.transferFinished();
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (BpProfile.ACTION_GET_TIME.equals(action)) {
+            try {
+               JSONObject obj = new JSONObject(message);
+               String time = obj.getString("Time");
+               
+            } catch(JSONException e) {
+                e.printStackTrace();
+            }
         }
     } 
 }
