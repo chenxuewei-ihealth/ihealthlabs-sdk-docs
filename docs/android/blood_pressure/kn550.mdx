@@ -8,6 +8,7 @@ sidebar_position: 6
 2. KN-550BT only support offline measurement.
 :::
 
+![kn550bt workflow](/kn550bt_workflow.png)
 
 ## Connection to device
 
@@ -46,7 +47,7 @@ iHealthDevicesManager.getInstance().startDiscovery(DiscoveryTypeEnum.BP550BT);
 ### 3.Connect to KN-550BT devices
 
 ```java
-iHealthDevicesManager.getInstance().connectDevice("", mac, iHealthDevicesManager.TYPE_550BT)
+iHealthDevicesManager.getInstance().connectDevice("", mac, iHealthDevicesManager.TYPE_550BT);
 
 Bp550BTControl control = iHealthDevicesManager.getInstance().getBp550BTControl(mDeviceMac);
 ```
@@ -129,16 +130,15 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
                 JSONArray historyArr = new JSONArray(message);
                 for (int i = 0; i < historyArr.length(); i++) {
                     JSONObject obj = historyArr.getJSONObject(i);
-                    String time = obj.getString(BpProfile.MEASUREMENT_DATE_BP);
-                    int sys = obj.getInt(BpProfile.HIGH_BLOOD_PRESSURE_BP)
-                    int dia = obj.getInt(BpProfile.LOW_BLOOD_PRESSURE_BP)
-                    int heartRate = obj.getInt(BpProfile.PULSE_BP)
-                    int ahr = obj.getInt(BpProfile.MEASUREMENT_AHR_BP)
-                    int hsd = obj.getInt(BpProfile.MEASUREMENT_HSD_BP)
+                    String time    = obj.getString(BpProfile.MEASUREMENT_DATE_BP);
+                    int sys        = obj.getInt(BpProfile.HIGH_BLOOD_PRESSURE_BP)
+                    int dia        = obj.getInt(BpProfile.LOW_BLOOD_PRESSURE_BP)
+                    int heartRate  = obj.getInt(BpProfile.PULSE_BP)
+                    int ahr        = obj.getInt(BpProfile.MEASUREMENT_AHR_BP)
+                    int hsd        = obj.getInt(BpProfile.MEASUREMENT_HSD_BP)
+                    
                     // only support firmware 2.0.1 or later
                     int timeCalibration = obj.getInt(BpProfile.TIME_CALIBRATION)
-
-
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -149,7 +149,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 }
 ```
 
-### Set locat time to KN-550BT
+### Set local time to KN-550BT
 
 ```java
 Bp550BTControl control = iHealthDevicesManager.getInstance().getBp550BTControl(mDeviceMac);
@@ -164,14 +164,45 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
         if (BpProfile.ACTION_FUNCTION_INFORMATION_BP.equals(action)) {
             try {
                JSONObject obj = new JSONObject(message);
-               Boolean upAirMeasureFlg    = obj.getBoolean(BpProfile.FUNCTION_IS_UPAIR_MEASURE);
-               Boolean armMeasureFlg      = obj.getBoolean(BpProfile.FUNCTION_IS_ARM_MEASURE);
+               
+               /**
+                * Blood pressure measurement mode, up air measurement mode and down air measurement mode.
+                * Up air measurement mode: measure blood pressure during the process of pressurization.
+                * Down air measurement mode: raise the pressure to a certain leven and then slowly release it to measure blood pressure.
+                * upAirMeasureFlg, true: up air measurement mode; false: down dir measurement mode.
+                */
+               Boolean upAirMeasureFlg = obj.getBoolean(BpProfile.FUNCTION_IS_UPAIR_MEASURE);
+               
+               /**
+                * It is used for measuring blood pressure on the arm or not.
+                */
+               Boolean armMeasureFlg = obj.getBoolean(BpProfile.FUNCTION_IS_ARM_MEASURE);
+               
+               /**
+                * 
+                */
                Boolean haveAngleSensorFlg = obj.getBoolean(BpProfile.FUNCTION_HAVE_ANGLE_SENSOR);
-               Boolean haveOfflineFlg     = obj.getBoolean(BpProfile.FUNCTION_HAVE_OFFLINE);
-               Boolean haveHSDFlg         = obj.getBoolean(BpProfile.FUNCTION_HAVE_HSD);
-               Boolean haveAngleSetFlg    = obj.getBoolean(BpProfile.FUNCTION_HAVE_ANGLE_SETTING);
-               Boolean mutableUploadFlg   = obj.getBoolean(BpProfile.FUNCTION_IS_MULTI_UPLOAD);
-               Boolean selfUpdateFlg      = obj.getBoolean(BpProfile.FUNCTION_HAVE_SELF_UPDATE);
+               
+               /**
+                * It support offline measurement mode or not.
+                */
+               Boolean haveOfflineFlg = obj.getBoolean(BpProfile.FUNCTION_HAVE_OFFLINE);
+               
+               /**
+                * It support diagnosis of hemodynamic stability or not. It is always false for KN-550BT.
+                */
+               Boolean haveHSDFlg = obj.getBoolean(BpProfile.FUNCTION_HAVE_HSD);
+               
+               /**
+                * It support angle detection or not. It is always false for KN-550BT.
+                */
+               Boolean haveAngleSetFlg = obj.getBoolean(BpProfile.FUNCTION_HAVE_ANGLE_SETTING);
+               
+               /**
+                *  It support update firmware or not. It is always false for KN-550BT.
+                */
+               Boolean selfUpdateFlg = obj.getBoolean(BpProfile.FUNCTION_HAVE_SELF_UPDATE);
+
             } catch(JSONException e) {
                 e.printStackTrace();
             }
@@ -227,6 +258,10 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 
 ### Get KN-550BT time
 
+:::info
+Only Firmware 2.0.1 and above supprt this API
+:::
+
 ```java
 Bp550BTControl control = iHealthDevicesManager.getInstance().getBp550BTControl(mDeviceMac);
 control.getTime();
@@ -254,7 +289,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 
 :::info
 After history data transfer is finised, this API will help you to clear the history data.
-Only Firmware 2.0.1 and above supprt this feature. other frimware KN-550BT can clear history data automatically.
+Only Firmware 2.0.1 and above supprt this API. other frimware KN-550BT can clear history data automatically.
 :::
 
 ```java
@@ -267,14 +302,8 @@ control.transferFinished();
 private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
     @Override
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (BpProfile.ACTION_GET_TIME.equals(action)) {
-            try {
-               JSONObject obj = new JSONObject(message);
-               String time = obj.getString("Time");
-               
-            } catch(JSONException e) {
-                e.printStackTrace();
-            }
+        if (BpProfile.ACTION_HISTORICAL_OVER_BP.equals(action)) {
+            
         }
     } 
 }
