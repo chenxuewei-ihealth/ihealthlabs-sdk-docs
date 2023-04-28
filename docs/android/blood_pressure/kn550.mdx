@@ -125,7 +125,7 @@ control.getOfflineData();
 private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
     @Override
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (BpProfile.ACTION_HISTORICAL_NUM_BP.equals(action)) {
+        if (BpProfile.HISTORICAL_DATA_BP.equals(action)) {
             try {
                 JSONArray historyArr = new JSONArray(message);
                 for (int i = 0; i < historyArr.length(); i++) {
@@ -280,6 +280,16 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
             } catch(JSONException e) {
                 e.printStackTrace();
             }
+        } else if (BpProfile.ACTION_ERROR_BP.equals(action)) {
+            try {
+               JSONObject obj = new JSONObject(message);
+               int errorId = obj.getInt(BpProfile.ERROR_NUM_BP);
+               String errorMessage = obj.getString(BpProfile.ERROR_DESCRIPTION_BP);
+               Log.e("", "the API is unsupported");
+               
+            } catch(JSONException e) {
+                e.printStackTrace();
+            }
         }
     } 
 }
@@ -288,8 +298,8 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 ### History data transfer finished
 
 :::info
-After history data transfer is finised, this API will help you to clear the history data.
-Only Firmware 2.0.1 and above supprt this API. other frimware KN-550BT can clear history data automatically.
+After history data transfer is finished, this API will help you to clear the history data.
+Only Firmware 2.0.1 and above supprt this API. other firmware KN-550BT can clear history data automatically.
 :::
 
 ```java
@@ -303,7 +313,18 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
     @Override
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
         if (BpProfile.ACTION_HISTORICAL_OVER_BP.equals(action)) {
-            
+            Log.i("", "Data transfer is finished!");
+
+        } else if (BpProfile.ACTION_ERROR_BP.equals(action)) {
+            try {
+               JSONObject obj = new JSONObject(message);
+               int errorId = obj.getInt(BpProfile.ERROR_NUM_BP);
+               String errorMessage = obj.getString(BpProfile.ERROR_DESCRIPTION_BP);
+               Log.e("", "the API is unsupported");
+               
+            } catch(JSONException e) {
+                e.printStackTrace();
+            }
         }
     } 
 }
