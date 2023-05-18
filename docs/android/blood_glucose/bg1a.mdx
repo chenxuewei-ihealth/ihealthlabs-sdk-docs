@@ -1,0 +1,360 @@
+---
+title: BG1A
+sidebar_position: 5
+---
+
+:::info
+1. BG1A is a low-power Bluetooth glucose meter with indicator lights, but without a screen or buttons.
+2. The BG1A is only turned on by inserting test strip.
+3. BG1A only support online measurement.
+4. Once the device is turned on, it begins Bluetooth broadcasting and can be scanned and connected to by the app.
+5. After blood glucose measurement is completed, or the test strip is removed, the device will shut down and bluetooth connection will disconnect.
+:::
+
+## Connection to device
+
+### 1.Listen to device notify
+
+```java
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    
+    @Override
+    public void onScanDevice(String mac, String deviceType, int rssi, Map manufactorData) { }
+
+    @Override
+    public void onDeviceConnectionStateChange(String mac, String deviceType, int status, int errorID, Map manufactorData){ }
+
+    @Override
+    public void onScanError(String reason, long latency) { }
+
+    @Override
+    public void onScanFinish() { }
+
+    @Override
+    public void onDeviceNotify(String mac, String deviceType,
+                                String action, String message) { }
+}
+int callbackId = iHealthDevicesManager.getInstance().registerClientCallback(miHealthDevicesCallback);
+iHealthDevicesManager.getInstance().addCallbackFilterForDeviceType(callbackId, iHealthDevicesManager.TYPE_BG1A);
+iHealthDevicesManager.getInstance().addCallbackFilterForAddress(callbackId, String... macs)
+```
+
+### 2.Scan for BG1A devices
+
+```java
+iHealthDevicesManager.getInstance().startDiscovery(DiscoveryTypeEnum.BG1A);
+```
+
+### 3.Connect to BG1A devices
+
+```java
+iHealthDevicesManager.getInstance().connectDevice("", mac, iHealthDevicesManager.TYPE_BG1A)
+
+Bg1aControl control = iHealthDevicesManager.getInstance().getBg1aControl(mDeviceMac);
+```
+
+## Connection to device
+
+## API reference
+
+### Get BG1A information.
+
+```java
+Bg1sControl control = iHealthDevicesManager.getInstance().getBg1aControl(mDeviceMac);
+control.getDeviceInfo();
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Bg1aProfile.ACTION_GET_DEVICE_INFO.equals(action)) {
+            try {
+                JSONObject obj       = new JSONObject(message);
+                String protocol      = obj.getString(iHealthDevicesIDPS.PROTOCOLSTRING);
+                String accessory     = obj.getString(iHealthDevicesIDPS.ACCESSORYNAME);
+                String firmware      = obj.getString(iHealthDevicesIDPS.FIRMWAREVERSION);
+                String hardware      = obj.getString(iHealthDevicesIDPS.HARDWAREVERSION);
+                String manufacturer  = obj.getString(iHealthDevicesIDPS.MANUFACTURER);
+                String mode_number   = obj.getString(iHealthDevicesIDPS.MODENUMBER);
+                String serial_number = obj.getString(iHealthDevicesIDPS.SERIALNUMBER);
+                
+                int battery_level     = obj.getInt(Bg1aProfile.INFO_BATTERY_BG1A);
+                int historyDataStatus = obj.getInt(Bg1aProfile.INFO_HISTORY_STATUS_BG1A);
+                long timeStamp        = obj.getLong(Bg1aProfile.INFO_LOCAL_TIME);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    } 
+}
+```
+
+### Set BG1A timestamp.
+
+```java
+Bg1aControl control = iHealthDevicesManager.getInstance().getBg1aControl(mDeviceMac);
+control.setDeviceTime(long currentTime);
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Bg1aProfile.ACTION_SET_DEVICE_TIME.equals(action)) {
+            Log.i("", "Set time success");
+        }
+    } 
+}
+```
+
+### Set BG1A measurement mode.
+
+```java
+/**
+ * 0: Blood mode
+ * 1: CTL mode, CTL: control solution
+ **/
+
+Bg1aControl control = iHealthDevicesManager.getInstance().getBg1aControl(mDeviceMac);
+control.setMeasureMode(int mode);
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Bg1aProfile.ACTION_SET_MEASURE_MODE.equals(action)) {
+           
+        }
+    } 
+}
+```
+
+### Get BG1A history data.
+
+```java
+Bg1aControl control = iHealthDevicesManager.getInstance().getBg1aControl(mDeviceMac);
+control.getHistoryData();
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Bg1aProfile.ACTION_MEASURE_RESULT_HISTORY.equals(action)) {
+           try {
+                JSONArray historyArr = new JSONArray(message);
+                for (int i = 0; i < historyArr.length(); i++) {
+                    JSONObject obj = historyArr.getJSONObject(i);
+                    
+                    /**
+                     * Wrong measurement time. If you use BG1A first time or no used for a long time, the time of BG1A is wrong.
+                     * 0: time is correct, don't need calibration.
+                     * 1: time is wrong, need calibration.
+                     */
+                    int wrongTime = obj.getInt(Bg1aProfile.MEASURE_TIME_IS_ERROR);
+                    
+                    // Mesurement timestamp
+                    long time = obj.getLong(Bg1aProfile.MEASURE_TIME_DEVICE);
+                    
+                    // Please refer to the error message
+                    int errorId = obj.getLong(Bg1aProfile.ERROR_NUM_BG1A);
+                    
+                    /**
+                     * Measurement mode
+                     * 0: Blood measurement mode
+                     * 1: Control solution mode
+                     * 2: Uric Acid measurement mode
+                     * 3: Uric Acid control solution mode
+                     */
+                    int mode = obj.getInt(Bg1aProfile.MEASURE_MODE);
+                    
+                    // Measurement result
+                    int result    = obj.getInt(Bg1aProfile.MEASURE_RESULT);
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    } 
+}
+```
+
+### Delete BG1A history data.
+
+```java
+Bg1aControl control = iHealthDevicesManager.getInstance().getBg1aControl(mDeviceMac);
+control.deleteHistoryData();
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Bg1aProfile.ACTION_DELETE_HISTORY_RESULT.equals(action)) {
+           Log.i("", "Delete history data");
+        }
+    } 
+}
+```
+
+### Notify the measurement workflow.
+
+
+No need to call any API, just listen to this event.
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Bg1aProfile.ACTION_STRIP_INSERTION_STATUS.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                int status = obj.getInt(Bg1aProfile.STRIP_INSERTION_STATUS);
+                
+                if (0 == status) {
+                    /**
+                     * Strip Type
+                     * 1: Blood glucose
+                     * 2: Uric Acid
+                     * 3: Control solution
+                     */
+                    int stripType = obj.getInt(Bg1aProfile.STRIP_TYPE);
+                    Log.i("Test strip in");
+
+                } else if (1 == status) {
+                    /**
+                     * Strip Type
+                     * 1: Blood glucose
+                     * 2: Uric Acid
+                     * 3: Control solution
+                     */
+                    int stripType = obj.getInt(Bg1aProfile.STRIP_TYPE);
+                    Log.i("Test strip out");
+                
+                } else if (2 == status) {
+                    Log.i("Blood collection is started");        
+
+                } else if (3 == status) {
+                    // The collected blood is too little and strip can't work
+                    Log.i("Blood collection is on process step 1");   
+                
+                } else if (4 == status) {
+                    // The collected blood is still too little and strip can't work
+
+                    // How long have we been collecting blood. 
+                    int bloodCollectionTime = obj.getInt(Bg1aProfile.BLOOD_COLLECTION_TIME);
+                    // The limit of waiting time 
+                    int bloodCollectionTotalTime = obj.getInt(Bg1aProfile.BLOOD_COLLECTION_TOTAL_TIME);
+                    
+                    Log.i("Blood collection is on process step 2");   
+
+                } else if (5 == status) {
+                    // The collected blood is still not enough but strip have worked.
+
+                    // How long have we been collecting blood. 
+                    int bloodCollectionTime = obj.getInt(Bg1aProfile.BLOOD_COLLECTION_TIME);
+                    // The limit of waiting time
+                    int bloodCollectionTotalTime = obj.getInt(Bg1aProfile.BLOOD_COLLECTION_TOTAL_TIME);
+                    Log.i("Blood collection is on process step 3");   
+
+                } else if (6 == status) {
+                    // How long have we been collecting blood. 
+                    int bloodCollectionTime = obj.getInt(Bg1aProfile.BLOOD_COLLECTION_TIME);
+                    // The limit of waiting time
+                    int bloodCollectionTotalTime = obj.getInt(Bg1aProfile.BLOOD_COLLECTION_TOTAL_TIME);
+                    Log.i("Blood collection is completed");
+                
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    } 
+}
+```
+
+### Notify measurement result.
+
+No need to call any API, just listen to this event.
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Bg1aProfile.ACTION_MEASURE_RESULT.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                /**
+                 * Strip Type
+                 * 1: Blood glucose
+                 * 2: Uric Acid
+                 * 3: Control solution
+                 */
+                int stripType = obj.getInt(Bg1aProfile.STRIP_TYPE);
+                int value = obj.getInt(Bg1aProfile.MEASURE_RESULT);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } 
+    } 
+}
+```
+
+### Error message
+
+No need to call any API, just listen to the error event.
+
+```java
+/**
+  * Error id and error description
+  * 0: Measurement timeout, no test strip. 
+  * 1: The caculation result is zero
+  * 2: Abnormal low current
+  * 3: Algorithm connection error
+  * 4: Blood-sucking timeout
+  * 5: Missing XM1 error
+  * 10: Self-inspection error
+  * 11: Unrecognized test paper type error
+  * 12: Waste test strip
+  * 14: Low power alarm (<2.6V)
+  * 15: High voltage alarm (>4V)
+  * 16: Temperature low out of range
+  * 17: Temperature high out of range
+  * 18: Flash write failed
+  * 20: No calibration inspection mark
+  * 21: No calibration recheck inspection mark
+  * 21: No test paper socket inspection mark
+  * 22: Early blood-sucking
+  **/
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Bg1aProfile.ACTION_ERROR_BG1A.equals(action)) {
+           try {
+                JSONObject obj = new JSONObject(message);
+                int error_id          = obj.getInt(Bg1aProfile.ERROR_NUM_BG1A);
+                int error_description = obj.getInt(Bg1aProfile.ERROR_DESCRIPTION_BG1A);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } else if (iHealthDevicesManager.IHEALTH_COMM_TIMEOUT.equasls(action)) {
+            // Ble connection timeout, Please send the current command again.
+        }
+    } 
+}
+```
+
+
