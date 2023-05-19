@@ -44,18 +44,11 @@ BG1A Manager
 used to call the API
 
 ```objective-c
-/// Get device information (IDPS)
+/// Get device information
 /// - Parameters:
-///   - success: successful callback. After callback, you can read the IDPS proterties.
+///   - success: successful callback,  battery:14   protocol:com.jiuan.BGV44 accessoryName:BG1A firmwareVersion:1.0.0 hardwareVersion:3.0.0 manufaturer:iHealth  modelNumber:BG1A 11070
 ///   - fail: error callback, see BG1ADeviceError
-- (void)commandGetIDPS:(BG1ASuccessBlock)success
-                  fail:(BG1AErrorBlock)fail;
-
-/// Get the battery level of device
-/// - Parameters:
-///   - success: successful callback, battery: [1,100].
-///   - fail: error callback, see BG1ADeviceError
-- (void)commandGetBattery:(BG1ABatteryBlock)success
+- (void)commandGetDeviceInfo:(BG1ASuccessBlock)success
                      fail:(BG1AErrorBlock)fail;
 
 /// Change measure type. Default is BG1AMeasureType_BloodSugar.
@@ -66,6 +59,36 @@ used to call the API
 - (void)commandSetMeasureType:(BG1AMeasureType)type
                       success:(BG1ASuccessBlock)success
                          fail:(BG1AErrorBlock)fail;
+/// synchronised time
+/// - Parameters:
+///   - success: successful callback
+///   - fail: error callback, see BG1ADeviceError
+- (void)commandSyncTime:(BG1ASuccessBlock)success
+                     fail:(BG1AErrorBlock)fail;
+
+/// Sync History
+/// - Parameters:
+///   - historyArray: successful callback    (
+///{
+///MAC = "004D3201D6CD";
+///isResultNeedCalibrate = 0;
+///measureTs = 2023-05-19 14:28:51 +0000;
+///type = 0;
+///value = 200;
+///metaData = <BG1AMeasureMetaData: 0x281a89f20>;
+///errorCode=0;    If it is not 0, it means that it is a wrong result, and the subsequent blood sugar value is invalid
+///}
+///)
+///   - fail: error callback, see BG1ADeviceError
+- (void)commandSyncHistory:(BG1AHistoryBlock)historyArray
+                     fail:(BG1AErrorBlock)fail;
+
+/// Delete History
+/// - Parameters:
+///   - success: successful callback
+///   - fail: error callback, see BG1ADeviceError
+- (void)commandDeleteHistory:(BG1ASuccessBlock)success
+                     fail:(BG1AErrorBlock)fail;
 
 /**
  
@@ -76,7 +99,7 @@ used to call the API
  The device collects enough blood to measure, and the result will be post in a few seconds. The notification's userInfo:
   {
      MAC = "385B44DDC723";
-     Status = 1; // 1: Strip in 2: Strip out
+     Status = 1; Test strip status value: 0: The test strip is inserted, and blood can be dripped 1: The test strip is removed 2: Blood sucking starts 3: The blood sucking volume is insufficient for 1 4: The blood sucking volume is insufficient for 1 state for more than 5 seconds 5: The blood sucking volume is insufficient for 2 6: The blood sucking is completed
   
   }
   Tips:
@@ -169,7 +192,6 @@ typedef NS_ENUM(int,BG1ADeviceError) {
     BG1ADeviceError_NoCheckFlagError1 = 0x14,
     BG1ADeviceError_NoCheckFlagError2 = 0x15,
     BG1ADeviceError_NoStripCheckFlag = 0x16,
-    BG1ADeviceError_BloodEarly = 0x17,
     BG1ADeviceError_RejectChangeMeasureType = 0xF0,
     BG1ADeviceError_ParameterError = 400,
     BG1ADeviceError_ResultIsTooLow = 401,
