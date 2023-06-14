@@ -72,17 +72,25 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
         if (Bg1aProfile.ACTION_GET_DEVICE_INFO.equals(action)) {
             try {
                 JSONObject obj       = new JSONObject(message);
-                String protocol      = obj.getString(iHealthDevicesIDPS.PROTOCOLSTRING);
+                String protocol      = obj.getString(iHealthDevicesIDPS.PROTOCOL);
                 String accessory     = obj.getString(iHealthDevicesIDPS.ACCESSORYNAME);
                 String firmware      = obj.getString(iHealthDevicesIDPS.FIRMWAREVERSION);
                 String hardware      = obj.getString(iHealthDevicesIDPS.HARDWAREVERSION);
                 String manufacturer  = obj.getString(iHealthDevicesIDPS.MANUFACTURER);
                 String mode_number   = obj.getString(iHealthDevicesIDPS.MODENUMBER);
-                String serial_number = obj.getString(iHealthDevicesIDPS.SERIALNUMBER);
                 
-                int battery_level     = obj.getInt(Bg1aProfile.INFO_BATTERY_BG1A);
+                // The battery level of BG1A
+                int battery_level = obj.getInt(Bg1aProfile.INFO_BATTERY_BG1A);
+                
+                /**
+                 * BG1A still has no upload results
+                 * 0: don't has results. 
+                 * 1: has results.
+                 */
                 int historyDataStatus = obj.getInt(Bg1aProfile.INFO_HISTORY_STATUS_BG1A);
-                long timeStamp        = obj.getLong(Bg1aProfile.INFO_LOCAL_TIME);
+                
+                // The current time of BG1A
+                String time = obj.getLong(Bg1aProfile.INFO_LOCAL_TIME);
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -96,6 +104,9 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 
 ```java
 Bg1aControl control = iHealthDevicesManager.getInstance().getBg1aControl(mDeviceMac);
+/**
+ * currentTime: The current timestamp of phone.
+ */
 control.setDeviceTime(long currentTime);
 ```
 
@@ -114,12 +125,12 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 ### Set BG1A measurement mode.
 
 ```java
-/**
- * 0: Blood mode
- * 1: CTL mode, CTL: control solution
- **/
-
 Bg1aControl control = iHealthDevicesManager.getInstance().getBg1aControl(mDeviceMac);
+/**
+ * mode: measurement mode.
+ * 0: Blood mode.
+ * 1: control solution mode.
+ **/
 control.setMeasureMode(int mode);
 ```
 
@@ -129,7 +140,20 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
     @Override
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
         if (Bg1aProfile.ACTION_SET_MEASURE_MODE.equals(action)) {
-           
+           Log.i("", "Set measure mode success");
+
+        } else if (Bg1aProfile.ACTION_ERROR_BG1A.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                int error_id = obj.getInt(Bg1aProfile.ERROR_NUM_BG1A);
+                if (error_id == 0xf0) {
+                    Log.e("", "Set measure mode failed");
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
         }
     } 
 }
@@ -160,8 +184,8 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
                      */
                     int wrongTime = obj.getInt(Bg1aProfile.MEASURE_TIME_IS_ERROR);
                     
-                    // Mesurement timestamp
-                    long time = obj.getLong(Bg1aProfile.MEASURE_TIME_DEVICE);
+                    // Mesurement time
+                    String time = obj.getLong(Bg1aProfile.MEASURE_TIME_DEVICE);
                     
                     // Please refer to the error message
                     int errorId = obj.getLong(Bg1aProfile.ERROR_NUM_BG1A);
@@ -176,7 +200,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
                     int mode = obj.getInt(Bg1aProfile.MEASURE_MODE);
                     
                     // Measurement result
-                    int result    = obj.getInt(Bg1aProfile.MEASURE_RESULT);
+                    int result = obj.getInt(Bg1aProfile.MEASURE_RESULT);
                 }
 
             } catch (JSONException e) {
@@ -229,7 +253,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
                      * 3: Control solution
                      */
                     int stripType = obj.getInt(Bg1aProfile.STRIP_TYPE);
-                    Log.i("Test strip in");
+                    Log.i("The test strip is inserted, and blood can be dripped.");
 
                 } else if (1 == status) {
                     /**
@@ -239,40 +263,22 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
                      * 3: Control solution
                      */
                     int stripType = obj.getInt(Bg1aProfile.STRIP_TYPE);
-                    Log.i("Test strip out");
+                    Log.i("The test strip is removed.");
                 
                 } else if (2 == status) {
-                    Log.i("Blood collection is started");        
+                    Log.i("Blood sucking starts.");        
 
                 } else if (3 == status) {
-                    // The collected blood is too little and strip can't work
-                    Log.i("Blood collection is on process step 1");   
+                    Log.i("The blood sucking volume is insufficient for 1.");   
                 
                 } else if (4 == status) {
-                    // The collected blood is still too little and strip can't work
-
-                    // How long have we been collecting blood. 
-                    int bloodCollectionTime = obj.getInt(Bg1aProfile.BLOOD_COLLECTION_TIME);
-                    // The limit of waiting time 
-                    int bloodCollectionTotalTime = obj.getInt(Bg1aProfile.BLOOD_COLLECTION_TOTAL_TIME);
-                    
-                    Log.i("Blood collection is on process step 2");   
+                    Log.i("The blood sucking volume is insufficient for 1 state for more than 5 seconds.");   
 
                 } else if (5 == status) {
-                    // The collected blood is still not enough but strip have worked.
-
-                    // How long have we been collecting blood. 
-                    int bloodCollectionTime = obj.getInt(Bg1aProfile.BLOOD_COLLECTION_TIME);
-                    // The limit of waiting time
-                    int bloodCollectionTotalTime = obj.getInt(Bg1aProfile.BLOOD_COLLECTION_TOTAL_TIME);
-                    Log.i("Blood collection is on process step 3");   
+                    Log.i("The blood sucking volume is insufficient for 2.");   
 
                 } else if (6 == status) {
-                    // How long have we been collecting blood. 
-                    int bloodCollectionTime = obj.getInt(Bg1aProfile.BLOOD_COLLECTION_TIME);
-                    // The limit of waiting time
-                    int bloodCollectionTotalTime = obj.getInt(Bg1aProfile.BLOOD_COLLECTION_TOTAL_TIME);
-                    Log.i("Blood collection is completed");
+                    Log.i("The blood sucking is completed.");
                 
                 }
 
