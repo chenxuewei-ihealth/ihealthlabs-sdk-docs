@@ -70,11 +70,11 @@ used to call the API
 /// - Parameters:
 ///   - historyArray: successful callback    (
 ///{
-///MAC = "004D3201D6CD";
+///mac = "004D3201D6CD";
 ///isResultNeedCalibrate = 0;
 ///measureTs = 2023-05-19 14:28:51 +0000;
-///type = 0;
-///value = 200;
+///mode = 0;//
+///result= 200;
 ///metaData = <BG1AMeasureMetaData: 0x281a89f20>;
 ///errorCode=0;    If it is not 0, it means that it is a wrong result, and the subsequent blood sugar value is invalid
 ///}
@@ -98,9 +98,10 @@ used to call the API
   
  The device collects enough blood to measure, and the result will be post in a few seconds. The notification's userInfo:
   {
-     MAC = "385B44DDC723";
-     Status = 1; Test strip status value: 0: The test strip is inserted, and blood can be dripped 1: The test strip is removed 2: Blood sucking starts 3: The blood sucking volume is insufficient for 1 4: The blood sucking volume is insufficient for 1 state for more than 5 seconds 5: The blood sucking volume is insufficient for 2 6: The blood sucking is completed
-  
+    mac = "004D3201D6CD";
+    status = 0;
+    Test strip status value: 0: The test strip is inserted, and blood can be dripped 1: The test strip is removed 2: Blood sucking starts 3: The blood sucking volume is insufficient for 1 4: The blood sucking volume is insufficient for 1 state for more than 5 seconds 5: The blood sucking volume is insufficient for 2 6: The blood sucking is completed
+    type = 1;  1: Blood glucose 2: Uric acid 3: Quality control strip
   }
   Tips:
   It will be posted immediately after the bluetooth is connected. Because only after strip in, the device is ready to connect bluetooth.
@@ -108,22 +109,20 @@ used to call the API
  2)  kBG1ANotiNameBloodIn
  The device collects enough blood to measure, and the result will be post in a few seconds. The notification's userInfo:
  {
-    MAC = "385B44DDC723";
+    mac = "385B44DDC723";
  }
  3)  kBG1ANotiNameResult
  The device sends the measurement result (the value is in the unit mg/dL). The notification's userInfo:
  {
-    MAC = "385B44DDC723";
-    Value = 80;
+    mac = "385B44DDC723";
+    result = 80;
+    mode = 0;  Measure Type, see BG1AMeasureType
  }
 **/
 
 
 /// Active disconnect a device from app
 - (void)commandDisconnectDevice;
-@end
-
-NS_ASSUME_NONNULL_END
 ```
 
 #### BGMacroFile
