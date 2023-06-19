@@ -1,0 +1,227 @@
+---
+title: KN550
+sidebar_position: 6
+---
+
+:::info
+1. Scan and connect KN-550BT blood pressure monitor.
+2. KN-550BT only support offline measurement.
+:::
+
+## Import KN550 module
+
+```js
+import {
+  BP550BTModule,
+  BPProfileModule
+} from '@ihealth/ihealthlibrary-react-native';
+```
+
+### Add and remove listener
+
+```js
+// add
+const notifyListener = DeviceEventEmitter.addListener(BP550BTModule.Event_Notify,  (event) => {
+    console.log(event);
+});
+
+// remove
+notifyListener.remove();
+```
+
+## API Reference
+
+### Get device battery
+
+:::info
+The KN-550BT doesn't support this feature on firmware 2.0.0.
+:::
+
+```js
+BP550BTModule.getBattery(mac);
+
+// Return value
+const notifyListener = DeviceEventEmitter.addListener(BP550BTModule.Event_Notify,  (event) => {
+    if (event.action === BPProfileModule.ACTION_BATTERY_BP) {
+        console.log(event[BPProfileModule.BATTERY_BP]);
+    }
+});
+```
+
+### Set local time to KN-550BT
+
+```js
+BP550BTModule.getFunctionInfo(mac);
+
+// Return value
+const notifyListener = DeviceEventEmitter.addListener(BP550BTModule.Event_Notify,  (event) => {
+    if (event.action === BPProfileModule.ACTION_FUNCTION_INFORMATION_BP) {
+        
+        /**
+         * Blood pressure measurement mode, up air measurement mode and down air measurement mode.
+         * Up air measurement mode: measure blood pressure during the process of pressurization.
+         * Down air measurement mode: raise the pressure to a certain leven and then slowly release it to measure blood pressure.
+         * upAirMeasureFlg, true: up air measurement mode; false: down dir measurement mode.
+         */
+        console.log(event[BPProfileModule.FUNCTION_IS_UPAIR_MEASURE]);
+        
+        /**
+         * It is used for measuring blood pressure on the arm or not.
+         */
+        console.log(event[BPProfileModule.FUNCTION_IS_ARM_MEASURE]);
+        
+        /**
+         * It support detect angle of monitor. 
+         */
+        console.log(event[BPProfileModule.FUNCTION_HAVE_ANGLE_SENSOR]);
+        
+        /**
+         * It support offline measurement mode or not.
+         */
+        console.log(event[BPProfileModule.FUNCTION_HAVE_OFFLINE]);
+
+        /**
+         * It support diagnosis of hemodynamic stability or not. It is always false for KN-550BT.
+         */
+        console.log(event[BPProfileModule.FUNCTION_HAVE_HSD]);
+        
+        /**
+         * It support angle detection or not. It is always false for KN-550BT.
+         */
+        console.log(event[BPProfileModule.FUNCTION_HAVE_ANGLE_SETTING]);
+        
+        /**
+         *  It support update firmware or not. It is always false for KN-550BT.
+         */
+        console.log(event[BPProfileModule.FUNCTION_IS_MULTI_UPLOAD]);
+        
+    }
+});
+```
+
+### Get number of history data
+
+```js
+BP550BTModule.getOfflineNum(mac);
+
+// Return value
+const notifyListener = DeviceEventEmitter.addListener(BP550BTModule.Event_Notify,  (event) => {
+    if (e.action === BPProfileModule.ACTION_HISTORICAL_NUM_BP) {
+        console.log(event[BPProfileModule.HISTORICAL_NUM_BP]);
+    }
+});
+```
+
+### Get history data
+
+```js
+BP550BTModule.getOfflineData(mac);
+
+// Return value
+const notifyListener = DeviceEventEmitter.addListener(BP550BTModule.Event_Notify,  (event) => {
+    if (event.action === BPProfileModule.ACTION_HISTORICAL_DATA_BP) {
+        let dataArray = event[BPProfileModule.HISTORICAL_DATA_BP];
+        if (dataArray == undefined) {
+            result = "There is not offline data in device"
+        }else {
+            for (let i = 0; i < dataArray.length; i++) {
+                let offlineData = dataArray[i];
+
+                console.log(offlineData[BPProfileModule.MEASUREMENT_DATE_BP]);
+                console.log(offlineData[BPProfileModule.HIGH_BLOOD_PRESSURE_BP]);
+                console.log(offlineData[BPProfileModule.LOW_BLOOD_PRESSURE_BP]);
+                console.log(offlineData[BPProfileModule.PULSE_BP]);
+                console.log(offlineData[BPProfileModule.MEASUREMENT_AHR_BP]);
+                console.log(offlineData[BPProfileModule.MEASUREMENT_HSD_BP]);
+                console.log(offlineData[BPProfileModule.DATAID]);
+
+                // only support firmware 2.0.1 or later
+                console.log(offlineData[BPProfileModule.TIME_CALIBRATION]);
+            }
+        }
+    }
+});
+```
+
+### Get KN-550BT display status
+
+```js
+BP550BTModule.getDisplayConfig();
+
+// Return value
+const notifyListener = DeviceEventEmitter.addListener(BP550BTModule.Event_Notify,  (event) => {
+    if (e.action === BPProfileModule.ACTION_SHOW_CONFIG_BP) {
+        console.log(event[BPProfileModule.IS_BACKLIGHT_ON_BP]);
+        console.log(event[BPProfileModule.IS_CLOCK_ON_BP]);
+    }
+});
+```
+
+### Set KN-550BT display status
+
+```js
+/**
+ * lightOn: background light is on or off.
+ * timeOn: show date on KN 550BT screen.
+ */
+BP550BTModule.setDisplayConfig(mac, lightOn, timeOn);
+
+// Return value
+const notifyListener = DeviceEventEmitter.addListener(BP550BTModule.Event_Notify,  (event) => {
+    if (e.action === BPProfileModule.ACTION_SET_STATUS_DISPLAY_SUCCESS) {
+        console.log("set display success");
+    }
+});
+```
+
+### Get KN-550BT time
+
+:::info
+Only Firmware 2.0.1 and above supprt this API
+:::
+
+```js
+BP550BTModule.getTime();
+
+// Return value
+const notifyListener = DeviceEventEmitter.addListener(BP550BTModule.Event_Notify,  (event) => {
+    if (e.action === BPProfileModule.ACTION_GET_TIME) {
+        console.log(event["date"]);
+    }
+});
+```
+
+### History data transfer finished
+
+:::info
+After history data transfer is finished, this API will help you to clear the history data.
+Only Firmware 2.0.1 and above supprt this API. other firmware KN-550BT can clear history data automatically.
+:::
+
+```js
+BP550BTModule.transferFinished();
+
+// Return value
+const notifyListener = DeviceEventEmitter.addListener(BP550BTModule.Event_Notify,  (event) => {
+    if (e.action === BPProfileModule.ACTION_HISTORICAL_OVER_BP) {
+        console.log("Finish data transfer");
+    }
+});
+```
+
+### Get all connected devices
+
+```js
+BP550BTModule.getAllConnectedDevices();
+
+// Return value
+const notifyListener = DeviceEventEmitter.addListener(BP550BTModule.Event_Notify,  (event) => {
+    console.log(event);
+});
+```
+
+### Disconnect KN-550BT device
+
+```js
+BP550BTModule.disconnect(mac);
+```

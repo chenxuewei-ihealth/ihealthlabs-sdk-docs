@@ -131,19 +131,18 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
                 for (int i = 0; i < historyArr.length(); i++) {
                     JSONObject obj = historyArr.getJSONObject(i);
                     String time    = obj.getString(BpProfile.MEASUREMENT_DATE_BP);
-                    int sys        = obj.getInt(BpProfile.HIGH_BLOOD_PRESSURE_BP)
-                    int dia        = obj.getInt(BpProfile.LOW_BLOOD_PRESSURE_BP)
-                    int heartRate  = obj.getInt(BpProfile.PULSE_BP)
-                    int ahr        = obj.getInt(BpProfile.MEASUREMENT_AHR_BP)
-                    int hsd        = obj.getInt(BpProfile.MEASUREMENT_HSD_BP)
+                    int sys        = obj.getInt(BpProfile.HIGH_BLOOD_PRESSURE_BP);
+                    int dia        = obj.getInt(BpProfile.LOW_BLOOD_PRESSURE_BP);
+                    int heartRate  = obj.getInt(BpProfile.PULSE_BP);
+                    int ahr        = obj.getInt(BpProfile.MEASUREMENT_AHR_BP);
+                    int hsd        = obj.getInt(BpProfile.MEASUREMENT_HSD_BP);
                     
                     // only support firmware 2.0.1 or later
-                    int timeCalibration = obj.getInt(BpProfile.TIME_CALIBRATION)
+                    int timeCalibration = obj.getInt(BpProfile.TIME_CALIBRATION);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-        }
         }
     } 
 }
@@ -179,7 +178,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
                Boolean armMeasureFlg = obj.getBoolean(BpProfile.FUNCTION_IS_ARM_MEASURE);
                
                /**
-                * 
+                * It support detect angle of monitor. 
                 */
                Boolean haveAngleSensorFlg = obj.getBoolean(BpProfile.FUNCTION_HAVE_ANGLE_SENSOR);
                
