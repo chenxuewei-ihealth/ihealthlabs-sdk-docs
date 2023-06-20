@@ -3,11 +3,13 @@ title: BG5S
 sidebar_position: 4
 ---
 
-## WorkFlow
-
-1. Scan and connect BG5S blood pressure monitor.
-
-2. BG5S only support online measurement.
+:::info
+1. BG5S is a low-power Bluetooth glucose meter with indicator lights, a screen and button.
+2. When you use BG5S for first time or haven't used it for a long time, Please charge it for 2~4 hours to make BG5S have enough power, and then start using it.
+3. The BG5S support two way to turn on. One is turn on by inserting test strip, the other is turn on by pressing button. 
+4. BG5S support online measurement and offline measurement. 
+5. Once the device is turned on, it begins Bluetooth broadcasting and can be scanned and connected to by the app.
+:::
 
 ## Connection to device
 
@@ -66,13 +68,29 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
         if (Bg5sProfile.ACTION_GET_STATUS_INFO.equals(action)) {
             try {
                 JSONObject obj = new JSONObject(message);
+                
+                // The battery level of BG5S.
                 int batteryLevel = obj.getInt(Bg5sProfile.INFO_BATTERY_LEVEL);
+                
+                // The time of BG5S.
                 String timeStr = obj.getString(Bg5sProfile.INFO_TIME);
+                
+                // The timezone of BG5S.
                 int timeZone = obj.getInt(Bg5sProfile.INFO_TIMEZONE);
+
+                // The number of test strips used.
                 int usedStrip = obj.getInt(Bg5sProfile.INFO_USED_STRIP);
+                
+                // The number of offline data.
                 int offlineDataNum = obj.getInt(Bg5sProfile.INFO_OFFLINE_DATA_NUM);
+                
+                // The code version of strip.
                 int mCodeVersionBlood = obj.getInt(Bg5sProfile.INFO_CODE_VERSION_BLOOD);
+                
+                // The code version of control solution strip.
                 int mCodeVersionCTL = obj.getInt(Bg5sProfile.INFO_CODE_VERSION_CTL);
+                
+                // The unit of BG5S.
                 int unit = obj.getInt(Bg5sProfile.INFO_UNIT);
 
             } catch (JSONException e) {
@@ -87,7 +105,10 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 
 ```java
 Bg5sControl control = iHealthDevicesManager.getInstance().getBg5sControl(mDeviceMac);
-control.getStatusInfo();
+/**
+ * @param enable enable offline measurement.
+ */
+control.setOfflineMeasurementMode(boolean enable);
 ```
 
 ```java
@@ -95,7 +116,9 @@ control.getStatusInfo();
 private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
     @Override
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (Bg5sProfile.ACTION_SET_OFFLINE_MEASUREMENT_MODE.equals(action)) { }
+        if (Bg5sProfile.ACTION_SET_OFFLINE_MEASUREMENT_MODE.equals(action)) { 
+            Log.i("", "Set offline measurement mode");
+        }
     } 
 }
 ```
@@ -103,6 +126,10 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 ### Set time to BG5 device
 
 ```java
+/**
+ * @param date 
+ * @param timeZone
+ */
 Bg5sControl control = iHealthDevicesManager.getInstance().getBg5sControl(mDeviceMac);
 control.setTime(Date date, float timeZone);
 ```
@@ -113,7 +140,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
     @Override
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
         if (Bg5sProfile.ACTION_SET_TIME.equals(action)) {
-           
+           Log.i("", "Set time success");
         } 
     } 
 }
@@ -124,9 +151,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 ```java
 Bg5sControl control = iHealthDevicesManager.getInstance().getBg5sControl(mDeviceMac);
 /**
- * @param unitType the unit type set to BG5S. Can be one of
- *                 {@link Bg5sProfile#UNIT_MMOL}  or
- *                 {@link Bg5sProfile#UNIT_MG}
+ * @param unitType the unit type set to BG5S: Bg5sProfile.UNIT_MMOL; Bg5sProfile.UNIT_MG    
  */
 control.setUnit(int type);
 ```
@@ -137,7 +162,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
     @Override
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
         if (Bg5sProfile.ACTION_SET_UNIT.equals(action)) {
-            
+            Log.i("", "Set unit success");
         } 
     } 
 }
@@ -148,9 +173,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 ```java
 Bg5sControl control = iHealthDevicesManager.getInstance().getBg5sControl(mDeviceMac);
 /**
- * @param unitType the unit type set to BG5S. Can be one of
- *                 {@link Bg5sProfile#UNIT_MMOL}  or
- *                 {@link Bg5sProfile#UNIT_MG}
+ * @param mode enable display mode.
  */
 control.setDisplayMode(boolean mode);
 ```
@@ -161,13 +184,13 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
     @Override
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
         if (Bg5sProfile.ACTION_SET_DISPLAY_MODE.equals(action)) {
-           
+           Log.i("", "Set display mode success");
         } 
     } 
 }
 ```
 
-### Delete used strip of BG5S
+### Delete number of test strips used.
 
 ```java
 Bg5sControl control = iHealthDevicesManager.getInstance().getBg5sControl(mDeviceMac);
@@ -180,7 +203,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
     @Override
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
         if (Bg5sProfile.ACTION_DELETE_USED_STRIP.equals(action)) {
-           
+           Log.i("", "Delete success");
         } 
     } 
 }
@@ -198,8 +221,8 @@ control.deleteOfflineData();
 private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
     @Override
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (Bg5sProfile.ACTION_DELETE_USED_STRIP.equals(action)) {
-           
+        if (Bg5sProfile.ACTION_DELETE_OFFLINE_DATA.equals(action)) {
+           Log.i("", "Delete success");
         } 
     } 
 }
@@ -226,7 +249,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
                     boolean dateStr = obj.getBoolean(Bg5sProfile.DATA_TIME_PROOF);
                     int value = obj.getString(Bg5sProfile.DATA_VALUE);
                     String time = obj.getString(Bg5sProfile.DATA_MEASURE_TIME);
-                    String timezone = obj.getString(Bg5sProfile.DATA_MEASURE_TIMEZONE);
+                    float timezone = obj.getString(Bg5sProfile.DATA_MEASURE_TIMEZONE);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -241,9 +264,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 ```java
 Bg5sControl control = iHealthDevicesManager.getInstance().getBg5sControl(mDeviceMac);
 /**
- * @param measureType the measure type set to BG5S.Can be one of
- *                    {@link Bg5sProfile#MEASURE_BLOOD}  or
- *                    {@link Bg5sProfile#MEASURE_CTL}
+ * @param measureType the measure type set to BG5S.Bg5sProfile.MEASURE_BLOOD Bg5sProfile.MEASURE_CTL
  */
 control.startMeasure(int measureType);
 ```
@@ -265,7 +286,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
         } else if (Bg5sProfile.ACTION_RESULT.equals(action)) {
             try {
                 JSONObject obj = new JSONObject(message);
-                int value = obj.getInt((Bg5sProfile.RESULT_VALUE);
+                int value = obj.getInt(Bg5sProfile.RESULT_VALUE);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -276,30 +297,18 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 }
 ```
 
-### Close Bluetooth
+### Correct date of offline data
+
+When you use BG5S for first time or haven't used it for a long time, before you take an offline measurement, 
+you need to connect your phone to sync the time. But if you forget to sunc the time and take an offline measurement, 
+this API can correct the time.
 
 ```java
 Bg5sControl control = iHealthDevicesManager.getInstance().getBg5sControl(mDeviceMac);
-control.closeBluetooth();
-```
-
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (Bg5sProfile.ACTION_CLOSE_BLUETOOTH.equals(action)) {
-            
-        }
-    } 
-}
-```
-
-### Correct the measurement time of the offline data according to the flag and return in format JSON String
-
-```java
-Bg5sControl control = iHealthDevicesManager.getInstance().getBg5sControl(mDeviceMac);
-
-// Return value
-String message = control.adjustOfflineData(String timeString, String originData);
+/**
+ * @param timeString The device time from getStatusInfo API
+ * @param originData The origin data from getOfflineData API
+ * @return Correct offline data
+ */
+String newOfflineData = control.adjustOfflineData(String timeString, String originData);
 ```
