@@ -44,9 +44,10 @@ BG1A Manager
 used to call the API
 
 ```objective-c
+
 /// Get device information
 /// - Parameters:
-///   - success: successful callback,  battery:14   protocol:com.jiuan.BGV44 accessoryName:BG1A firmwareVersion:1.0.0 hardwareVersion:3.0.0 manufaturer:iHealth  modelNumber:BG1A 11070
+///   - success: successful callback,  battery:14   protocol:com.jiuan.BGV44 accessoryName:BG1A firmwareVersion:1.0.0 hardwareVersion:3.0.0 manufaturer:iHealth  modelNumber:BG1A 11070   hasHistoryResult：1（0：no history 1：has history） deviceTS：2023-06-20 14:17:02 +0000
 ///   - fail: error callback, see BG1ADeviceError
 - (void)commandGetDeviceInfo:(BG1ASuccessBlock)success
                      fail:(BG1AErrorBlock)fail;
@@ -105,13 +106,8 @@ used to call the API
   }
   Tips:
   It will be posted immediately after the bluetooth is connected. Because only after strip in, the device is ready to connect bluetooth.
-
- 2)  kBG1ANotiNameBloodIn
- The device collects enough blood to measure, and the result will be post in a few seconds. The notification's userInfo:
- {
-    mac = "385B44DDC723";
- }
- 3)  kBG1ANotiNameResult
+ 
+ 2)  kBG1ANotiNameResult
  The device sends the measurement result (the value is in the unit mg/dL). The notification's userInfo:
  {
     mac = "385B44DDC723";
@@ -210,7 +206,6 @@ typedef NS_ENUM(uint8_t,BG1AMeasureType) {
 [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(onDeviceDisconnect:) name:BG1ADisConnectNoti object:nil];
 
 [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(handleStripStatusNoti:) name:kBG1ANotiNameStripStatus object:nil];
-[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(handleBloodInNoti:) name:kBG1ANotiNameBloodIn object:nil];
 [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(handleResultNoti:) name:kBG1ANotiNameResult object:nil];
 [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(handleErrorNoti:) name:kBG1ANotiNameError object:nil];
 
