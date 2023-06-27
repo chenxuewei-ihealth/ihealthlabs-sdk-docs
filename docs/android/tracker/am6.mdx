@@ -1,0 +1,384 @@
+---
+title: AM6
+sidebar_position: 5
+---
+
+:::info
+1. AM6 is a low-power activity tracker. It can track acticity, sleep, heart rate and Blood oxygen.
+2. First use requires charging until the dial of watch displays a QR code.
+3. After the user successfully bound, AM6 will enter the dial activity UI, if the user unbound will return to the QR code UI.
+:::
+
+## Connection to device
+
+### 1.Listen to device notify
+
+```java
+int callbackId = iHealthDevicesManager.getInstance().registerClientCallback(new iHealthDevicesCallback() {
+    
+    @Override
+    public void onScanDevice(String mac, String deviceType, int rssi, Map manufactorData) { }
+
+    @Override
+    public void onDeviceConnectionStateChange(String mac, String deviceType, int status, int errorID, Map manufactorData) { }
+
+    @Override
+    public void onScanError(String reason, long latency) { }
+
+    @Override
+    public void onScanFinish() { }
+});
+
+iHealthDevicesManager.getInstance().addCallbackFilterForDeviceType(mClientCallbackId, iHealthDevicesManager.TYPE_AM6);
+iHealthDevicesManager.getInstance().addCallbackFilterForAddress(int clientCallbackId, String... macs)
+```
+
+### 2.Scan for AM6 devices
+
+```java
+iHealthDevicesManager.getInstance().startDiscovery(DiscoveryTypeEnum.AM6);
+```
+
+### 3.Connect to AM6 devices
+
+```java
+iHealthDevicesManager.getInstance().connectDevice("", mac, iHealthDevicesManager.TYPE_AM6)
+
+Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
+```
+
+## API reference
+
+## How to bind user with AM6
+
+:::info
+1. AM6 is used for the first time or is in an unbound state, and AM6 displays a QR code.
+2. Call the API bindUser, AM6 enters the binding state.
+3. Call the API bindUserSuccess and pass user id to AM6, AM6 will save user id, and then wiil display UI of successful binding.
+4. Call the API bindUserFail, AM6 will display UI of failure binding, and then fall back to UI of OR code.
+:::
+
+### Bind user
+
+Am6 enters the binding state.
+
+```java
+Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
+control.bindUser();
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Am6Profile.Action_BindToken.equals(action)) {
+            Log.i("", "start to bind user");
+        }
+    } 
+}
+```
+
+### Bind user success
+
+```java
+Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
+String userId = "1234567890abcdef";
+/**
+ * @param userId must be a 16 character string
+ */
+control.bindUserSuccess(userId);
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Am6Profile.Action_BindUserSuccess.equals(action)) {
+            Log.i("", "Bind user success");
+        }
+    } 
+}
+```
+
+### Bind user fail
+
+```java
+Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);å
+control.bindUserFail();
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Am6Profile.Action_BindUserFail.equals(action)) {
+            Log.i("", "Bind user fail");
+        }
+    } 
+}
+```
+
+### Unbind user
+
+```java
+Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
+String userId = "1234567890abcdef";
+/**
+ * @param userId must be a 16 character string
+ */
+control.unBindUser(userId);
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Am6Profile.Action_UnbindUser.equals(action)) {
+            Log.i("", "Unbind user");
+        }
+    } 
+}
+```
+
+## How to get started with AM6
+
+### Get AM6 information ans sync time
+
+```java
+Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
+control.getDeviceInfoAndSyncTime();
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Am6Profile.Action_getDeviceInfoAndSetTime.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                
+                // The battery level of AM6, the range is 0~100
+                int battery = obj.getInt(Am6Profile.GetDeviceInfo_Battery);
+                
+                // The hardware version of AM6
+                String hardwareVersion = obj.getString(Am6Profile.GetDeviceInfo_Hardware_Version);
+                
+                // The sdk version of AM6
+                String sdkVersion = obj.getString(Am6Profile.GetDeviceInfo_SDK_Version);
+                
+                // The firmware version of AM6
+                String firmwareVersion = obj.getString(Am6Profile.GetDeviceInfo_Firmware_Version);
+                
+                // Is it bound, 0: no, 1: yes
+                int bindStatus = obj.getInt(Am6Profile.GetDeviceInfo_Bind_Status);
+                
+                // Is it charging, 0: no, 1: yes
+                int charge = obj.getInt(Am6Profile.GetDeviceInfo_Charge);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    } 
+}
+```
+
+### Get information of the device
+
+```java
+Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
+/**
+ * @param userId must be a 16 character string
+ * @param gender 0: male, 1: female
+ * @param age    
+ * @param height unit is cm
+ * @param weight unit is kg
+ */
+control.setUserInfo(String userId, int gender, int age, int height, float weight);
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Am6Profile.Action_SetUserInfo.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                /*
+                 * Is setting user information successful? If it fails, please check whether the userId is same with the bound user.
+                 * 0: failure, 1: success
+                 */
+                int result = obj.getInt(Am6Profile.SetUser_Result);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    } 
+}
+```
+
+## Set Notification 
+
+:::info
+Before setting nofication information, please set the mobile platform type.
+:::
+
+### Set phone platform
+
+```java
+Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
+control.setPlatform();
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Am6Profile.Action_SetPhonePlatform.equals(action)) {
+            Log.i("", "Set phone platform");
+        }
+    } 
+}
+```
+
+### Notify Message
+
+:::info
+|  Message Type | |
+| ---- | ---- |
+| Others | 0 |
+| Call | 1 |
+| SMS | 2 |
+| WYZE | 3 |
+| Facebook | 4 |
+| Wechat | 5 |
+| Instagram | 6 |
+| Twitter | 7 |
+| Facebook messager | 8 |
+| WhatsApp | 9 |
+| Gmail | 10 |
+| Email | 11 |
+| Yahoo | 12 |
+| Spotify | 13 |
+| Apple music | 14 |
+| Youtube | 15 |
+| Uber | 16 |
+| Google map | 17 |
+| Google calendar | 18 |
+| Strava | 19 |
+:::
+
+
+```java
+Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
+/**
+ * @param date timestamp
+ * @param status when message type is Call, the status can be set to 0: call ansered; 1: missed call; 2: call was hung up
+ * @param type message type        
+ * @param title Maximum is 128 characters
+ * @param content Maximum is 512 characters
+ */
+control.notifyMessage(long date, int status, int type, String title, String content);
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Am6Profile.Action_NotifyMessage.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                /*
+                 * 0: failure, 1: success
+                 */
+                int result = obj.getInt(Am6Profile.NotifyMessage_Result);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    } 
+}
+```
+
+## Device settings
+
+### Find device
+
+```java
+Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
+/**
+ * @param start 0: start finding; 1: stop finding 
+ */
+control.findDevice(int start);
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Am6Profile.Action_FindDevice.equals(action)) {
+            Log.i("", "Find device");
+        }
+    } 
+}
+```
+
+### Find phone
+
+When the mobile phone is connected, click AM6 to find the function of the mobile phone, and the SDK will receive the message.
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Am6Profile.Action_FindPhone.equals(action)) {
+            Log.i("", "Find phone")
+        }
+    } 
+}
+```
+
+### Reboot device
+
+After calling this API, AM6 will be disconnected
+
+```java
+Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
+control.rebootDevice();
+```
+
+### Get current time of AM6
+
+```java
+Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
+control.getTime();
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Am6Profile.Action_GetTime.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                // The time format is "yyyy-MM-DD HH:MM:SS"
+                String time = obj.getString(Am6Profile.GetTime_Time);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    } 
+}
+```
+
+
+
