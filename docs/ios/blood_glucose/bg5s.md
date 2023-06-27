@@ -145,23 +145,13 @@ sidebar_position: 4
            errorBlock:(BG5SSDKErrorBlock)errorBlock;
 ```
 
-### Close Bluetooth
+###  Disconnect device
 
 ```java
-Bg5sControl control = iHealthDevicesManager.getInstance().getBg5sControl(mDeviceMac);
-control.closeBluetooth();
-```
-
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (Bg5sProfile.ACTION_CLOSE_BLUETOOTH.equals(action)) {
-            
-        }
-    } 
-}
+/**
+ Disconnect device
+ */
+- (void)disconnectDevice;
 ```
 
 ### Correct the measurement time of the offline data according to the flag and return in format JSON String
