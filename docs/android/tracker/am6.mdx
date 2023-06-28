@@ -380,5 +380,66 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 }
 ```
 
+## How sync data with AM6
+
+### Daily data
+
+The daily report is a summary of the data for the day.
+
+```java
+Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
+control.getDailyData();
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Am6Profile.Action_GetDailyData.equals(action)) {
+            try {
+                JSONArray arr = new JSONObject(message);
+                for (JSONObject obj : arr) {
+                    
+                    // The date of daily report, date format is "yyyy-MM-DD HH:MM:SS" 
+                    String date = obj.getString(Am6Profile.GetDailyData_Date);
+                    
+                    // The step of daily report
+                    int step = obj.getInt(Am6Profile.GetDailyData_Step);
+                    
+                    // The calorie of daily report
+                    int calorie = obj.getInt(Am6Profile.GetDailyData_Calorie);
+                    
+                    // The blood oxygen of daily report
+                    int bloodOxygen = obj.getInt(Am6Profile.GetDailyData_BloodOxygen);
+                    
+                    // The heart rate of daily report
+                    int heartRate = obj.getString(Am6Profile.GetDailyData_HeartRate);
+                    
+                    // The min heart rate of daily report
+                    int minHeartRate = obj.getString(Am6Profile.GetDailyData_MinHeartRate);
+                    
+                    // The max heart rate of daily report
+                    int maxHeartRate = obj.getString(Am6Profile.GetDailyData_MaxHeartRate);
+                    
+                    // The mean heart rate of daily report
+                    int meanHeartRate = obj.getString(Am6Profile.GetDailyData_MeanHeartRate);
+                    
+                    // The rest heart rate of daily report
+                    int restHeartRate = obj.getString(Am6Profile.GetDailyData_RestHeartRate);
+                    
+                    // The time of day when the minimum heart rate occurs, date format is "yyyy-MM-DD HH:MM:SS" 
+                    String minHeartRateTime = obj.getString(Am6Profile.GetDailyData_MinHeartRateTime);
+                    
+                    // The time of day when your maximum heart rate occurs, date format is "yyyy-MM-DD HH:MM:SS" 
+                    String maxHeartRateTime = obj.getString(Am6Profile.GetDailyData_MaxHeartRateTime);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    } 
+}
+```
 
 
