@@ -385,6 +385,145 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 }
 ```
 
+### Set wearing hand
+
+```java
+Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
+/**
+ * @param hand 0: left hand; 1: right hand
+ */
+control.setWearHand(int hand);
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Am6Profile.Action_SetWearHand.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                /**
+                 * @return result 0: failure; 1: success
+                 */
+                int result = obj.getInt(Am6Profile.SetWearHand_Result);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    } 
+}
+```
+
+### Get wearing hand
+
+```java
+Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
+control.setWearHand();
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Am6Profile.Action_GetWearHand.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                /**
+                 * @return result 0: failure; 1: success
+                 */
+                int result = obj.getInt(Am6Profile.GetWearHand_Result);
+
+                /**
+                 * @return hand 0: left; 1: right
+                 */
+                int result = obj.getInt(Am6Profile.GetWearHand_Hand);
+                
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    } 
+}
+```
+
+### Set target reminder
+
+```java
+Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
+/**
+ * @param type 0: close; 1: open
+ * @param calorie
+ * @param step
+ */
+control.setTargetRemind(int type, int calorie, int step);
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Am6Profile.Action_SetWearHand.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                /**
+                 * @return result 0: failure; 1: success
+                 */
+                int result = obj.getInt(Am6Profile.SetWearHand_Result);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    } 
+}
+```
+
+### Get target reminder
+
+```java
+Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
+control.getTargetRemind();
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Am6Profile.Action_GetWearHand.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+
+                /**
+                 * @return result 0: failure; 1: success
+                 */
+                int result = obj.getInt(Am6Profile.GetTargetReminder_Result);
+
+                /**
+                 * @return enable 0: close; 3: open
+                 */
+                int enable = obj.getInt(Am6Profile.GetTargetReminder_Enable);
+                
+                /**
+                 * @return calorie
+                 */
+                int calorie = obj.getInt(Am6Profile.GetTargetReminder_Calorie);
+
+                /**
+                 * @return step
+                 */
+                int step = obj.getInt(Am6Profile.GetTargetReminder_Step);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    } 
+}
+```
+
 ## How sync data with AM6
 
 ### Daily data
@@ -548,3 +687,4 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
     } 
 }
 ```
+
