@@ -333,7 +333,10 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 
 ### Find phone
 
+:::info
 When the mobile phone is connected, click AM6 to find the function of the mobile phone, and the SDK will receive the message.
+:::
+
 ```java
 // Return value
 private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
@@ -348,7 +351,9 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 
 ### Reboot device
 
-After calling this API, AM6 will be disconnected
+:::info
+After calling this API, AM6 will be disconnected.
+:::
 
 ```java
 Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
@@ -384,7 +389,9 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 
 ### Daily data
 
+:::info
 The daily report is a summary of the data for the day.
+:::
 
 ```java
 Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
@@ -398,7 +405,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
         if (Am6Profile.Action_GetDailyData.equals(action)) {
             try {
-                JSONArray arr = new JSONObject(message);
+                JSONArray arr = new JSONArray(message);
                 for (JSONObject obj : arr) {
                     
                     // The date of daily report, date format is "yyyy-MM-DD HH:MM:SS" 
@@ -443,3 +450,101 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 ```
 
 
+### Sleep data
+
+:::info
+
+This API returns sleep detail data in the form of sleep segments. Each sleep segment contains start date and sleep details. The start date starts at 0:00 of the current day. The sleep details include the sleep mode and the start time of this mode.
+For example, a person goes to bed at 2023-06-27 23:11 in the evening and wakes up at 2023-06-28 02:19 o'clock the next morning.
+
+[{"am6_getSleepData_date":"2023-06-27 00:00:00","am6_getSleepData_list":[
+    {"am6_getSleepData_mode":2,"am6_getSleepData_mode_date":"23:11"},
+    {"am6_getSleepData_mode":1,"am6_getSleepData_mode_date":"23:39"},
+    {"am6_getSleepData_mode":2,"am6_getSleepData_mode_date":"23:57"},
+    {"am6_getSleepData_mode":1,"am6_getSleepData_mode_date":"00:26"},
+    {"am6_getSleepData_mode":2,"am6_getSleepData_mode_date":"00:41"},
+    {"am6_getSleepData_mode":1,"am6_getSleepData_mode_date":"01:09"},
+    {"am6_getSleepData_mode":2,"am6_getSleepData_mode_date":"01:18"},
+    {"am6_getSleepData_mode":0,"am6_getSleepData_mode_date":"01:19"},
+    {"am6_getSleepData_mode":2,"am6_getSleepData_mode_date":"01:51"},
+    {"am6_getSleepData_mode":0,"am6_getSleepData_mode_date":"02:19"}]}]
+
+|  Sleep Mode | |
+| ---- | ---- |
+| 1 | start to sleep |
+| 2 | light sleep |
+| 3 | deep sleep |
+| 4 | wake |
+| 5 | exit sleep |
+| 6 | rapid eye movement (REM) |
+
+:::
+
+
+```java
+Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
+control.getSleepData();
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Am6Profile.Action_GetSleepData.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject
+                
+                // The date of sleep, date format is "yyyy-MM-DD HH:MM:SS" 
+                String date = obj.getString(Am6Profile.GetSleepData_Date);
+
+                // The sleep detail list
+                JSONArray arr = obj.getJSONArray(Am6Profile.GetSleepData_List);
+                for (JSONObject o : arr) {
+                    
+                    // The mode of sleep
+                    int sleepMode = o.getInt(Am6Profile.GetSleepData_Mode);
+
+                    // The start time of this sleep mode, date format is "yyyy-MM-DD HH:MM:SS" 
+                    String sleepModeDate = o.getString(Am6Profile.GetSleepData_Mode_Duration);
+                }
+                    
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+```
+
+### Blood oxygen data
+
+```java
+Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
+control.getBloodOxygenData();
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Am6Profile.Action_GetBloodOxygenData.equals(action)) {
+            try {
+                JSONArray arr = new JSONArray(message);
+                for (JSONObject obj : arr) {
+                    
+                    // The time of measure blood oxygen, date format is "yyyy-MM-DD HH:MM:SS" 
+                    String date = obj.getString(Am6Profile.GetBloodOxygenData_Date);
+                    
+                    // The value of blood oxygen
+                    int bloodOxygen = obj.getInt(Am6Profile.GetBloodOxygenData_BloodOxygen);
+                    
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    } 
+}
+```
