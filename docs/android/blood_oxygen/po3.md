@@ -87,11 +87,11 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 }
 ```
 
-### Start real-time measurement
+### Start a measurement
 
 ```java
 Po3Control control = iHealthDevicesManager.getInstance().getPo3Control(mDeviceMac);
-control.startMeasure() 
+control.startMeasure();
 ```
 
 ```java
@@ -99,15 +99,29 @@ control.startMeasure()
 private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
     @Override
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (HsProfile.ACTION_HISTORICAL_DATA_COMPLETE_HS.equals(action)) {
+        if (PoProfile.ACTION_LIVEDA_PO.equals(action)) {
             try {
-                JSONArray historyArr = new JSONArray(message);
-                for (int i = 0; i < historyArr.length(); i++) {
-                    JSONObject obj = historyArr.getJSONObject(i);
-                    String measureTs = obj.getString(HsProfile.MEASUREMENT_DATE_HS);
-                    String weight    = obj.getString(HsProfile.WEIGHT_HS);
-                 
-                }
+                JSONObject obj = new JSONObject(message);
+
+                int bloodOxygen = obj.getInt(PoProfile.BLOOD_OXYGEN_PO);
+                int pulseRate = obj.getInt(PoProfile.PULSE_RATE_PO);
+                int pulseStrength = obj.getInt(PoProfile.PULSE_STRENGTH_PO);
+                int pi = obj.getInt(PoProfile.PI_PO);
+                JSONArray pulseWave = obj.getJSONArray(PoProfile.PULSE_WAVE_PO);
+            
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } else if (PoProfile.ACTION_RESULTDATA_PO.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+
+                int bloodOxygen = obj.getInt(PoProfile.BLOOD_OXYGEN_PO);
+                int pulseRate = obj.getInt(PoProfile.PULSE_RATE_PO);
+                int pulseStrength = obj.getInt(PoProfile.PULSE_STRENGTH_PO);
+                int pi = obj.getInt(PoProfile.PI_PO);
+                JSONArray pulseWave = obj.getJSONArray(PoProfile.PULSE_WAVE_PO);
+            
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -116,15 +130,12 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 }
 ```
 
-### Specify Online Users
+
+### Get offline data
 
 ```java
-Hs2Control control = iHealthDevicesManager.getInstance().getHs2Control(mDeviceMac);
-/*
- * @param unit 1 kg; 2 lb; 3 st
- * @param userId user identify number
- */
-control.measureOnline(int unit, int userId)
+Po3Control control = iHealthDevicesManager.getInstance().getPo3Control(mDeviceMac);
+control.getHistoryData();
 ```
 
 ```java
@@ -132,24 +143,25 @@ control.measureOnline(int unit, int userId)
 private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
     @Override
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (HsProfile.ACTION_LIVEDATA_HS.equals(action)) {
+        if (PoProfile.ACTION_NO_OFFLINEDATA_PO.equals(action)) {
+            Log.i("", "No offline data");
+
+        } else if (PoProfile.ACTION_OFFLINEDATA_PO.equals(action)) {
             try {
                 JSONObject obj = new JSONObject(message);
-                String weight = obj.getString(HsProfile.DATA_LIVEDATA_HSWEIGHT);
-
+                JSONArray arr = obj.getJSONArray();
+                for (JSONObject obj : arr) {
+                    int measureDate = obj.getInt(PoProfile.MEASURE_DATE_PO);
+                    int bloodOxygen = obj.getInt(PoProfile.BLOOD_OXYGEN_PO);
+                    int pulseRate = obj.getInt(PoProfile.PULSE_RATE_PO);
+                    JSONArray pulseWave = obj.getJSONArray(PoProfile.PULSE_WAVE_PO);
+                }
+            
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-        } else if (HsProfile.ACTION_ONLINE_RESULT_HS.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                String weight = obj.getString(HsProfile.WEIGHT_HS);
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        } 
-    }
+        }
+    } 
 }
 ```
 

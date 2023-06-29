@@ -754,6 +754,82 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 }
 ```
 
+### Set do not disturb mode
+
+```java
+Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
+/**
+ * @param type 0: close; 1: open
+ * @param start
+ * @param end
+ */
+control.setDoNotDisturbMode(int enable, int start, int end);
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Am6Profile.Action_SetDoNotDisturb.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                /**
+                 * @return result 0: failure; 1: success
+                 */
+                int result = obj.getInt(Am6Profile.SetDoNotDisturb_Result);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    } 
+}
+```
+
+### Get do not disturb mode
+
+```java
+Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
+control.getDoNotDisturbMode();
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Am6Profile.Action_GetDoNotDisturb.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+
+                /**
+                 * @return result 0: failure; 1: success
+                 */
+                int result = obj.getInt(Am6Profile.GetDoNotDisturb_Result);
+
+                /**
+                 * @return enable 0: close; 1: open
+                 */
+                int enable = obj.getInt(Am6Profile.GetDoNotDisturb_Enable);
+                
+                /**
+                 * @return start
+                 */
+                int start = obj.getLong(Am6Profile.GetDoNotDisturb_StartTime);
+
+                /**
+                 * @return stop
+                 */
+                int stop = obj.getLong(Am6Profile.GetDoNotDisturb_EndTime);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    } 
+}
+```
+
 ## How to sync data with AM6
 
 ### Daily data
