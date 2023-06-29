@@ -58,6 +58,8 @@ Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMa
 4. Call the API bindUserFail, AM6 will display UI of failure binding, and then fall back to UI of OR code.
 :::
 
+![am6 binding](/am6_binding.png)
+
 ### Bind user
 
 Am6 enters the binding state.
@@ -105,7 +107,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 ### Bind user fail
 
 ```java
-Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);å
+Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
 control.bindUserFail();
 ```
 
@@ -146,7 +148,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 
 ## How to get started with AM6
 
-### Get AM6 information ans sync time
+### Get AM6 information and sync time
 
 ```java
 Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
@@ -187,7 +189,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 }
 ```
 
-### Get information of the device
+### Set user information of the device
 
 ```java
 Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
@@ -752,7 +754,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 }
 ```
 
-## How sync data with AM6
+## How to sync data with AM6
 
 ### Daily data
 
@@ -908,6 +910,34 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
                     int bloodOxygen = obj.getInt(Am6Profile.GetBloodOxygenData_BloodOxygen);
                     
                 }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    } 
+}
+```
+
+### Delete history data
+
+```java
+Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
+control.deleteData();
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Am6Profile.Action_DeleteData.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                /**
+                 * @return result 0: failure; 1: success
+                 */
+                int result = obj.getInt(Am6Profile.DeleteData_Result);
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
