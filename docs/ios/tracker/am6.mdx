@@ -1,0 +1,728 @@
+---
+title: AM6
+sidebar_position: 5
+---
+
+:::info
+1. AM6 is a low-power activity tracker. It can track acticity, sleep, heart rate and Blood oxygen.
+2. First use requires charging until the dial of watch displays a QR code.
+3. After the user successfully bound, AM6 will enter the dial activity UI, if the user unbound will return to the QR code UI.
+:::
+
+## Connection to device
+
+### 1.Listen to device notify  and init
+
+```java
+[[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(DeviceDiscover:) name:AM6Discover object:nil];
+            
+[[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(DeviceConnectFail:) name:AM6ConnectFailed object:nil];
+            
+[[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(DeviceConnect:) name:AM6ConnectNoti object:nil];
+            
+[[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(DeviceDisConnect:) name:AM6DisConnectNoti object:nil];
+
+ [AM6Controller shareAM6Controller];
+            
+ [[AM6Controller shareAM6Controller] configAM6DeviceBleParameters];
+```
+
+### 2.Scan for AM6 devices
+
+```java
+[[ScanDeviceController commandGetInstance] commandScanDeviceType:HealthDeviceType_AM6];
+```
+
+### 3.Connect to AM6 devices
+
+```java
+[[ConnectDeviceController commandGetInstance] commandContectDeviceWithDeviceType:HealthDeviceType_AM5 andSerialNub:deviceMac];
+```
+
+## API reference
+
+## How to bind user with AM6
+
+:::info
+1. AM6 is used for the first time or is in an unbound state, and AM6 displays a QR code.
+2. Call the API bindUser, AM6 enters the binding state.
+3. Call the API bindUserSuccess and pass user id to AM6, AM6 will save user id, and then wiil display UI of successful binding.
+4. Call the API bindUserFail, AM6 will display UI of failure binding, and then fall back to UI of OR code.
+:::
+
+![am6 binding](/am6_binding.png)
+
+### Bind user
+
+Am6 enters the binding state.
+
+```java
+/**
+ * App sends StartBind to device
+ *@param success  success
+ *@param fail  fail
+ */
+- (void)sendStartBindWithSuccess:(DisposeAM6SuccessBlock)success
+                 fail:(DisposeAM6ErrorBlock)fail;
+```
+
+### Bind user success
+
+```java
+/**
+ * The app sends the binding success to the device
+ *@param userId   we recommend use user id's md5-16 value, 16 bytes length
+ *@param success  success
+ *@param fail  fail
+ */
+- (void)sendSuccessBindWithUserId:(NSData*)userId
+                          success:(DisposeAM6SuccessBlock)success
+                              fail:(DisposeAM6ErrorBlock)fail;
+```
+
+### Bind user fail
+
+```java
+/**
+ * The app sends the binding fail to the device
+ *@param success  success
+ *@param fail  fail
+ */
+- (void)sendFailBindWithSuccess:(DisposeAM6SuccessBlock)success
+                              fail:(DisposeAM6ErrorBlock)fail;
+```
+
+### Unbind user
+
+```java
+/**
+ * App sends unbind to device
+ *@param userId   we recommend use user id's md5-16 value, 16 bytes length
+ *@param success  success
+ *@param fail  fail
+ */
+- (void)sendUnbindWithUserId:(NSData*)userId
+                     success:(DisposeAM6SuccessBlock)success
+                        fail:(DisposeAM6ErrorBlock)fail;
+```
+
+## How to get started with AM6
+
+### Get AM6 information and sync time
+
+```java
+/**
+ * Query device information and synchronize time to the device
+ *@param success  You can get data by reading:  battery, isCharging,firmwareVersion,hardwareVersion,bindStatus
+ *{
+ * Battery = 100;   Power 0-100
+ * ChargeState = 0;  0:NO Charging  1:Charging
+ * FirmwareVersion = "0.1.1";  FirmwareVersion
+ * HardwareVersion = "1.0.0";  HardwareVersion
+ * bindState = 1;    0: The watch is not bound (QR code state) 1: The watch is bound (normal state)
+}
+ *@param fail  fail
+ */
+- (void)queryDeviceInfoAndSyncTimeWithSuccess:(DisposeAM6SuccessBlock)success
+                                         fail:(DisposeAM6ErrorBlock)fail;
+```
+
+### Set user information of the device
+
+```java
+/**
+ * Set user info
+ *@param userId we recommend use user id's md5-16 value, 16 bytes length
+ *@param gender 0: male 1: female
+ *@param age  age
+ *@param height height, in cm
+ *@param weight Weight, in kg
+ *@param success  success
+ *@param fail  fail
+ */
+- (void)setUserInfoWithUserIdMD5:(NSData*)userId
+                          gender:(uint8_t)gender
+                             age:(uint8_t)age
+                          height:(uint8_t)height
+                          weight:(double)weight
+                         success:(DisposeAM6SuccessBlock)success
+                            fail:(DisposeAM6ErrorBlock)fail;
+```
+
+
+## Set Notification 
+
+:::info
+Before setting nofication information, please set the mobile platform type.
+:::
+
+### Set phone platform
+
+```java
+/**
+ * Set platform to iOS
+ * @param success  success
+ * @param fail Communication error codes, see AM6 error descriptions.
+ */
+- (void)setPlatformWithSuccess:(DisposeAM6SuccessBlock)success
+                          fail:(DisposeAM6ErrorBlock)fail;
+/**
+ * Query notification switch
+ * @param success   notificationEnable    0:close 1:open
+ * @param fail Communication error codes, see AM6 error descriptions.
+ */
+- (void)queryNotificationStateWithSuccess:(DisposeAM6SuccessBlock)success
+                                     fail:(DisposeAM6ErrorBlock)fail;
+/**
+ * Set notification switch
+ * @param enable YES：open  NO：close
+ * @param success  success
+ * @param fail Communication error codes, see AM6 error descriptions.
+ */
+- (void)setNotificationStatus:(BOOL)enable
+                      success:(DisposeAM6SuccessBlock)success
+                         fail:(DisposeAM6ErrorBlock)fail;
+
+/**
+ * Query whether ANCS has been authorized
+ */
+- (BOOL)queryAncsAuthorizedStatus NS_AVAILABLE_IOS(13);
+```
+
+## Device settings
+
+### Find device
+
+```java
+/**
+ * findDevice
+ * @param flag 0: start 1: end
+ * @param success  success
+ * @param fail Communication error codes, see AM6 error descriptions.
+ */
+- (void)findDevice:(uint8_t)flag
+           success:(DisposeAM6SuccessBlock)success
+              fail:(DisposeAM6ErrorBlock)fail;
+```
+
+### Find phone
+
+:::info
+When the mobile phone is connected, click AM6 to find the function of the mobile phone, and the SDK will receive the message.
+:::
+
+```java
+/**
+ *Start FindPhone
+ *
+ *If you want to use this feature, please listen to this notification:
+ *
+ *AM6StartFindPhoneNoti
+ *
+ */
+
+/**
+ * Stop FindPhone
+ *
+ *If you want to use this feature, please listen to this notification:
+ *
+ *AM6StopFindPhoneNoti
+ *
+ */
+```
+
+### Reboot device
+
+:::info
+After calling this API, AM6 will be disconnected.
+:::
+
+```java
+/**
+ * rebootDevice
+ * @param success  success
+ * @param fail Communication error codes, see AM6 error descriptions.
+ */
+- (void)rebootDeviceWithSuccess:(DisposeAM6SuccessBlock)success
+                           fail:(DisposeAM6ErrorBlock)fail;
+```
+
+### Get current time of AM6
+
+```java
+/**
+ * Get the current time of the AM6
+ *@param success  You can get data by reading:  deviceTime, is12HoursFormat
+ *@param fail  fail
+ */
+- (void)queryDeviceTimeWithSuccess:(DisposeAM6SuccessBlock)success
+                              fail:(DisposeAM6ErrorBlock)fail;
+```
+
+### Set wearing hand
+
+```java
+/**
+ * setWearHand
+ * @param hand 0x00: left 0x01: right
+ * @param success  success
+ * @param fail Communication error codes, see AM6 error descriptions.
+ */
+- (void)setWearHand:(uint8_t)hand
+            success:(DisposeAM6SuccessBlock)success
+               fail:(DisposeAM6ErrorBlock)fail;
+```
+
+### Get wearing hand
+
+```java
+/**
+ * queryWearHand
+ * @param success wristHand:   0 left 1 right
+ * @param fail Communication error codes, see AM6 error descriptions.
+ */
+- (void)queryWearHandWithSuccess:(DisposeAM6SuccessBlock)success
+                            fail:(DisposeAM6ErrorBlock)fail;
+```
+
+### Set target reminder
+
+```java
+/**
+ * setGoalReminder
+ * @param enable YES：open，NO：close
+ * @param calorie  Calorie Goal (0-65535 Cal)
+ * @param steps  step goal
+ * @param success  success
+ * @param fail Communication error codes, see AM6 error descriptions.
+ */
+- (void)setGoalReminderEnable:(BOOL)enable
+                      calorie:(uint32_t)calorie
+                        steps:(uint32_t)steps
+                      success:(DisposeAM6SuccessBlock)success
+                         fail:(DisposeAM6ErrorBlock)fail;
+```
+
+### Get target reminder
+
+```java
+/**
+ * queryGoalReminder
+ * @param success  :  isActivityGoalOn(YES or NO),caloGoal,stepsGoal
+ * @param fail Communication error codes, see AM6 error descriptions.
+ */
+- (void)queryGoalReminderWithSuccess:(DisposeAM6SuccessBlock)success
+                                fail:(DisposeAM6ErrorBlock)fail;
+```
+
+### Set sedentary reminder
+
+```java
+/**
+ * setStretchReminder
+ * @param enable YES：open，NO：close
+ * @param start  Minute to start (24-hour format, minimum 0 minutes)
+ * @param end  Ending minute (24-hour format, max 1439 minutes)
+ * @param success  success
+ * @param fail Communication error codes, see AM6 error descriptions.
+ */
+- (void)setStretchReminderEnable:(BOOL)enable
+                           start:(NSInteger)start
+                             end:(NSInteger)end
+                         success:(DisposeAM6SuccessBlock)success
+                            fail:(DisposeAM6ErrorBlock)fail;
+```
+
+### Get sedentary reminder
+
+```java
+- (void)setGoalReminderEnable:(BOOL)enable
+                      calorie:(uint32_t)calorie
+                        steps:(uint32_t)steps
+                      success:(DisposeAM6SuccessBlock)success
+                         fail:(DisposeAM6ErrorBlock)fail;
+/**
+ * queryStretchReminder
+ * @param success  : isStretchReminderOn(YES or NO) ,stretchReminderStartTime(24-hour format, minimum 0 minutes),stretchReminderEndTime((24-hour format, max 1439 minutes)
+ * @param fail Communication error codes, see AM6 error descriptions.
+ */
+- (void)queryStretchReminderWithSuccess:(DisposeAM6SuccessBlock)success
+                                   fail:(DisposeAM6ErrorBlock)fail;
+```
+
+### Set raise to light
+
+```java
+/**
+ * setRaiseWake
+ * @param enable YES：open，NO：close
+ * @param start  Minute to start (24-hour format, minimum 0 minutes)
+ * @param end  Ending minute (24-hour format, max 1439 minutes)
+ * @param success  success
+ * @param fail Communication error codes, see AM6 error descriptions.
+ */
+- (void)setRaiseWakeEnable:(BOOL)enable
+                     start:(NSInteger)start
+                       end:(NSInteger)end
+                   success:(DisposeAM6SuccessBlock)success
+                      fail:(DisposeAM6ErrorBlock)fail;
+```
+
+### Get raise to light
+
+```java
+/**
+ * queryRaiseWake
+ * @param success : isRaiseToWakeOn(YES or NO) ,raiseToWakeStartTime (24-hour format, minimum 0 minutes),raiseToWakeEndTime(24-hour format, max 1439 minutes)
+ * @param fail Communication error codes, see AM6 error descriptions.
+ */
+- (void)queryRaiseWakeWithSuccess:(DisposeAM6SuccessBlock)success
+                             fail:(DisposeAM6ErrorBlock)fail;
+```
+
+### Set do not disturb mode
+
+```java
+/**
+ * setNotDisturb
+ * @param enable YES：open，NO：close
+ * @param start  Minute to start (24-hour format, minimum 0 minutes)
+ * @param end  Ending minute (24-hour format, max 1439 minutes)
+ * @param success  success
+ * @param fail Communication error codes, see AM6 error descriptions.
+ */
+- (void)setNotDisturbEnable:(BOOL)enable
+                      start:(NSInteger)start
+                        end:(NSInteger)end
+                    success:(DisposeAM6SuccessBlock)success
+                       fail:(DisposeAM6ErrorBlock)fail;
+
+```
+
+### Get do not disturb mode
+
+```java
+/**
+ * queryNotDisturb
+ * @param success  : isDoNotDisturbOn(YES or NO) ,doNotDisturbStartTime (24-hour format, minimum 0 minutes), doNotDisturbEndTime(24-hour format, max 1439 minutes)
+ * @param fail Communication error codes, see AM6 error descriptions.
+ */
+- (void)queryNotDisturbWithSuccess:(DisposeAM6SuccessBlock)success
+                              fail:(DisposeAM6ErrorBlock)fail;
+```
+
+## How to sync data with AM6
+
+### Prepare sync data   （This API must be called before synchronizing all data）
+
+
+```java
+/**
+ * Prepare the synchronization command. Before synchronizing data, you need to call this command once!!!!
+ * @param success  success
+ * @param fail Communication error codes, see AM6 error descriptions.
+ */
+- (void)prepareSyncWithSuccess:(DisposeAM6SuccessBlock)success
+                          fail:(DisposeAM6ErrorBlock)fail;
+```
+
+### Daily data
+
+:::info
+The daily report is a summary of the data for the day.
+:::
+
+```java
+/**
+ * Sync daily, up to 15 days
+ * @param success  :NSArray<AM6DeviceDailyActivityReportModel*> *reportArray
+ {
+ calorie = 0;
+ dateString = 20340101000000;
+ effectiveStand = 0;
+ functionEnable = 2047;
+ heartRate = 0;
+ heartRateAve = 0;
+ heartRateMax = 0;
+ heartRateMaxTime = 20000000000000;
+ heartRateMin = 0;
+ heartRateMinTime = 20000000000000;
+ heartRateResting = 0;
+ spo2 = 0;
+ steps = 0;
+}
+ * @param fail Communication error codes, see AM6 error descriptions.
+ */
+- (void)syncDailyActivityReportWithSuccess:(DisposeAM6SuccessBlock)success
+                                      fail:(DisposeAM6ErrorBlock)fail;
+```
+### Delete Daily data
+
+```java
+/**
+ * deleteDailyActivityReport
+ * @param success success
+ * @param fail Communication error codes, see AM6 error descriptions.
+ */
+- (void)deleteDailyActivityReportWithSucess:(DisposeAM6SuccessBlock)success
+fail:(DisposeAM6ErrorBlock)fail;
+
+```
+
+###  DailyStepsCalorieDistance
+
+```java
+/**
+ * Synchronize daily records of steps, calories, distance details, up to 15 days, 1 set of values per hour
+ * @param success  :NSArray<AM6DeviceDailyStepModel*> *dailyStepsArray;
+ (   {
+ calorieArray =         (
+     2850............
+ );
+ dateString = 20210704000000;
+ distanceArray =         (
+     2850.............
+ );
+ stepsArray =         (
+     2850.................
+ );
+},
+)
+ * @param fail Communication error codes, see AM6 error descriptions.
+ */
+- (void)syncDailyStepsCalorieDistanceWithSuccess:(DisposeAM6SuccessBlock)success
+                                            fail:(DisposeAM6ErrorBlock)fail;
+```
+
+### Delete DailyStepsCalorieDistance
+
+
+```java
+
+/**
+ * deleteDailyStepsCalorieDistance
+ * @param success success
+ * @param fail Communication error codes, see AM6 error descriptions.
+ */
+- (void)deleteDailyStepsCalorieDistanceWithSucess:(DisposeAM6SuccessBlock)success
+fail:(DisposeAM6ErrorBlock)fail;
+```
+
+### Sleep data
+
+:::info
+
+This API returns sleep detail data in the form of sleep segments. Each sleep segment contains start date and sleep details. The start date starts at 0:00 of the current day. The sleep details include the sleep mode and the start time of this mode.
+For example, a person goes to bed at 2023-06-27 23:11 in the evening and wakes up at 2023-06-28 02:19 o'clock the next morning.
+
+:::
+
+
+```java
+/**
+ * Synchronized sleep, up to 15 days
+ * @param success  :NSArray<AM6DeviceSleepModel*> *sleepArray;
+ (  {
+         dataArray =         (
+                         {
+                 status = 1;//0x01 enter sleep 0x02 light sleep 0x03 deep sleep 0x04 wake up 0x05 exit sleep 0x06 rapid eye movement (REM)
+                 timeString = 2201;
+             },
+         );
+         dateString = 20230204000000;
+     },
+)
+ * @param fail Communication error codes, see AM6 error descriptions.
+ */
+
+- (void)syncSleepWithSuccess:(DisposeAM6SuccessBlock)success
+                        fail:(DisposeAM6ErrorBlock)fail;
+```
+
+### Sleep data
+
+```java
+/**
+ * deleteSleepData
+ * @param success success
+ * @param fail Communication error codes, see AM6 error descriptions.
+ */
+- (void)deleteSleepWithSucess:(DisposeAM6SuccessBlock)success
+fail:(DisposeAM6ErrorBlock)fail;
+
+```
+### Blood oxygen data
+
+```java
+/**
+ * Synchronous offline blood oxygen, 8
+ * @param success  :NSArray<AM6DeviceOffineBloodOxygenModel*> *bloodOxygenArray;
+ (
+ {
+ dateString = 20210704030100;
+ value = 15;
+},
+)
+ * @param fail Communication error codes, see AM6 error descriptions.
+ */
+- (void)syncOfflineBloodOxygenWithSuccess:(DisposeAM6SuccessBlock)success
+                                     fail:(DisposeAM6ErrorBlock)fail;
+```
+
+### Delete Blood oxygen data
+
+```java
+/**
+ * deleteOfflineBloodOxygen
+ * @param success success
+ * @param fail Communication error codes, see AM6 error descriptions.
+ */
+- (void)deleteOfflineBloodOxygenWithSucess:(DisposeAM6SuccessBlock)success
+fail:(DisposeAM6ErrorBlock)fail;
+```
+
+### Daily Heart Rate
+
+
+```java
+
+/**
+ * Synchronize daily heart rate, up to 15 days
+ * @param success  :NSArray<AM6DeviceHeartRateModel*> *dailyHeartRateArray;
+ (
+  {
+         dataArray =         (
+             0..........
+         );
+         dateString = 20210704000000;
+  },
+)
+ * @param fail Communication error codes, see AM6 error descriptions.
+ */
+
+- (void)syncDailyHeartRateWithSuccess:(DisposeAM6SuccessBlock)success
+                                 fail:(DisposeAM6ErrorBlock)fail;
+
+```
+
+### Delete Daily Heart Rate
+
+
+```java
+
+/**
+ * deleteDailyHeartRate
+ * @param success success
+ * @param fail Communication error codes, see AM6 error descriptions.
+ */
+- (void)deleteDailyHeartRateWithSucess:(DisposeAM6SuccessBlock)success
+fail:(DisposeAM6ErrorBlock)fail;
+
+```
+
+
+### Sport Data
+
+
+```java
+
+/**
+ * Synchronize sports data (dotted data and report data)
+ * @param success  :
+ NSArray<AM6DeviceIndoorRun*> *indoorRunArray
+ (
+         {
+         dataArray =         (
+                         {
+                 calorieArray =   (
+                     61,
+                     61,..............
+                      )
+                 dateString = 20200229180100;
+                 distanceArray =  (
+                     28,
+                     28,.................
+                   )
+                        }
+                    )
+         }
+ )
+ NSArray<AM6DeviceIndoorRunReport*> *indoorRunReportArray;
+ (
+         {
+         anaerobicTime = 20;
+         aveHeartRate = 178;
+         bodyEnergyCost = 0;
+         cardioTime = 20;
+         dataType = 0;
+         endDateString = 20200229210100;
+         estimatedRecoveryTime = 0;
+         fatReductionTime = 20;
+         maxHeartRate = 255;
+         maxOxygenUptake = 0;
+         maxPace = 320;
+         maxStepFrequency = 336;
+         minHeartRate = 0;
+         minPace = 400;
+         peakTime = 20;
+         startDateString = 20200229180100;
+         timeZone = 0;
+         totalCalorie = 65535;
+         totalDistance = 30000;
+         totalStep = 60000;
+         totalTime = 10800;
+         trainingEffect = 0;
+         type = 0;
+         typeDescription = 0;
+         version = 0;
+         warnUpTime = 20;
+     },
+)
+ * @param fail Communication error codes, see AM6 error descriptions.
+ */
+- (void)syncSportWithSuccess:(DisposeAM6SuccessBlock)success
+                        fail:(DisposeAM6ErrorBlock)fail;
+
+```
+
+### Delete Sport Data
+
+
+```java
+/**
+ * deleteSport
+ * @param success success
+ * @param fail Communication error codes, see AM6 error descriptions.
+ */
+- (void)deleteSportWithSucess:(DisposeAM6SuccessBlock)success
+fail:(DisposeAM6ErrorBlock)fail;
+
+```
+
+### Delete All Data
+
+
+```java
+/**
+ * deleteAllData
+ * @param success success
+ * @param fail Communication error codes, see AM6 error descriptions.
+ */
+- (void)deleteAllDataWithSuccess:(DisposeAM6SuccessBlock)success
+                            fail:(DisposeAM6ErrorBlock)fail;
+
+```
+
+### Disconnect AM6 connection
+
+
+```java
+/**
+ * Disconnect AM6 connection.
+ * @param success  success
+ * @param fail Communication error codes, see AM6 error descriptions.
+ */
+-(void)commandAM6Disconnect:(DisposeAM6SuccessBlock)success
+                       fail:(DisposeAM6ErrorBlock)fail;
+
+```
