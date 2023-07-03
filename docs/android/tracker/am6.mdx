@@ -421,7 +421,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 
 ```java
 Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
-control.setWearHand();
+control.getWearHand();
 ```
 
 ```java
@@ -467,13 +467,13 @@ control.setTargetRemind(int type, int calorie, int step);
 private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
     @Override
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (Am6Profile.Action_SetWearHand.equals(action)) {
+        if (Am6Profile.Action_SetTargetReminder.equals(action)) {
             try {
                 JSONObject obj = new JSONObject(message);
                 /**
                  * @return result 0: failure; 1: success
                  */
-                int result = obj.getInt(Am6Profile.SetWearHand_Result);
+                int result = obj.getInt(Am6Profile.SetTargetReminder_Result);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -494,7 +494,7 @@ control.getTargetRemind();
 private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
     @Override
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (Am6Profile.Action_GetWearHand.equals(action)) {
+        if (Am6Profile.Action_GetTargetReminder.equals(action)) {
             try {
                 JSONObject obj = new JSONObject(message);
 
@@ -754,16 +754,19 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 }
 ```
 
-### Set do not disturb mode
+### Set alarm clock
 
 ```java
 Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
+
+Am6Command.AlarmClockInfo info = new Am6Command.AlarmClockInfo();
+info.ts = 600;      // This is the minute from the day starts, such as 10:10 am, it is 60 * 10 + 10.
+info.isOpen = true; // is open or close.
+info.week = new int[]{1, 1, 1, 1, 1, 1, 1}; //whick day is repeat, the array format is [sun, mon, tus, wed, thur, fri, sat]. 1 means repeat; 0 means don't.
 /**
- * @param type 0: close; 1: open
- * @param start
- * @param end
+ * @param info
  */
-control.setDoNotDisturbMode(int enable, int start, int end);
+control.setAlarmClockList(Am6Command.AlarmClockInfo info);
 ```
 
 ```java
@@ -771,13 +774,13 @@ control.setDoNotDisturbMode(int enable, int start, int end);
 private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
     @Override
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (Am6Profile.Action_SetDoNotDisturb.equals(action)) {
+        if (Am6Profile.Action_SetAlarmClockList.equals(action)) {
             try {
                 JSONObject obj = new JSONObject(message);
                 /**
                  * @return result 0: failure; 1: success
                  */
-                int result = obj.getInt(Am6Profile.SetDoNotDisturb_Result);
+                int result = obj.getInt(Am6Profile.SetAlarmClockList_Status);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -786,11 +789,11 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 }
 ```
 
-### Get do not disturb mode
+### Get alarm clock
 
 ```java
 Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
-control.getDoNotDisturbMode();
+control.getAlarmClockList();
 ```
 
 ```java
@@ -798,29 +801,29 @@ control.getDoNotDisturbMode();
 private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
     @Override
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (Am6Profile.Action_GetDoNotDisturb.equals(action)) {
+        if (Am6Profile.GetAlarmClockList_List.equals(action)) {
             try {
                 JSONObject obj = new JSONObject(message);
 
                 /**
                  * @return result 0: failure; 1: success
                  */
-                int result = obj.getInt(Am6Profile.GetDoNotDisturb_Result);
+                int status = obj.getInt(Am6Profile.GetAlarmClockList_Status);
 
                 /**
                  * @return enable 0: close; 1: open
                  */
-                int enable = obj.getInt(Am6Profile.GetDoNotDisturb_Enable);
+                int enable = obj.getInt(Am6Profile.GetAlarmClockList_Enable);
                 
                 /**
-                 * @return start
+                 * @return time This is the minute from the day starts, such as 10:10 am, it is 60 * 10 + 10.
                  */
-                int start = obj.getLong(Am6Profile.GetDoNotDisturb_StartTime);
+                int time = obj.getInt(Am6Profile.GetAlarmClockList_Time);
 
                 /**
-                 * @return stop
+                 * @return week //whick day is repeat, the array format is [sun, mon, tus, wed, thur, fri, sat]. 1 means repeat; 0 means don't.
                  */
-                int stop = obj.getLong(Am6Profile.GetDoNotDisturb_EndTime);
+                JSONArray week = obj.getJSONArray(Am6Profile.GetAlarmClockList_Week);
 
             } catch (JSONException e) {
                 e.printStackTrace();
