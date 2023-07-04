@@ -835,6 +835,40 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 
 ## How to sync data with AM6
 
+### Ready to sync data
+
+:::info
+
+Before synchronizing data each time, it is recommended to notify Am6 to prepare for synchronizing data, which will ensure that there is no error between the transmitted data and the table display data
+
+:::
+
+```java
+Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
+control.readySyncData();
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Am6Profile.Action_ReadySyncData.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                /**
+                 * @return result 0: failure; 1: success
+                 */
+                int result = obj.getInt(Am6Profile.ReadySyncData_Status);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    } 
+}
+```
+
 ### Daily data
 
 :::info
@@ -897,6 +931,46 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 }
 ```
 
+### Step Data
+
+:::info
+
+The data is counted every hour. The data includes steps, calories, and distance.
+
+:::
+
+```java
+Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
+control.getStepData();
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Am6Profile.Action_GetStepData.equals(action)) {
+            try {
+                JSONArray arr = new JSONArray(message);
+                for (JSONObject obj : arr) {
+                    
+                    // The start time of this day, date format is "yyyy-MM-DD HH:MM:SS"
+                    String date = obj.getString(Am6Profile.GetStepData_Date);
+                    
+                    JSONArray array = obj.getJSONArray(Am6Profile.GetStepData_List);
+                    for (JSONObject o: array) {
+                        int step = obj.getInt(Am6Profile.GetStepData_Step);
+                        int calorie = obj.getInt(Am6Profile.GetStepData_Calorie);
+                        int distance = obj.getInt(Am6Profile.GetStepData_Distance);
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    } 
+}
+```
 
 ### Sleep data
 
@@ -965,6 +1039,47 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 }
 ```
 
+### Heart rate data
+
+:::info
+
+The data is counted every 5 minutes. The data includes heart rate data.
+
+:::
+
+```java
+Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
+control.getStepData();
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Am6Profile.Action_GetStepData.equals(action)) {
+            try {
+                JSONArray arr = new JSONArray(message);
+                for (JSONObject obj : arr) {
+                    
+                    // The start time of this day, date format is "yyyy-MM-DD HH:MM:SS"
+                    String date = obj.getString(Am6Profile.GetStepData_Date);
+                    
+                   
+                    JSONArray array = obj.getJSONArray(Am6Profile.GetHeartRateData_List);
+                    for (JSONObject o: array) {
+                         // The value of heart rate
+                        int heartRate = obj.getInt(Am6Profile.GetHeartRateData_HeartRate);
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    } 
+}
+```
+
 ### Blood oxygen data
 
 ```java
@@ -1017,6 +1132,49 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
                  */
                 int result = obj.getInt(Am6Profile.DeleteData_Result);
 
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    } 
+}
+```
+
+### Ready to sync data
+
+:::warning
+
+Please ensure that the data is complete, and call the delete data API carefully
+
+:::
+
+```java
+Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
+/**
+ * @param num 0x0: step and calorie data; 
+              0x1: sleep data; 
+              0x2: heart rate data; 
+              0x4: blood oxygen data; 
+              0x8: daily data; 
+              0x10: activity data;
+              0x80000: All data
+ */
+control.deleteData(int num);
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Am6Profile.Action_DeleteData.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                /**
+                 * @return result 0: failure; 1: success
+                 */
+                int result = obj.getInt(Am6Profile.DeleteData_Result);
+                
             } catch (JSONException e) {
                 e.printStackTrace();
             }
