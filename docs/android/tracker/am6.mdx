@@ -328,6 +328,15 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
         if (Am6Profile.Action_FindDevice.equals(action)) {
             Log.i("", "Find device");
+            try {
+                JSONObject obj = new JSONObject(message);
+                /*
+                 * 0: failure, 1: success
+                 */
+                int status = obj.getInt(Am6Profile.FindDevice_Status);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     } 
 }
@@ -345,7 +354,16 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
     @Override
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
         if (Am6Profile.Action_FindPhone.equals(action)) {
-            Log.i("", "Find phone")
+            Log.i("", "Find phone");
+            try {
+                JSONObject obj = new JSONObject(message);
+                /*
+                 * 0: failure, 1: success
+                 */
+                int status = obj.getInt(Am6Profile.FindPhone_Status);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     } 
 }
@@ -1103,34 +1121,6 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
                     int bloodOxygen = obj.getInt(Am6Profile.GetBloodOxygenData_BloodOxygen);
                     
                 }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
-```
-
-### Delete history data
-
-```java
-Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
-control.deleteData();
-```
-
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (Am6Profile.Action_DeleteData.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                /**
-                 * @return result 0: failure; 1: success
-                 */
-                int result = obj.getInt(Am6Profile.DeleteData_Result);
-
             } catch (JSONException e) {
                 e.printStackTrace();
             }
