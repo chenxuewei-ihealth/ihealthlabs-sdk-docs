@@ -532,8 +532,8 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
 /**
  * @param type 0: close; 1: open
- * @param start
- * @param end
+ * @param start This is the minute from the day starts, such as 10:10 am, it is 60 * 10 + 10
+ * @param end   This is the minute from the day starts, such as 10:10 am, it is 60 * 10 + 10
  */
 control.setSedentaryRemind(int enable, int start, int end);
 ```
@@ -608,8 +608,8 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
 /**
  * @param enable 0: close; 1: open
- * @param start
- * @param end
+ * @param start This is the minute from the day starts, such as 10:10 am, it is 60 * 10 + 10
+ * @param end   This is the minute from the day starts, such as 10:10 am, it is 60 * 10 + 10
  */
 control.setRaiseToLight(int enable, int start, int end);
 ```
@@ -684,8 +684,8 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
 /**
  * @param type 0: close; 1: open
- * @param start
- * @param end
+ * @param start This is the minute from the day starts, such as 10:10 am, it is 60 * 10 + 10
+ * @param end   This is the minute from the day starts, such as 10:10 am, it is 60 * 10 + 10
  */
 control.setDoNotDisturbMode(int enable, int start, int end);
 ```
@@ -837,7 +837,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 
 ### Ready to sync data
 
-:::info
+:::warning important
 
 Before synchronizing data each time, it is recommended to notify Am6 to prepare for synchronizing data, which will ensure that there is no error between the transmitted data and the table display data
 
@@ -1049,7 +1049,7 @@ The data is counted every 5 minutes. The data includes heart rate data.
 
 ```java
 Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
-control.getStepData();
+control.getHeartRateData();
 ```
 
 ```java
@@ -1057,18 +1057,17 @@ control.getStepData();
 private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
     @Override
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (Am6Profile.Action_GetStepData.equals(action)) {
+        if (Am6Profile.Action_GetHeartRateData.equals(action)) {
             try {
                 JSONArray arr = new JSONArray(message);
                 for (JSONObject obj : arr) {
                     
                     // The start time of this day, date format is "yyyy-MM-DD HH:MM:SS"
-                    String date = obj.getString(Am6Profile.GetStepData_Date);
-                    
+                    String date = obj.getString(Am6Profile.GetHeartRateData_Date);
                    
                     JSONArray array = obj.getJSONArray(Am6Profile.GetHeartRateData_List);
                     for (JSONObject o: array) {
-                         // The value of heart rate
+                        // The value of heart rate
                         int heartRate = obj.getInt(Am6Profile.GetHeartRateData_HeartRate);
                     }
                 }
@@ -1140,7 +1139,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 }
 ```
 
-### Ready to sync data
+### Delete data
 
 :::warning
 
