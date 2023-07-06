@@ -844,9 +844,9 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
 
 Am6Command.AlarmClockInfo info = new Am6Command.AlarmClockInfo();
-info.ts = 600;      // This is the minute from the day starts, such as 10:10 am, it is 60 * 10 + 10.
+info.ts = 600;      // This is the minute from the day starts, such as 10:10 am, it is 60 * 10 + 10, the range is 0 ~ 1440
 info.isOpen = true; // is open or close.
-info.week = new int[]{1, 1, 1, 1, 1, 1, 1}; //whick day is repeat, the array format is [sun, mon, tus, wed, thur, fri, sat]. 1 means repeat; 0 means don't.
+info.week = new int[]{true, true, true ,true, true, true, true}; //whick day is repeat, the array format is [sun, mon, tus, wed, thur, fri, sat]. true means repeat; false means don't.
 /**
  * @param info
  */
