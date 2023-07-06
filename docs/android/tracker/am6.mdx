@@ -823,12 +823,12 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
                 /**
                  * @return start
                  */
-                int start = obj.getLong(Am6Profile.GetDoNotDisturb_StartTime);
+                int start = obj.getInt(Am6Profile.GetDoNotDisturb_StartTime);
 
                 /**
                  * @return stop
                  */
-                int stop = obj.getLong(Am6Profile.GetDoNotDisturb_EndTime);
+                int stop = obj.getInt(Am6Profile.GetDoNotDisturb_EndTime);
 
             } catch (JSONException e) {
                 e.printStackTrace();
