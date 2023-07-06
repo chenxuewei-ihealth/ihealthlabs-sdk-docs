@@ -99,6 +99,15 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
         if (Am6Profile.Action_BindUserSuccess.equals(action)) {
             Log.i("", "Bind user success");
+        
+        } else if (OtherDeviceProfile.ACTION_ERROR.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                int errorId = obj.getInt(OtherDeviceProfile.ERROR_NUM);
+                int errorMessage = obj.getInt(OtherDeviceProfile.ERROR_DESCRIPTION);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     } 
 }
@@ -141,6 +150,15 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
         if (Am6Profile.Action_UnbindUser.equals(action)) {
             Log.i("", "Unbind user");
+
+        } else if (OtherDeviceProfile.ACTION_ERROR.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                int errorId = obj.getInt(OtherDeviceProfile.ERROR_NUM);
+                int errorMessage = obj.getInt(OtherDeviceProfile.ERROR_DESCRIPTION);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     } 
 }
@@ -196,9 +214,9 @@ Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMa
 /**
  * @param userId must be a 16 character string
  * @param gender 0: male, 1: female
- * @param age    
- * @param height unit is cm
- * @param weight unit is kg
+ * @param age 0 ~ 100
+ * @param height unit is cm 50 ~ 255
+ * @param weight unit is kg 10 ~ 300
  */
 control.setUserInfo(String userId, int gender, int age, int height, float weight);
 ```
@@ -216,6 +234,14 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
                  * 0: failure, 1: success
                  */
                 int result = obj.getInt(Am6Profile.SetUser_Result);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } 
+        } else if (OtherDeviceProfile.ACTION_ERROR.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                int errorId = obj.getInt(OtherDeviceProfile.ERROR_NUM);
+                int errorMessage = obj.getInt(OtherDeviceProfile.ERROR_DESCRIPTION);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -334,6 +360,14 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
                  * 0: failure, 1: success
                  */
                 int status = obj.getInt(Am6Profile.FindDevice_Status);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } else if (OtherDeviceProfile.ACTION_ERROR.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                int errorId = obj.getInt(OtherDeviceProfile.ERROR_NUM);
+                int errorMessage = obj.getInt(OtherDeviceProfile.ERROR_DESCRIPTION);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -474,8 +508,8 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
 /**
  * @param type 0: close; 1: open
- * @param calorie
- * @param step
+ * @param calorie 0 ~ 65535
+ * @param step 0 ~ 65534
  */
 control.setTargetRemind(int type, int calorie, int step);
 ```
@@ -492,6 +526,14 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
                  * @return result 0: failure; 1: success
                  */
                 int result = obj.getInt(Am6Profile.SetTargetReminder_Result);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } else if (OtherDeviceProfile.ACTION_ERROR.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                int errorId = obj.getInt(OtherDeviceProfile.ERROR_NUM);
+                int errorMessage = obj.getInt(OtherDeviceProfile.ERROR_DESCRIPTION);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -550,8 +592,8 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
 /**
  * @param type 0: close; 1: open
- * @param start This is the minute from the day starts, such as 10:10 am, it is 60 * 10 + 10
- * @param end   This is the minute from the day starts, such as 10:10 am, it is 60 * 10 + 10
+ * @param start This is the minute from the day starts, such as 10:10 am, it is 60 * 10 + 10, the range is 0 ~ 1440
+ * @param end   This is the minute from the day starts, such as 10:10 am, it is 60 * 10 + 10, the range is 0 ~ 1440
  */
 control.setSedentaryRemind(int enable, int start, int end);
 ```
@@ -568,6 +610,14 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
                  * @return result 0: failure; 1: success
                  */
                 int result = obj.getInt(Am6Profile.SetSedentaryReminder_Result);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } else if (OtherDeviceProfile.ACTION_ERROR.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                int errorId = obj.getInt(OtherDeviceProfile.ERROR_NUM);
+                int errorMessage = obj.getInt(OtherDeviceProfile.ERROR_DESCRIPTION);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -626,8 +676,8 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
 /**
  * @param enable 0: close; 1: open
- * @param start This is the minute from the day starts, such as 10:10 am, it is 60 * 10 + 10
- * @param end   This is the minute from the day starts, such as 10:10 am, it is 60 * 10 + 10
+ * @param start This is the minute from the day starts, such as 10:10 am, it is 60 * 10 + 10, the range is 0 ~ 1440
+ * @param end   This is the minute from the day starts, such as 10:10 am, it is 60 * 10 + 10, the range is 0 ~ 1440
  */
 control.setRaiseToLight(int enable, int start, int end);
 ```
@@ -644,6 +694,14 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
                  * @return result 0: failure; 1: success
                  */
                 int result = obj.getInt(Am6Profile.SetRaiseToLight_Result);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } else if (OtherDeviceProfile.ACTION_ERROR.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                int errorId = obj.getInt(OtherDeviceProfile.ERROR_NUM);
+                int errorMessage = obj.getInt(OtherDeviceProfile.ERROR_DESCRIPTION);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -702,8 +760,8 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
 /**
  * @param type 0: close; 1: open
- * @param start This is the minute from the day starts, such as 10:10 am, it is 60 * 10 + 10
- * @param end   This is the minute from the day starts, such as 10:10 am, it is 60 * 10 + 10
+ * @param start This is the minute from the day starts, such as 10:10 am, it is 60 * 10 + 10, the range is 0 ~ 1440
+ * @param end   This is the minute from the day starts, such as 10:10 am, it is 60 * 10 + 10, the range is 0 ~ 1440
  */
 control.setDoNotDisturbMode(int enable, int start, int end);
 ```
@@ -720,6 +778,14 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
                  * @return result 0: failure; 1: success
                  */
                 int result = obj.getInt(Am6Profile.SetDoNotDisturb_Result);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } else if (OtherDeviceProfile.ACTION_ERROR.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                int errorId = obj.getInt(OtherDeviceProfile.ERROR_NUM);
+                int errorMessage = obj.getInt(OtherDeviceProfile.ERROR_DESCRIPTION);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -1146,7 +1212,7 @@ Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMa
               0x4: blood oxygen data; 
               0x8: daily data; 
               0x10: activity data;
-              0x80000: All data
+              0x8000: All data
  */
 control.deleteData(int num);
 ```
@@ -1171,4 +1237,12 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
     } 
 }
 ```
+
+## Error Message
+
+:::warning Error
+|  Error Id | Error Message |
+| ---- | ---- |
+| 1003 | InputParameterError |
+:::
 
