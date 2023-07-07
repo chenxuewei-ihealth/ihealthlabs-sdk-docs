@@ -135,8 +135,8 @@ Am6 enters the binding state.
  *@param userId we recommend use user id's md5-16 value, 16 bytes length
  *@param gender 0: male 1: female
  *@param age  age
- *@param height height, in cm
- *@param weight Weight, in kg
+ *@param height height, in cm  115-200(Please set strictly according to this range, and the data beyond the range will be assigned according to the upper and lower limits.)
+ *@param weight Weight, in kg  25-250(Please set strictly according to this range, and the data beyond the range will be assigned according to the upper and lower limits.)
  *@param success  success
  *@param fail  fail
  */
@@ -292,7 +292,7 @@ After calling this API, AM6 will be disconnected.
  * setGoalReminder
  * @param enable YES：open，NO：close
  * @param calorie  Calorie Goal (0-65535 Cal)
- * @param steps  step goal
+ * @param steps  step goal(0-65534)
  * @param success  success
  * @param fail Communication error codes, see AM6 error descriptions.
  */
@@ -409,6 +409,46 @@ After calling this API, AM6 will be disconnected.
  */
 - (void)queryNotDisturbWithSuccess:(DisposeAM6SuccessBlock)success
                               fail:(DisposeAM6ErrorBlock)fail;
+```
+
+### Set Alarm
+
+```java
+/**
+ * setAlartList
+ * @param alarmArray AM6AlarmModel Array
+ 
+AM6AlarmModel 
+// Switch Status
+@property (assign, nonatomic) BOOL isOn;
+
+/// Alarm Repeat Mode, randge: 0x00~0x7F, bit0-bit6 refer to Sunday to Staturday, 1: repeat 0: not repeat. For example, 0x41(0100 0001) means repeat at weekends, 0x3E(0011 1110) means repeat on weekdays and 0x00(0000 00000) means no repeat.
+@property (assign, nonatomic) uint8_t repeatMode;
+
+/// Only hour and minute Available
+@property (assign, nonatomic) struct AM6DateStruct date;
+- (nullable NSData*)commandData;
+- (instancetype)initWithData:(NSData*)data;
+
+ * @param success  success
+ * @param fail Communication error codes, see AM6 error descriptions.
+ */
+- (void)setAlartList:(NSArray<AM6AlarmModel*> *)alarmArray
+             success:(DisposeAM6SuccessBlock)success
+                fail:(DisposeAM6ErrorBlock)fail;
+
+```
+### Get Alarm
+
+```java
+/**
+ * queryAlarmList
+ * @param success  alarmList(AM6AlarmModel)
+ * @param fail Communication error codes, see AM6 error descriptions.
+ */
+- (void)queryAlarmListWithSuccess:(DisposeAM6SuccessBlock)success
+                             fail:(DisposeAM6ErrorBlock)fail;
+
 ```
 
 ## How to sync data with AM6
