@@ -1206,12 +1206,12 @@ Please ensure that the data is complete, and call the delete data API carefully
 ```java
 Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
 /**
- * @param num 0x0: step and calorie data; 
-              0x1: sleep data; 
-              0x2: heart rate data; 
-              0x4: blood oxygen data; 
-              0x8: daily data; 
-              0x10: activity data;
+ * @param num 0x1: step and calorie data; 
+              0x2: sleep data; 
+              0x4: heart rate data; 
+              0x8: blood oxygen data; 
+              0x10: daily data; 
+              0x20: activity data;
               0x8000: All data
  */
 control.deleteData(int num);
