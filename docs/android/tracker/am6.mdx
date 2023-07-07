@@ -4,7 +4,7 @@ sidebar_position: 5
 ---
 
 :::info
-1. AM6 is a low-power activity tracker. It can track acticity, sleep, heart rate and Blood oxygen.
+1. AM6 is a low-power activity tracker. It can track activity, sleep, heart rate and Blood oxygen.
 2. First use requires charging until the dial of watch displays a QR code.
 3. After the user successfully bound, AM6 will enter the dial activity UI, if the user unbound will return to the QR code UI.
 :::
@@ -846,7 +846,7 @@ Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMa
 Am6Command.AlarmClockInfo info = new Am6Command.AlarmClockInfo();
 info.ts = 600;      // This is the minute from the day starts, such as 10:10 am, it is 60 * 10 + 10, the range is 0 ~ 1440
 info.isOpen = true; // is open or close.
-info.week = new int[]{true, true, true ,true, true, true, true}; //whick day is repeat, the array format is [sun, mon, tus, wed, thur, fri, sat]. true means repeat; false means don't.
+info.week = new boolean[]{true, true, true ,true, true, true, true}; //whick day is repeat, the array format is [sun, mon, tus, wed, thur, fri, sat]. true means repeat; false means don't.
 /**
  * @param info
  */
@@ -1185,6 +1185,116 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
                     
                     // The value of blood oxygen
                     int bloodOxygen = obj.getInt(Am6Profile.GetBloodOxygenData_BloodOxygen);
+                    
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    } 
+}
+```
+
+### Activity data
+
+```java
+Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
+control.getBloodOxygenData();
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Am6Profile.Action_GetBloodOxygenData.equals(action)) {
+            try {
+                JSONObject object = new JSONObject(message);
+                
+                // Activity point data
+                JSONArray pointArr = object.getJSONArray();
+                for (JSONObject obj : pointArr) {
+                    
+                    // The start time of activity
+                    String date = obj.getString(Am6Profile.GetActivityData_Date);
+                    
+                    JSONArray itemArr = obj.getJSONArray(Am6Profile.GetActivityData_List);
+
+                    // A data point is generated every 10 seconds
+                    for (JSONObject o : itemArr) {                       
+                        int calorie = obj.getInt(Am6Profile.GetActivityData_Calorie);
+                        int step = obj.getInt(Am6Profile.GetActivityData_Step);
+                        int heartRate = obj.getInt(Am6Profile.GetActivityData_HeartRate);                  
+                        int distance = obj.getInt(Am6Profile.GetActivityData_Distance);
+                    }
+                }
+
+                // activity daily report
+                JSONArray reportArr = object.getJSONArray();
+                for (JSONObject obj : reportArr) {
+                    
+                    // The start time of activity, date format is "yyyy-MM-DD HH:MM:SS" 
+                    String startTime = obj.getString(Am6Profile.GetActivityData_StartDate);
+                    
+                    // The end time of activity, date format is "yyyy-MM-DD HH:MM:SS" 
+                    String endTime = obj.getString(Am6Profile.GetActivityData_EndDate);
+
+                    // The total time of activity, the unit is second
+                    int totalTime = obj.getInt(Am6Profile.GetActivityData_TotalTime);
+
+                    // The total distance of activity, the unit is meter
+                    int totalDistance = obj.getInt(Am6Profile.GetActivityData_TotalDistance);
+
+                    // The total calorie of activity, the unit is meter
+                    int totalCalorie = obj.getInt(Am6Profile.GetActivityData_TotalCalorie);
+
+                    // The total step of activity
+                    int totalStep = obj.getInt(Am6Profile.GetActivityData_TotalStep);
+
+                    // The max running pace, the unit is second / 100 meter
+                    int maxPace = obj.getInt(Am6Profile.GetActivityData_MaxPace);
+
+                    // The min running pace, the unit is second / 100 meter
+                    int minPace = obj.getInt(Am6Profile.GetActivityData_MinPace);
+
+                    // The max freguency of step
+                    int maxStepFrequency = obj.getInt(Am6Profile.GetActivityData_MaxStepFrequency);
+
+                    // The average heart rate
+                    int aveHeartRate = obj.getInt(Am6Profile.GetActivityData_AveHeartRate);
+
+                    // The max heart rate
+                    int maxHeartRate = obj.getInt(Am6Profile.GetActivityData_MaxHeartRate);
+
+                    // The min heart rate
+                    int minHeartRate = obj.getInt(Am6Profile.GetActivityData_MinHeartRate);
+
+                    // The training effect
+                    int training = obj.getInt(Am6Profile.GetActivityData_TrainingEffect);
+
+                    // The max oxygen uptake, the unit is milliliter/minute
+                    int maxOxygenUpdake = obj.getInt(Am6Profile.GetActivityData_MaxOxygenUptake);
+
+                    // The body energy expenditure, the range is 0 ~ 100
+                    int bodyCost = obj.getInt(Am6Profile.GetActivityData_BodyEnergyCost);
+
+                    // The estimated recovery time
+                    int recoveryTime = obj.getInt(Am6Profile.GetActivityData_EstimatedRecoveryTime);
+
+                    // The ultimate heart rate duration, the unit is second
+                    int peakTime = obj.getInt(Am6Profile.GetActivityData_PeakTime);
+
+                    // The anaerobic endurance duration, the unit is second
+                    int anaerobicTime = obj.getInt(Am6Profile.GetActivityData_AnaerobicTime);
+
+                    // The aerobic endurance duration, the unit is second
+                    int cardioTime = obj.getInt(Am6Profile.GetActivityData_CardioTime);
+
+                    // The fat burning duration, the unit is second
+                    int fatReductionTime = obj.getInt(Am6Profile.GetActivityData_FatReductionTime);
+
+                    // The warm up time, the unit is secode
+                    int warmUpTime = obj.getInt(Am6Profile.GetActivityData_WarmUpTime);
                     
                 }
             } catch (JSONException e) {
