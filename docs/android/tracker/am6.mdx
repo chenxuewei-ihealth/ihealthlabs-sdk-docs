@@ -1207,7 +1207,7 @@ control.getActivityData();
 private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
     @Override
     public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (Am6Profile.Action_GetBloodOxygenData.equals(action)) {
+        if (Am6Profile.Action_GetActivityData.equals(action)) {
             try {
                 JSONObject object = new JSONObject(message);
                 
