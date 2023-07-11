@@ -17,7 +17,12 @@ sidebar_position: 5
 int callbackId = iHealthDevicesManager.getInstance().registerClientCallback(new iHealthDevicesCallback() {
     
     @Override
-    public void onScanDevice(String mac, String deviceType, int rssi, Map manufactorData) { }
+    public void onScanDevice(String mac, String deviceType, int rssi, Map manufactorData) {
+        if ((manufacturerData != null) && (manufacturerData.get("isBound") != null)) {
+            boolean isBound = (boolean) manufacturerData.get("isBound");
+            Log.i(TAG,"isBound AM6 - " + isBound);
+        }
+    }
 
     @Override
     public void onDeviceConnectionStateChange(String mac, String deviceType, int status, int errorID, Map manufactorData) { }
