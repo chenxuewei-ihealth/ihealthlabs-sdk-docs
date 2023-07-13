@@ -4,7 +4,7 @@ sidebar_position: 5
 ---
 
 :::info
-1. AM6 is a low-power activity tracker. It can track acticity, sleep, heart rate and Blood oxygen.
+1. AM6 is a low-power activity tracker. It can track activity, sleep, heart rate and Blood oxygen.
 2. First use requires charging until the dial of watch displays a QR code.
 3. After the user successfully bound, AM6 will enter the dial activity UI, if the user unbound will return to the QR code UI.
 :::
@@ -14,16 +14,69 @@ sidebar_position: 5
 ### 1.Listen to device notify  and init
 
 ```java
+
+/**
+ AM6Discover
+ {
+     BindStatus = 0;           //0: The watch is not bound (QR code state) 1: The watch is bound (normal state)
+     DeviceName = "AM6 1BD2DB";
+     RSSI = "-64";
+     SerialNumber = 004D321BD2DB;
+ }
+ */
+
 [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(DeviceDiscover:) name:AM6Discover object:nil];
-            
+/**
+ AM6ConnectFailed
+{
+    AM6ConnectErrorID = 2;
+    ID = "0A757F50-1508-A265-FCC6-8278888FDC4F";
+    ProtocolString = "com.jiuan.AM6V10";
+    SerialNumber = 004D321BD2DE;
+}
+
+typedef NS_ENUM(NSUInteger, AM6DeviceConnectError) {
+    /// Communication error
+    AM6DeviceConnectError_OverTime = 0,
+    /// You did not receive a response within a certain period of time, usually clogged Bluetooth
+    AM6DeviceConnectError_NoRespond,
+    ///AuthError
+    AM6DeviceConnectError_AuthError,
+    ///AuthKeyError
+    AM6DeviceConnectError_AuthKeyError,
+    /// AM disconnect
+    AM6DeviceConnectError_Disconnect,
+};
+ */       
 [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(DeviceConnectFail:) name:AM6ConnectFailed object:nil];
+
+
+/**
+ AM6ConnectNoti
+{
+    DeviceName = AM6;
+    ID = "0A757F50-1508-A265-FCC6-8278888FDC4F";
+    ProtocolString = "com.jiuan.AM6V10";
+    SerialNumber = 004D321BD2DE;
+}
+ */
             
 [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(DeviceConnect:) name:AM6ConnectNoti object:nil];
+
+/**
+ AM6DisConnectNoti
+{
+    DeviceName = AM6;
+    ProtocolString = "com.jiuan.AM6V10";
+    SerialNumber = 004D321BD2DE;
+}
+ */
             
 [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(DeviceDisConnect:) name:AM6DisConnectNoti object:nil];
 
- [AM6Controller shareAM6Controller];
-            
+/**
+Please initialize the Am6 configuration before scanning the device, otherwise the connection cannot be successfully scanned.
+ */         
  [[AM6Controller shareAM6Controller] configAM6DeviceBleParameters];
 ```
 
@@ -36,7 +89,10 @@ sidebar_position: 5
 ### 3.Connect to AM6 devices
 
 ```java
-[[ConnectDeviceController commandGetInstance] commandContectDeviceWithDeviceType:HealthDeviceType_AM5 andSerialNub:deviceMac];
+
+///deviceMac is the mac of Am6, which can be obtained from the successful connection notification dictionary key is SerialNumber,
+
+[[ConnectDeviceController commandGetInstance] commandContectDeviceWithDeviceType:HealthDeviceType_AM6 andSerialNub:deviceMac];
 ```
 
 ## API reference
@@ -45,9 +101,9 @@ sidebar_position: 5
 
 :::info
 1. AM6 is used for the first time or is in an unbound state, and AM6 displays a QR code.
-2. Call the API bindUser, AM6 enters the binding state.
-3. Call the API bindUserSuccess and pass user id to AM6, AM6 will save user id, and then wiil display UI of successful binding.
-4. Call the API bindUserFail, AM6 will display UI of failure binding, and then fall back to UI of OR code.
+2. Call the API sendStartBindWithSuccess, AM6 enters the binding state.
+3. Call the API sendSuccessBindWithUserId and pass user id to AM6, AM6 will save user id, and then wiil display UI of successful binding.
+4. Call the API sendFailBindWithSuccess, AM6 will display UI of failure binding, and then fall back to UI of OR code.
 :::
 
 ![am6 binding](/am6_binding.png)
@@ -59,7 +115,7 @@ Am6 enters the binding state.
 ```java
 /**
  * App sends StartBind to device
- *@param success  success
+ *@param success  After calling this API, AM6 will display the pairing interface
  *@param fail  fail
  */
 - (void)sendStartBindWithSuccess:(DisposeAM6SuccessBlock)success
@@ -72,7 +128,7 @@ Am6 enters the binding state.
 /**
  * The app sends the binding success to the device
  *@param userId   we recommend use user id's md5-16 value, 16 bytes length
- *@param success  success
+ *@param success  After calling this API, AM6 will display the binding successful interface
  *@param fail  fail
  */
 - (void)sendSuccessBindWithUserId:(NSData*)userId
@@ -85,7 +141,7 @@ Am6 enters the binding state.
 ```java
 /**
  * The app sends the binding fail to the device
- *@param success  success
+ *@param success  After calling this API, AM6 will display the binding fail interface
  *@param fail  fail
  */
 - (void)sendFailBindWithSuccess:(DisposeAM6SuccessBlock)success
@@ -113,6 +169,9 @@ Am6 enters the binding state.
 ```java
 /**
  * Query device information and synchronize time to the device
+ *
+ *The device must call this API every time it is connected, so that the latest time can be synchronized to AM6.
+ *
  *@param success  You can get data by reading:  battery, isCharging,firmwareVersion,hardwareVersion,bindStatus
  *{
  * Battery = 100;   Power 0-100
@@ -132,11 +191,12 @@ Am6 enters the binding state.
 ```java
 /**
  * Set user info
+ * Setting user information to AM6 is to calculate parameters such as step length, exercise sleep and so on.
  *@param userId we recommend use user id's md5-16 value, 16 bytes length
  *@param gender 0: male 1: female
  *@param age  age
- *@param height height, in cm  115-200(Please set strictly according to this range, and the data beyond the range will be assigned according to the upper and lower limits.)
- *@param weight Weight, in kg  25-250(Please set strictly according to this range, and the data beyond the range will be assigned according to the upper and lower limits.)
+ *@param height height, in cm  1-255(Please set strictly according to this range, and the data beyond the range will be assigned according to the upper and lower limits.)
+ *@param weight Weight, in kg  1-300(Please set strictly according to this range, and the data beyond the range will be assigned according to the upper and lower limits.)
  *@param success  success
  *@param fail  fail
  */
@@ -147,7 +207,8 @@ Am6 enters the binding state.
                           weight:(double)weight
                          success:(DisposeAM6SuccessBlock)success
                             fail:(DisposeAM6ErrorBlock)fail;
-```
+
+
 
 
 ## Set Notification 
@@ -161,11 +222,15 @@ Before setting nofication information, please set the mobile platform type.
 ```java
 /**
  * Set platform to iOS
- * @param success  success
+ * @param success  The platform is set so that AM6 can normally receive notifications on the phone.After calling this API, the system will pop up a pop-up window asking whether to pair uniformly. If you choose to agree, then AM6 will perform Bluetooth pairing with the mobile phone, and next time AM6 will automatically connect to the mobile phone via Bluetooth. If you choose not to agree, then the AM6 and mobile phone Bluetooth will not be automatically connected.
  * @param fail Communication error codes, see AM6 error descriptions.
  */
 - (void)setPlatformWithSuccess:(DisposeAM6SuccessBlock)success
                           fail:(DisposeAM6ErrorBlock)fail;
+```
+### Query notification switch
+
+```java
 /**
  * Query notification switch
  * @param success   notificationEnable    0:close 1:open
@@ -173,6 +238,10 @@ Before setting nofication information, please set the mobile platform type.
  */
 - (void)queryNotificationStateWithSuccess:(DisposeAM6SuccessBlock)success
                                      fail:(DisposeAM6ErrorBlock)fail;
+
+```
+### Set notification switch
+```java
 /**
  * Set notification switch
  * @param enable YES：open  NO：close
@@ -182,9 +251,15 @@ Before setting nofication information, please set the mobile platform type.
 - (void)setNotificationStatus:(BOOL)enable
                       success:(DisposeAM6SuccessBlock)success
                          fail:(DisposeAM6ErrorBlock)fail;
-
+```
+### Query whether ANCS has been authorized（Only in iOS）
+```java
 /**
  * Query whether ANCS has been authorized
+ *
+ *The purpose of Apple Notification Center Service (ANCS) is to provide a simple and convenient way for Bluetooth peripherals to obtain notification information of ios devices.
+ *
+ *If the query authorization is turned off, it will affect your normal  receiving notifications.
  */
 - (BOOL)queryAncsAuthorizedStatus NS_AVAILABLE_IOS(13);
 ```
@@ -197,7 +272,7 @@ Before setting nofication information, please set the mobile platform type.
 /**
  * findDevice
  * @param flag 0: start 1: end
- * @param success  success
+ * @param success  If you call the search device interface, AM6 will keep vibrating
  * @param fail Communication error codes, see AM6 error descriptions.
  */
 - (void)findDevice:(uint8_t)flag
@@ -240,23 +315,11 @@ After calling this API, AM6 will be disconnected.
 ```java
 /**
  * rebootDevice
- * @param success  success
+ * @param success    Call this API, AM6 will disconnect from the phone and restart
  * @param fail Communication error codes, see AM6 error descriptions.
  */
 - (void)rebootDeviceWithSuccess:(DisposeAM6SuccessBlock)success
                            fail:(DisposeAM6ErrorBlock)fail;
-```
-
-### Get current time of AM6
-
-```java
-/**
- * Get the current time of the AM6
- *@param success  You can get data by reading:  deviceTime, is12HoursFormat
- *@param fail  fail
- */
-- (void)queryDeviceTimeWithSuccess:(DisposeAM6SuccessBlock)success
-                              fail:(DisposeAM6ErrorBlock)fail;
 ```
 
 ### Set wearing hand
@@ -336,11 +399,6 @@ After calling this API, AM6 will be disconnected.
 ### Get sedentary reminder
 
 ```java
-- (void)setGoalReminderEnable:(BOOL)enable
-                      calorie:(uint32_t)calorie
-                        steps:(uint32_t)steps
-                      success:(DisposeAM6SuccessBlock)success
-                         fail:(DisposeAM6ErrorBlock)fail;
 /**
  * queryStretchReminder
  * @param success  : isStretchReminderOn(YES or NO) ,stretchReminderStartTime(24-hour format, minimum 0 minutes),stretchReminderEndTime((24-hour format, max 1439 minutes)
@@ -417,7 +475,7 @@ After calling this API, AM6 will be disconnected.
 /**
  * setAlartList
  * @param alarmArray AM6AlarmModel Array
- 
+
 AM6AlarmModel 
 // Switch Status
 @property (assign, nonatomic) BOOL isOn;
@@ -466,6 +524,27 @@ AM6AlarmModel
                           fail:(DisposeAM6ErrorBlock)fail;
 ```
 
+### Delete specified historical data
+```java
+/**
+ * Delete specified historical data
+ * @param type in order bit0: steps and calories bit1: sleep bit2: heart rate bit3: blood oxygen bit4: daily bit5: multi-sports, the highest bit is 1 all delete all the corresponding data on the above bits If you need to delete, it is 1 If you don’t need to delete is 0
+ *
+ * type example
+ * 0x0010     deleteDailyActivityReport
+ * 0x0001     deleteDailyStepsCalorieDistance
+ * 0x0002     deleteSleepData
+ * 0x0004     deleteDailyHeartRate
+ * 0x0008     deleteOfflineBloodOxygen
+ * 0x0020     deleteSport
+ * 0x8000    deleteAllData
+ * @param success  success
+ * @param fail Communication error codes, see AM6 error descriptions.
+ */
+- (void)deleteDataWithType:(uint16_t)type
+                   success:(DisposeAM6SuccessBlock)success
+                          fail:(DisposeAM6ErrorBlock)fail;
+```
 ### Daily data
 
 :::info
@@ -477,36 +556,24 @@ The daily report is a summary of the data for the day.
  * Sync daily, up to 15 days
  * @param success  :NSArray<AM6DeviceDailyActivityReportModel*> *reportArray
  {
- calorie = 0;
- dateString = 20340101000000;
- effectiveStand = 0;
+ calorie = 0;  // The calorie of daily report
+ dateString = 20340101000000;   // The date of daily report
+ effectiveStand = 0; //Effective standing mark 24bits to mark whether there is effective standing from 0~1 point, 1~2 point, ... to 23~24 point
  functionEnable = 2047;
- heartRate = 0;
- heartRateAve = 0;
- heartRateMax = 0;
- heartRateMaxTime = 20000000000000;
- heartRateMin = 0;
- heartRateMinTime = 20000000000000;
- heartRateResting = 0;
- spo2 = 0;
- steps = 0;
+ heartRate = 0;   // The heart rate of daily report
+ heartRateAve = 0; ;// The ave heart rate of daily report
+ heartRateMax = 0;// The max heart rate of daily report
+ heartRateMaxTime = 20000000000000; // The time of day when your maximum heart rate occurs
+ heartRateMin = 0;   // The min heart rate of daily report
+ heartRateMinTime = 20000000000000;   // The time of day when the minimum heart rate occurs
+ heartRateResting = 0;  // The rest heart rate of daily report
+ spo2 = 0;   // The blood oxygen of daily report
+ steps = 0;  // The step of daily report
 }
  * @param fail Communication error codes, see AM6 error descriptions.
  */
 - (void)syncDailyActivityReportWithSuccess:(DisposeAM6SuccessBlock)success
                                       fail:(DisposeAM6ErrorBlock)fail;
-```
-### Delete Daily data
-
-```java
-/**
- * deleteDailyActivityReport
- * @param success success
- * @param fail Communication error codes, see AM6 error descriptions.
- */
-- (void)deleteDailyActivityReportWithSucess:(DisposeAM6SuccessBlock)success
-fail:(DisposeAM6ErrorBlock)fail;
-
 ```
 
 ###  DailyStepsCalorieDistance
@@ -534,20 +601,6 @@ fail:(DisposeAM6ErrorBlock)fail;
                                             fail:(DisposeAM6ErrorBlock)fail;
 ```
 
-### Delete DailyStepsCalorieDistance
-
-
-```java
-
-/**
- * deleteDailyStepsCalorieDistance
- * @param success success
- * @param fail Communication error codes, see AM6 error descriptions.
- */
-- (void)deleteDailyStepsCalorieDistanceWithSucess:(DisposeAM6SuccessBlock)success
-fail:(DisposeAM6ErrorBlock)fail;
-```
-
 ### Sleep data
 
 :::info
@@ -561,36 +614,35 @@ For example, a person goes to bed at 2023-06-27 23:11 in the evening and wakes u
 ```java
 /**
  * Synchronized sleep, up to 15 days
+ *
+ *One sleep data per day. When the sleep state changes, add an item data point.
+ *
  * @param success  :NSArray<AM6DeviceSleepModel*> *sleepArray;
  (  {
          dataArray =         (
                          {
                  status = 1;//0x01 enter sleep 0x02 light sleep 0x03 deep sleep 0x04 wake up 0x05 exit sleep 0x06 rapid eye movement (REM)
-                 timeString = 2201;
+                 timeString = 2201;  //Sleep time   22:hour 01:minute
              },
          );
-         dateString = 20230204000000;
+         dateString = 20230204000000;//Sleep date
      },
 )
  * @param fail Communication error codes, see AM6 error descriptions.
  */
+ |  Sleep status | |
+| ---- | ---- |
+| 1 | start to sleep |
+| 2 | light sleep |
+| 3 | deep sleep |
+| 4 | wake |
+| 5 | exit sleep |
+| 6 | rapid eye movement (REM) |
 
 - (void)syncSleepWithSuccess:(DisposeAM6SuccessBlock)success
                         fail:(DisposeAM6ErrorBlock)fail;
 ```
 
-### Delete Sleep data
-
-```java
-/**
- * deleteSleepData
- * @param success success
- * @param fail Communication error codes, see AM6 error descriptions.
- */
-- (void)deleteSleepWithSucess:(DisposeAM6SuccessBlock)success
-fail:(DisposeAM6ErrorBlock)fail;
-
-```
 ### Blood oxygen data
 
 ```java
@@ -599,8 +651,8 @@ fail:(DisposeAM6ErrorBlock)fail;
  * @param success  :NSArray<AM6DeviceOffineBloodOxygenModel*> *bloodOxygenArray;
  (
  {
- dateString = 20210704030100;
- value = 15;
+ dateString = 20210704030100; //date
+ value = 15; //For each measurement, increment the value by 1.
 },
 )
  * @param fail Communication error codes, see AM6 error descriptions.
@@ -609,17 +661,6 @@ fail:(DisposeAM6ErrorBlock)fail;
                                      fail:(DisposeAM6ErrorBlock)fail;
 ```
 
-### Delete Blood oxygen data
-
-```java
-/**
- * deleteOfflineBloodOxygen
- * @param success success
- * @param fail Communication error codes, see AM6 error descriptions.
- */
-- (void)deleteOfflineBloodOxygenWithSucess:(DisposeAM6SuccessBlock)success
-fail:(DisposeAM6ErrorBlock)fail;
-```
 
 ### Daily Heart Rate
 
@@ -628,13 +669,14 @@ fail:(DisposeAM6ErrorBlock)fail;
 
 /**
  * Synchronize daily heart rate, up to 15 days
+ * One value every 5 minutes, a total of 288 values per day.
  * @param success  :NSArray<AM6DeviceHeartRateModel*> *dailyHeartRateArray;
  (
   {
-         dataArray =         (
+         dataArray =         ( // The value of heart rate
              0..........
          );
-         dateString = 20210704000000;
+         dateString = 20210704000000;//date
   },
 )
  * @param fail Communication error codes, see AM6 error descriptions.
@@ -645,41 +687,32 @@ fail:(DisposeAM6ErrorBlock)fail;
 
 ```
 
-### Delete Daily Heart Rate
 
-
-```java
-
-/**
- * deleteDailyHeartRate
- * @param success success
- * @param fail Communication error codes, see AM6 error descriptions.
- */
-- (void)deleteDailyHeartRateWithSucess:(DisposeAM6SuccessBlock)success
-fail:(DisposeAM6ErrorBlock)fail;
-
-```
-
-
-### Sport Data
+### Activity data
 
 
 ```java
 
 /**
  * Synchronize sports data (dotted data and report data)
+ *
+ *The device uploads the daily data management results to the mobile phone, and counts the data every hour, including the number of steps, calories, and distance.
  * @param success  :
  NSArray<AM6DeviceIndoorRun*> *indoorRunArray
  (
          {
          dataArray =         (
                          {
-                 calorieArray =   (
+                 calorieArray =   (                                //calorieArray
                      61,
                      61,..............
                       )
-                 dateString = 20200229180100;
-                 distanceArray =  (
+                 dateString = 20200229180100;        //date
+                 distanceArray =  (                             //distanceArray
+                     28,
+                     28,.................
+                   )
+                 stepArray=  (                                    //stepArray
                      28,
                      28,.................
                    )
@@ -690,32 +723,32 @@ fail:(DisposeAM6ErrorBlock)fail;
  NSArray<AM6DeviceIndoorRunReport*> *indoorRunReportArray;
  (
          {
-         anaerobicTime = 20;
-         aveHeartRate = 178;
-         bodyEnergyCost = 0;
-         cardioTime = 20;
-         dataType = 0;
-         endDateString = 20200229210100;
-         estimatedRecoveryTime = 0;
-         fatReductionTime = 20;
-         maxHeartRate = 255;
-         maxOxygenUptake = 0;
-         maxPace = 320;
-         maxStepFrequency = 336;
-         minHeartRate = 0;
-         minPace = 400;
-         peakTime = 20;
-         startDateString = 20200229180100;
-         timeZone = 0;
-         totalCalorie = 65535;
-         totalDistance = 30000;
-         totalStep = 60000;
-         totalTime = 10800;
-         trainingEffect = 0;
-         type = 0;
-         typeDescription = 0;
-         version = 0;
-         warnUpTime = 20;
+         anaerobicTime = 20;     // The anaerobic endurance duration, the unit is second
+         aveHeartRate = 178;     // The average heart rate
+         bodyEnergyCost = 0;    // The body energy expenditure, the range is 0 ~ 100
+         cardioTime = 20;          // The aerobic endurance duration, the unit is second
+         dataType = 0;              //dataType
+         endDateString = 20200229210100;  // The end time of activity
+         estimatedRecoveryTime = 0;            // The estimated recovery time
+         fatReductionTime = 20;      // The fat burning duration, the unit is second
+         maxHeartRate = 255;      // The max heart rate
+         maxOxygenUptake = 0;  // The max oxygen uptake, the unit is milliliter/minute
+         maxPace = 320;             // The max running pace, the unit is second / 100 meter
+         maxStepFrequency = 336;    // The max freguency of step
+         minHeartRate = 0;        // The min heart rate
+         minPace = 400;            // The min running pace, the unit is second / 100 meter
+         peakTime = 20;           // The ultimate heart rate duration, the unit is second
+         startDateString = 20200229180100;   // The start time of activity
+         timeZone = 0;                     //timeZone
+         totalCalorie = 65535;         //Current total active calories
+         totalDistance = 30000;      //Current total Distance
+         totalStep = 60000;            //Current total steps
+         totalTime = 10800;           //Current total Time
+         trainingEffect = 0;            // The training effect
+         type = 0;                          //type
+         typeDescription = 0;        //typeDescription
+         version = 0;                      //version
+         warnUpTime = 20;         // The warm up time, the unit is secode
      },
 )
  * @param fail Communication error codes, see AM6 error descriptions.
@@ -725,33 +758,6 @@ fail:(DisposeAM6ErrorBlock)fail;
 
 ```
 
-### Delete Sport Data
-
-
-```java
-/**
- * deleteSport
- * @param success success
- * @param fail Communication error codes, see AM6 error descriptions.
- */
-- (void)deleteSportWithSucess:(DisposeAM6SuccessBlock)success
-fail:(DisposeAM6ErrorBlock)fail;
-
-```
-
-### Delete All Data
-
-
-```java
-/**
- * deleteAllData
- * @param success success
- * @param fail Communication error codes, see AM6 error descriptions.
- */
-- (void)deleteAllDataWithSuccess:(DisposeAM6SuccessBlock)success
-                            fail:(DisposeAM6ErrorBlock)fail;
-
-```
 
 ### Disconnect AM6 connection
 
