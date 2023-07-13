@@ -92,20 +92,6 @@ sidebar_position: 2
 -(void)commandPO3StartMeasure:(DisposePO3StartMeasure)startMeasure withMeasureData:(DisposePO3MeasureData)measureData  withFinishMeasure:(DisposePO3FinishMeasure)finishMeasure  withErrorBlock:(DisposePO3ErrorBlock)errorBlock;
 ```
 
-### Specify Online Users(firmwareVersion 2.1.6 support)
-
-```java
-/**
- * Only a specific version supports this feature, if the version does not support this feature, an error that does not support the feature will be returned
- * @param spo2  spo2
- * @param bpm  bpm
- * @param height  height
- * @param disposePO3EndMeasureResult  yes = success, no = fail.
- * @param errorBlock Communication error codes
- */
--(void)commandPO3EndMeasureWithSpo2:(NSNumber*)spo2  bpm:(NSNumber*)bpm height:(NSNumber*)height disposePO3EndMeasureResult:(DisposePO3EndMeasure)disposePO3EndMeasureResult withErrorBlock:(DisposePO3ErrorBlock)errorBlock;
-```
-
 ### Disconnect the PO3
 
 ```java
@@ -115,15 +101,4 @@ sidebar_position: 2
  * @param errorBlock Communication error codes
  */
 -(void)commandPO3Disconnect:(DisposePO3DisconnectBlock)disconnectBlock withErrorBlock:(DisposePO3ErrorBlock)errorBlock;
-```
-
-### Turn Off  Bluetooth(firmwareVersion 2.1.6 support)
-
-```java
-/**
- * Turn Off  Bluetooth(Only a specific version supports this feature, if the version does not support this feature, an error that does not support the feature will be returned)
- * @param disconnectBlock  yes = success, no = fail.
- * @param errorBlock Communication error codes
- */
--(void)commandPO3TurnOffBT:(DisposePO3TurnOffBT)disposePO3TurnOffBTBlock withErrorBlock:(DisposePO3ErrorBlock)errorBlock;
 ```
