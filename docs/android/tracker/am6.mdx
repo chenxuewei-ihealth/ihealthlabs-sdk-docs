@@ -60,7 +60,7 @@ Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMa
 1. AM6 is used for the first time or is in an unbound state, and AM6 displays a QR code.
 2. Call the API bindUser, AM6 enters the binding state.
 3. Call the API bindUserSuccess and pass user id to AM6, AM6 will save user id, and then wiil display UI of successful binding.
-4. Call the API bindUserFail, AM6 will display UI of failure binding, and then fall back to UI of OR code.
+4. Call the API bindUserFail, AM6 will display UI of failure binding, and then fall back to UI of QR code.
 :::
 
 ![am6 binding](/am6_binding.png)
@@ -258,14 +258,14 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 ## Set Notification 
 
 :::info
-Before setting nofication information, please set the mobile platform type.
+Before setting notification information, please set the mobile platform type.
 :::
 
 ### Set phone platform
 
 ```java
 Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
-control.setPlatform();
+control.setPhonePlatform();
 ```
 
 ```java
@@ -419,31 +419,6 @@ Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMa
 control.rebootDevice();
 ```
 
-### Get current time of AM6
-
-```java
-Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
-control.getTime();
-```
-
-```java
-// Return value
-private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
-    @Override
-    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-        if (Am6Profile.Action_GetTime.equals(action)) {
-            try {
-                JSONObject obj = new JSONObject(message);
-                // The time format is "yyyy-MM-DD HH:MM:SS"
-                String time = obj.getString(Am6Profile.GetTime_Time);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    } 
-}
-```
-
 ### Set wearing hand
 
 ```java
@@ -571,7 +546,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
                 /**
                  * @return enable true: open; false: close
                  */
-                boolean enable = obj.getInt(Am6Profile.GetTargetReminder_Enable);
+                boolean enable = obj.getBoolean(Am6Profile.GetTargetReminder_Enable);
                 
                 /**
                  * @return calorie
@@ -1325,7 +1300,6 @@ Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMa
               0x2: sleep data; 
               0x4: heart rate data; 
               0x8: blood oxygen data; 
-              0x10: daily data; 
               0x20: activity data;
               0x8000: All data
  */
