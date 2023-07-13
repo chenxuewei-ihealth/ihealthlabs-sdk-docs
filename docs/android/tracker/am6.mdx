@@ -826,7 +826,7 @@ Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMa
 Am6Command.AlarmClockInfo info = new Am6Command.AlarmClockInfo();
 info.ts = 600;      // This is the minute from the day starts, such as 10:10 am, it is 60 * 10 + 10, the range is 0 ~ 1439
 info.isOpen = true; // is open or close.
-info.week = new boolean[]{true, true, true ,true, true, true, true}; //whick day is repeat, the array format is [sun, mon, tus, wed, thur, fri, sat]. true means repeat; false means don't.
+info.week = new boolean[]{true, true, true ,true, true, true, true}; //which day is repeat, the array format is [sun, mon, tus, wed, thur, fri, sat]. true means repeat; false means don't.
 /**
  * @param info
  */
