@@ -219,9 +219,9 @@ Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMa
 /**
  * @param userId must be a 16 character string
  * @param gender 0: male, 1: female
- * @param age 0 ~ 100
- * @param height unit is cm 50 ~ 255
- * @param weight unit is kg 10 ~ 300
+ * @param age 1 ~ 255
+ * @param height unit is cm 1 ~ 255
+ * @param weight unit is kg 1 ~ 300
  */
 control.setUserInfo(String userId, int gender, int age, int height, float weight);
 ```
@@ -512,11 +512,11 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 ```java
 Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
 /**
- * @param type 0: close; 1: open
+ * @param enable true: open; false: close
  * @param calorie 0 ~ 65535
  * @param step 0 ~ 65534
  */
-control.setTargetRemind(int type, int calorie, int step);
+control.setTargetRemind(boolean enable, int calorie, int step);
 ```
 
 ```java
@@ -569,9 +569,9 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
                 int result = obj.getInt(Am6Profile.GetTargetReminder_Result);
 
                 /**
-                 * @return enable 0: close; 3: open
+                 * @return enable true: open; false: close
                  */
-                int enable = obj.getInt(Am6Profile.GetTargetReminder_Enable);
+                boolean enable = obj.getInt(Am6Profile.GetTargetReminder_Enable);
                 
                 /**
                  * @return calorie
@@ -849,7 +849,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
 
 Am6Command.AlarmClockInfo info = new Am6Command.AlarmClockInfo();
-info.ts = 600;      // This is the minute from the day starts, such as 10:10 am, it is 60 * 10 + 10, the range is 0 ~ 1440
+info.ts = 600;      // This is the minute from the day starts, such as 10:10 am, it is 60 * 10 + 10, the range is 0 ~ 1439
 info.isOpen = true; // is open or close.
 info.week = new boolean[]{true, true, true ,true, true, true, true}; //whick day is repeat, the array format is [sun, mon, tus, wed, thur, fri, sat]. true means repeat; false means don't.
 /**
