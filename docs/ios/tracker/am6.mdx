@@ -103,7 +103,7 @@ Please initialize the Am6 configuration before scanning the device, otherwise th
 1. AM6 is used for the first time or is in an unbound state, and AM6 displays a QR code.
 2. Call the API sendStartBindWithSuccess, AM6 enters the binding state.
 3. Call the API sendSuccessBindWithUserId and pass user id to AM6, AM6 will save user id, and then wiil display UI of successful binding.
-4. Call the API sendFailBindWithSuccess, AM6 will display UI of failure binding, and then fall back to UI of OR code.
+4. Call the API sendFailBindWithSuccess, AM6 will display UI of failure binding, and then fall back to UI of QR code.
 :::
 
 ![am6 binding](/am6_binding.png)
@@ -174,11 +174,12 @@ Am6 enters the binding state.
  *
  *@param success  You can get data by reading:  battery, isCharging,firmwareVersion,hardwareVersion,bindStatus
  *{
- * Battery = 100;   Power 0-100
- * ChargeState = 0;  0:NO Charging  1:Charging
- * FirmwareVersion = "0.1.1";  FirmwareVersion
- * HardwareVersion = "1.0.0";  HardwareVersion
- * bindState = 1;    0: The watch is not bound (QR code state) 1: The watch is bound (normal state)
+ * battery = 100;   Power 0-100
+ * isCharging = 0;  0:NO Charging  1:Charging
+ * firmwareVersion = "0.1.1";  FirmwareVersion
+ * hardwareVersion = "1.0.0";  HardwareVersion
+ * sdkFirmwareVersion = "1.0.0";  sdkFirmwareVersion
+ * bindStatus = 1;    0: The watch is not bound (QR code state) 1: The watch is bound (normal state)
 }
  *@param fail  fail
  */
