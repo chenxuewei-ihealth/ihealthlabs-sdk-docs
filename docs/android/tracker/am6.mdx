@@ -205,7 +205,10 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 
 ```java
 Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
-control.getDeviceInfoAndSyncTime();
+/**
+ * @param is24Hour Time format is 12 hour or 24 hour
+ */
+control.getDeviceInfoAndSyncTime(boolean is24Hour);
 ```
 
 ```java
