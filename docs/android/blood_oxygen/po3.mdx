@@ -87,6 +87,66 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 }
 ```
 
+### Get the PO3 device infomation
+
+:::info
+The KN-550BT support this feature on firmware 3.1.1 or above.
+:::
+
+
+```java
+Po3Control control = iHealthDevicesManager.getInstance().getPo3Control(mDeviceMac);
+control.getDeviceInfo();
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (PoProfile.ACTION_GET_DEVICE_INFO.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                /*
+                 * charge status 0: PO3 is not charging; 1: PO3 is charging
+                 */
+                int status = obj.getInt(PoProfile.GET_DEVICE_INFO_BATTERY_STATUS);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } else if (PoProfile.ACTION_ERROR_PO.equals(action)) {
+            JSONObject obj = new JSONObject(message);
+            int errorId = obj.getInt(PoProfile.ERROR_NUM_PO);
+            if (errorId == 403) {
+                Log.i("", "This firmware don't support this API");
+            }
+        }
+    } 
+}
+```
+
+### Notify the PO3 device infomation
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (PoProfile.ACTION_NOTIFY_DEVICE_INFO.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                /*
+                 * charge status 0: PO3 is not charging; 1: PO3 is charging
+                 */
+                int status = obj.getInt(PoProfile.NOTIFY_INFO_BATTERY_STATUS);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    } 
+}
+```
+
 ### Start a measurement
 
 ```java
