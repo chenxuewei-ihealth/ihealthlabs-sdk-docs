@@ -184,11 +184,11 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
                      */
                     int wrongTime = obj.getInt(Bg1aProfile.MEASURE_TIME_IS_ERROR);
                     
-                    // Mesurement time
-                    String time = obj.getLong(Bg1aProfile.MEASURE_TIME_DEVICE);
+                    // Measurement time
+                    String time = obj.getString(Bg1aProfile.MEASURE_TIME_DEVICE);
                     
                     // Please refer to the error message
-                    int errorId = obj.getLong(Bg1aProfile.ERROR_NUM_BG1A);
+                    int errorId = obj.getInt(Bg1aProfile.ERROR_NUM_BG1A);
                     
                     /**
                      * Measurement mode
