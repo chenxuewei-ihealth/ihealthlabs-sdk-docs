@@ -37,13 +37,16 @@ int callbackId = iHealthDevicesManager.getInstance().registerClientCallback(new 
     @Override
     public void onSDKStatus(int statusId, String statusMessage) { 
         if (iHealthDevicesManager.SDK_STATUS_BLUETOOTH_DISABLE == statusId) {
-            Log.i("", "Bluetooth is disable!");
+            Log.i("", "Bluetooth service is disable!");
+
+        } else if (iHealthDevicesManager.SDK_STATUS_LOCATION_DISABLE == statusId) {
+            Log.i("", "Location service is disable!");
 
         } else if (iHealthDevicesManager.SDK_STATUS_BLUETOOTH_PERMISSION == statusId) {
             Log.i("", "Miss android permission: " + statusMessage);
 
         } else if (iHealthDevicesManager.SDK_STATUS_LICENSE_EXPIRED == statusId) {
-            Log.i("", "License is not match with applicaiton id or is expired!");
+            Log.i("", "License is not match with application id or is expired!");
 
         } else if (iHealthDevicesManager.SDK_STATUS_LICENSE_DEVICE_PERMISSION == statusId) {
             Log.i("", "Need this device permission!");
@@ -64,6 +67,10 @@ iHealthDevicesManager.getInstance().startDiscovery(DiscoveryTypeEnum.AM6);
 
 ### 3.Connect to AM6 devices
 
+:::info
+AM6 supports direct connection to the device without scanning, but after disconnection, the device cannot be connected immediately, because the phone needs time to release the GATT service, we recommend waiting for 2 seconds and trying to connect again. Connecting after scanning does not have this problem.
+:::
+
 ```java
 iHealthDevicesManager.getInstance().connectDevice(mac, iHealthDevicesManager.TYPE_AM6)
 
@@ -76,20 +83,20 @@ Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMa
 
 :::info
 1. AM6 is used for the first time or is in an unbound state, and AM6 displays a QR code.
-2. Call the API bindUser, AM6 enters the binding state.
+2. Call the API startBind, AM6 enters the binding state.
 3. Call the API bindUserSuccess and pass user id to AM6, AM6 will save user id, and then will display UI of successful binding.
 4. Call the API bindUserFail, AM6 will display UI of failure binding, and then fall back to UI of QR code.
 :::
 
 ![am6 binding](/am6_binding.png)
 
-### Bind user
+### Start to Bind user
 
 Am6 enters the binding state.
 
 ```java
 Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
-control.bindUser();
+control.startBind();
 ```
 
 ```java
@@ -202,7 +209,10 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 
 ```java
 Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
-control.getDeviceInfoAndSyncTime();
+/**
+ * @param is24Hour Time format is 12 hour or 24 hour
+ */
+control.getDeviceInfoAndSyncTime(boolean is24Hour);
 ```
 
 ```java
@@ -315,19 +325,19 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 | Others | 0 |
 | Call | 1 |
 | SMS | 2 |
-| WYZE | 3 |
+| iHealth | 3 |
 | Facebook | 4 |
 | Wechat | 5 |
 | Instagram | 6 |
 | Twitter | 7 |
-| Facebook messager | 8 |
+| Facebook messenger | 8 |
 | WhatsApp | 9 |
 | Gmail | 10 |
 | Email | 11 |
-| Yahoo | 12 |
+| Yahoo mail| 12 |
 | Spotify | 13 |
 | Apple music | 14 |
-| Youtube | 15 |
+| YouTube | 15 |
 | Uber | 16 |
 | Google map | 17 |
 | Google calendar | 18 |
@@ -341,10 +351,10 @@ Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMa
  * @param date timestamp
  * @param status when message type is Call, the status can be set to 0: call ansered; 1: missed call; 2: call was hung up
  * @param type message type        
- * @param title Maximum is 128 characters
- * @param content Maximum is 512 characters
+ * @param title Maximum is 128 UTF-8 byte
+ * @param content Maximum is 512 UTF-8 byte
  */
-control.notifyMessage(long date, int status, int type, String title, String content);
+control.notifyMessage(long date, int status, int type, byte[] title, byte[] content);
 ```
 
 ```java
@@ -371,6 +381,11 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 ## Device settings
 
 ### Find device
+
+:::info
+Call the API once, the watch only vibrates 6 times for about 5 seconds.
+So if you want to achieve continuous vibration, please continue to call the API after 5 seconds.
+:::
 
 ```java
 Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
@@ -600,8 +615,8 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
 /**
  * @param type 0: close; 1: open
- * @param start This is the minute from the day starts, such as 10:10 am, it is 60 * 10 + 10, the range is 0 ~ 1440
- * @param end   This is the minute from the day starts, such as 10:10 am, it is 60 * 10 + 10, the range is 0 ~ 1440
+ * @param start This is the minute from the day starts, such as 10:10 am, it is 60 * 10 + 10, the range is 0 ~ 1439
+ * @param end   This is the minute from the day starts, such as 10:10 am, it is 60 * 10 + 10, the range is 0 ~ 1439
  */
 control.setSedentaryRemind(int enable, int start, int end);
 ```
@@ -684,8 +699,8 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
 /**
  * @param enable 0: close; 1: open
- * @param start This is the minute from the day starts, such as 10:10 am, it is 60 * 10 + 10, the range is 0 ~ 1440
- * @param end   This is the minute from the day starts, such as 10:10 am, it is 60 * 10 + 10, the range is 0 ~ 1440
+ * @param start This is the minute from the day starts, such as 10:10 am, it is 60 * 10 + 10, the range is 0 ~ 1439
+ * @param end   This is the minute from the day starts, such as 10:10 am, it is 60 * 10 + 10, the range is 0 ~ 1439
  */
 control.setRaiseToLight(int enable, int start, int end);
 ```
@@ -768,8 +783,8 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMac);
 /**
  * @param type 0: close; 1: open
- * @param start This is the minute from the day starts, such as 10:10 am, it is 60 * 10 + 10, the range is 0 ~ 1440
- * @param end   This is the minute from the day starts, such as 10:10 am, it is 60 * 10 + 10, the range is 0 ~ 1440
+ * @param start This is the minute from the day starts, such as 10:10 am, it is 60 * 10 + 10, the range is 0 ~ 1439
+ * @param end   This is the minute from the day starts, such as 10:10 am, it is 60 * 10 + 10, the range is 0 ~ 1439
  */
 control.setDoNotDisturbMode(int enable, int start, int end);
 ```
