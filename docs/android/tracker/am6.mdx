@@ -1010,19 +1010,19 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
                     int bloodOxygen = obj.getInt(Am6Profile.GetDailyData_BloodOxygen);
                     
                     // The heart rate of daily report
-                    int heartRate = obj.getString(Am6Profile.GetDailyData_HeartRate);
+                    int heartRate = obj.getInt(Am6Profile.GetDailyData_HeartRate);
                     
                     // The min heart rate of daily report
-                    int minHeartRate = obj.getString(Am6Profile.GetDailyData_MinHeartRate);
+                    int minHeartRate = obj.getInt(Am6Profile.GetDailyData_MinHeartRate);
                     
                     // The max heart rate of daily report
-                    int maxHeartRate = obj.getString(Am6Profile.GetDailyData_MaxHeartRate);
+                    int maxHeartRate = obj.getInt(Am6Profile.GetDailyData_MaxHeartRate);
                     
                     // The mean heart rate of daily report
-                    int meanHeartRate = obj.getString(Am6Profile.GetDailyData_MeanHeartRate);
+                    int meanHeartRate = obj.getInt(Am6Profile.GetDailyData_MeanHeartRate);
                     
                     // The rest heart rate of daily report
-                    int restHeartRate = obj.getString(Am6Profile.GetDailyData_RestHeartRate);
+                    int restHeartRate = obj.getInt(Am6Profile.GetDailyData_RestHeartRate);
                     
                     // The time of day when the minimum heart rate occurs, date format is "yyyy-MM-DD HH:MM:SS" 
                     String minHeartRateTime = obj.getString(Am6Profile.GetDailyData_MinHeartRateTime);
@@ -1256,73 +1256,71 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
                     }
 
                     // activity daily report
-                    JSONArray reportArr = object.getJSONArray(Am6Profile.GetActivityData_Report);
-                    for (JSONObject obj : reportArr) {
+                    
+                    JSONObject reportObj = object.getObject(Am6Profile.GetActivityData_Report);
                         
-                        // The start time of activity, date format is "yyyy-MM-DD HH:MM:SS" 
-                        String startTime = obj.getString(Am6Profile.GetActivityData_StartDate);
+                    // The start time of activity, date format is "yyyy-MM-DD HH:MM:SS" 
+                    String startTime = reportObj.getString(Am6Profile.GetActivityData_StartDate);
                         
-                        // The end time of activity, date format is "yyyy-MM-DD HH:MM:SS" 
-                        String endTime = obj.getString(Am6Profile.GetActivityData_EndDate);
+                    // The end time of activity, date format is "yyyy-MM-DD HH:MM:SS" 
+                    String endTime = reportObj.getString(Am6Profile.GetActivityData_EndDate);
 
-                        // The total time of activity, the unit is second
-                        int totalTime = obj.getInt(Am6Profile.GetActivityData_TotalTime);
+                    // The total time of activity, the unit is second
+                    int totalTime = reportObj.getInt(Am6Profile.GetActivityData_TotalTime);
 
-                        // The total distance of activity, the unit is meter
-                        int totalDistance = obj.getInt(Am6Profile.GetActivityData_TotalDistance);
+                    // The total distance of activity, the unit is meter
+                    int totalDistance = reportObj.getInt(Am6Profile.GetActivityData_TotalDistance);
 
-                        // The total calorie of activity, the unit is meter
-                        int totalCalorie = obj.getInt(Am6Profile.GetActivityData_TotalCalorie);
+                    // The total calorie of activity, the unit is meter
+                    int totalCalorie = reportObj.getInt(Am6Profile.GetActivityData_TotalCalorie);
 
-                        // The total step of activity
-                        int totalStep = obj.getInt(Am6Profile.GetActivityData_TotalStep);
+                    // The total step of activity
+                    int totalStep = reportObj.getInt(Am6Profile.GetActivityData_TotalStep);
 
-                        // The max running pace, the unit is second / 100 meter
-                        int maxPace = obj.getInt(Am6Profile.GetActivityData_MaxPace);
+                    // The max running pace, the unit is second / 100 meter
+                    int maxPace = reportObj.getInt(Am6Profile.GetActivityData_MaxPace);
 
-                        // The min running pace, the unit is second / 100 meter
-                        int minPace = obj.getInt(Am6Profile.GetActivityData_MinPace);
+                    // The min running pace, the unit is second / 100 meter
+                    int minPace = reportObj.getInt(Am6Profile.GetActivityData_MinPace);
 
-                        // The max freguency of step
-                        int maxStepFrequency = obj.getInt(Am6Profile.GetActivityData_MaxStepFrequency);
+                    // The max freguency of step
+                    int maxStepFrequency = reportObj.getInt(Am6Profile.GetActivityData_MaxStepFrequency);
 
-                        // The average heart rate
-                        int aveHeartRate = obj.getInt(Am6Profile.GetActivityData_AveHeartRate);
+                    // The average heart rate
+                    int aveHeartRate = reportObj.getInt(Am6Profile.GetActivityData_AveHeartRate);
 
-                        // The max heart rate
-                        int maxHeartRate = obj.getInt(Am6Profile.GetActivityData_MaxHeartRate);
+                    // The max heart rate
+                    int maxHeartRate = reportObj.getInt(Am6Profile.GetActivityData_MaxHeartRate);
 
-                        // The min heart rate
-                        int minHeartRate = obj.getInt(Am6Profile.GetActivityData_MinHeartRate);
+                    // The min heart rate
+                    int minHeartRate = reportObj.getInt(Am6Profile.GetActivityData_MinHeartRate);
 
-                        // The training effect
-                        int training = obj.getInt(Am6Profile.GetActivityData_TrainingEffect);
+                    // The training effect
+                    int training = reportObj.getInt(Am6Profile.GetActivityData_TrainingEffect);
 
-                        // The max oxygen uptake, the unit is milliliter/minute
-                        int maxOxygenUpdake = obj.getInt(Am6Profile.GetActivityData_MaxOxygenUptake);
+                    // The max oxygen uptake, the unit is milliliter/minute
+                    int maxOxygenUpdake = reportObj.getInt(Am6Profile.GetActivityData_MaxOxygenUptake);
 
-                        // The body energy expenditure, the range is 0 ~ 100
-                        int bodyCost = obj.getInt(Am6Profile.GetActivityData_BodyEnergyCost);
+                    // The body energy expenditure, the range is 0 ~ 100
+                    int bodyCost = reportObj.getInt(Am6Profile.GetActivityData_BodyEnergyCost);
 
-                        // The estimated recovery time
-                        int recoveryTime = obj.getInt(Am6Profile.GetActivityData_EstimatedRecoveryTime);
+                    // The estimated recovery time
+                    int recoveryTime = reportObj.getInt(Am6Profile.GetActivityData_EstimatedRecoveryTime);
 
-                        // The ultimate heart rate duration, the unit is second
-                        int peakTime = obj.getInt(Am6Profile.GetActivityData_PeakTime);
+                    // The ultimate heart rate duration, the unit is second
+                    int peakTime = reportObj.getInt(Am6Profile.GetActivityData_PeakTime);
 
-                        // The anaerobic endurance duration, the unit is second
-                        int anaerobicTime = obj.getInt(Am6Profile.GetActivityData_AnaerobicTime);
+                    // The anaerobic endurance duration, the unit is second
+                    int anaerobicTime = reportObj.getInt(Am6Profile.GetActivityData_AnaerobicTime);
 
-                        // The aerobic endurance duration, the unit is second
-                        int cardioTime = obj.getInt(Am6Profile.GetActivityData_CardioTime);
+                    // The aerobic endurance duration, the unit is second
+                    int cardioTime = reportObj.getInt(Am6Profile.GetActivityData_CardioTime);
 
-                        // The fat burning duration, the unit is second
-                        int fatReductionTime = obj.getInt(Am6Profile.GetActivityData_FatReductionTime);
+                    // The fat burning duration, the unit is second
+                    int fatReductionTime = reportObj.getInt(Am6Profile.GetActivityData_FatReductionTime);
 
-                        // The warm up time, the unit is secode
-                        int warmUpTime = obj.getInt(Am6Profile.GetActivityData_WarmUpTime);
-                        
-                    }
+                    // The warm up time, the unit is secode
+                    int warmUpTime = reportObj.getInt(Am6Profile.GetActivityData_WarmUpTime);
                 }
                 
             } catch (JSONException e) {
