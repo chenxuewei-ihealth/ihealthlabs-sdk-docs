@@ -40,12 +40,15 @@ typedef NS_ENUM(NSUInteger, AM6DeviceConnectError) {
     AM6DeviceConnectError_OverTime = 0,
     /// You did not receive a response within a certain period of time, usually clogged Bluetooth
     AM6DeviceConnectError_NoRespond,
-    ///AuthError
+    
     AM6DeviceConnectError_AuthError,
-    ///AuthKeyError
+    
     AM6DeviceConnectError_AuthKeyError,
+    
+    AM6DeviceConnectError_SystemError,//AM6SystemErrorDetail If this error occurs, you can read detailed system error information
     /// AM disconnect
     AM6DeviceConnectError_Disconnect,
+    
 };
  */       
 [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(DeviceConnectFail:) name:AM6ConnectFailed object:nil];
@@ -476,8 +479,9 @@ After calling this API, AM6 will be disconnected.
 /**
  * setAlartList
  * @param alarmArray AM6AlarmModel Array
-
-AM6AlarmModel 
+ *
+ *AM6AlarmModel
+ *
 // Switch Status
 @property (assign, nonatomic) BOOL isOn;
 
@@ -558,15 +562,15 @@ The daily report is a summary of the data for the day.
  * @param success  :NSArray<AM6DeviceDailyActivityReportModel*> *reportArray
  {
  calorie = 0;  // The calorie of daily report
- dateString = 20340101000000;   // The date of daily report
+ dateString = 2020-02-29 00:00:00;   // The date of daily report
  effectiveStand = 0; //Effective standing mark 24bits to mark whether there is effective standing from 0~1 point, 1~2 point, ... to 23~24 point
  functionEnable = 2047;
  heartRate = 0;   // The heart rate of daily report
  heartRateAve = 0; ;// The ave heart rate of daily report
  heartRateMax = 0;// The max heart rate of daily report
- heartRateMaxTime = 20000000000000; // The time of day when your maximum heart rate occurs
+ heartRateMaxTime = 2020-02-29 00:00:00; // The time of day when your maximum heart rate occurs
  heartRateMin = 0;   // The min heart rate of daily report
- heartRateMinTime = 20000000000000;   // The time of day when the minimum heart rate occurs
+ heartRateMinTime = 2020-02-29 00:00:00;   // The time of day when the minimum heart rate occurs
  heartRateResting = 0;  // The rest heart rate of daily report
  spo2 = 0;   // The blood oxygen of daily report
  steps = 0;  // The step of daily report
@@ -587,7 +591,7 @@ The daily report is a summary of the data for the day.
  calorieArray =         (
      2850............
  );
- dateString = 20210704000000;
+ dateString = 2020-02-29 00:00:00;
  distanceArray =         (
      2850.............
  );
@@ -626,7 +630,7 @@ For example, a person goes to bed at 2023-06-27 23:11 in the evening and wakes u
                  timeString = 2201;  //Sleep time   22:hour 01:minute
              },
          );
-         dateString = 20230204000000;//Sleep date
+         dateString = 2020-02-29 00:00:00;//Sleep date
      },
 )
  * @param fail Communication error codes, see AM6 error descriptions.
@@ -652,7 +656,7 @@ For example, a person goes to bed at 2023-06-27 23:11 in the evening and wakes u
  * @param success  :NSArray<AM6DeviceOffineBloodOxygenModel*> *bloodOxygenArray;
  (
  {
- dateString = 20210704030100; //date
+ dateString = 2020-02-29 00:00:00; //date
  value = 15; //For each measurement, increment the value by 1.
 },
 )
@@ -677,7 +681,7 @@ For example, a person goes to bed at 2023-06-27 23:11 in the evening and wakes u
          dataArray =         ( // The value of heart rate
              0..........
          );
-         dateString = 20210704000000;//date
+         dateString = 2020-02-29 00:00:00;//date
   },
 )
  * @param fail Communication error codes, see AM6 error descriptions.
@@ -708,7 +712,7 @@ For example, a person goes to bed at 2023-06-27 23:11 in the evening and wakes u
                      61,
                      61,..............
                       )
-                 dateString = 20200229180100;        //date
+                 dateString = 2020-02-29 00:00:00;        //date
                  distanceArray =  (                             //distanceArray
                      28,
                      28,.................
@@ -729,7 +733,7 @@ For example, a person goes to bed at 2023-06-27 23:11 in the evening and wakes u
          bodyEnergyCost = 0;    // The body energy expenditure, the range is 0 ~ 100
          cardioTime = 20;          // The aerobic endurance duration, the unit is second
          dataType = 0;              //dataType
-         endDateString = 20200229210100;  // The end time of activity
+         endDateString = 2020-02-29 00:00:00;  // The end time of activity
          estimatedRecoveryTime = 0;            // The estimated recovery time
          fatReductionTime = 20;      // The fat burning duration, the unit is second
          maxHeartRate = 255;      // The max heart rate
@@ -739,7 +743,7 @@ For example, a person goes to bed at 2023-06-27 23:11 in the evening and wakes u
          minHeartRate = 0;        // The min heart rate
          minPace = 400;            // The min running pace, the unit is second / 100 meter
          peakTime = 20;           // The ultimate heart rate duration, the unit is second
-         startDateString = 20200229180100;   // The start time of activity
+         startDateString = 2020-02-29 00:00:00;   // The start time of activity
          timeZone = 0;                     //timeZone
          totalCalorie = 65535;         //Current total active calories
          totalDistance = 30000;      //Current total Distance
@@ -749,7 +753,7 @@ For example, a person goes to bed at 2023-06-27 23:11 in the evening and wakes u
          type = 0;                          //type
          typeDescription = 0;        //typeDescription
          version = 0;                      //version
-         warnUpTime = 20;         // The warm up time, the unit is secode
+         warmUpTime = 20;         // The warm up time, the unit is secode
      },
 )
  * @param fail Communication error codes, see AM6 error descriptions.
