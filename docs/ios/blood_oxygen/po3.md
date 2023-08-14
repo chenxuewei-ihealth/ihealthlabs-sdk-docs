@@ -102,3 +102,33 @@ sidebar_position: 2
  */
 -(void)commandPO3Disconnect:(DisposePO3DisconnectBlock)disconnectBlock withErrorBlock:(DisposePO3ErrorBlock)errorBlock;
 ```
+
+### GetChargeState 
+
+```java
+/**
+ * GetChargeState    （Firmware version must more than or equal to 3.1.1 support this API）
+ * @param state  PO3ChargeState
+ * @param errorBlock Communication error codes
+ */
+-(void)commandPO3GetChargeState:(DisposePO3ChargeState)state withErrorBlock:(DisposePO3ErrorBlock)errorBlock;
+```
+
+
+### Charge State  change Notification
+
+```java
+/**
+ 
+ Charge State  change Notification（Firmware version must more than or equal to 3.1.1 support this API）
+
+ PO3NotificationChargeState
+
+You need to listen to this message to get ChargeState
+ 
+ {
+     state = 1;   0:PO3ChargeState_ExitCharge,   1: PO3ChargeState_Charging,
+ }
+
+ */
+```
