@@ -16,7 +16,7 @@ export default function Home() {
       <Head>
         <meta title="iHealthlabs SDK" />
       </Head>
-      <Redirect to="/ihealthlabs-sdk-docs/docs/home/intro" />
+      <Redirect to="../../docs/home/intro" />
     </>
   );
 }
