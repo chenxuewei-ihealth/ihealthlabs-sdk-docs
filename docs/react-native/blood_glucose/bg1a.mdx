@@ -51,41 +51,21 @@ const notifyListener = DeviceEventEmitter.addListener(BG1AModule.Event_Notify,  
 });
 ```
 
-### Get BG1A IDPS information
-
-Return BG1A IDPS information
+### Get BG1A device information
 
 ```js
-BG1AModule.getIDPS(mac);
+BG1AModule.getDeviceInfo(mac);
 
 // Response
 const notifyListener = DeviceEventEmitter.addListener(BG1AModule.Event_Notify,  (event) => {
-    if (event.action === BG1AProfileModule.ACTION_INFO_IDPS) {
-        // Example: {"serialnumber":"","manufacture":"iHealth","modenumber":"BG1A 11070","hardwareversion":"3.0.0","firmwareversion":"1.0.0","accessoryname":"BG1A","protocolstring":"com.jiuan.BGV44","action":"action_info_idps","type":"BG1A","mac":"004D32DDC704"}
-        console.log(event);
-    }
-});
-```
-
-### Get BG1A battery level
-
-Return BG1A battery level
-
-```js
-BG1AModule.getBattery(mac);
-
-// response
-const notifyListener = DeviceEventEmitter.addListener(BG1AModule.Event_Notify,  (event) => {
-    if (event.action === BG1AProfileModule.ACTION_BATTERY_BG1A) {
-        // Example: {battery: 8, type: 'BG1A', mac: '004D32DDC704', action: 'battery_bg1a'}
+    if (event.action === BG1AProfileModule.ACTION_GET_DEVICE_INFO) {
+        // Example: {"accessoryname": "BG1A", "action": "action_get_device_info", "battery": 20, "firmwareversion": "1.0.0", "hardwareversion": "3.0.0", "info_history_status_bg1a": 0, "info_local_time": "2023-08-23 11:07:34", "mac": "004D323146E3", "manufacture": "iHealth", "modenumber": "BG1A 11070", "protocol": "com.jiuan.BGV44", "type": "BG1A"}
         console.log(event);
     }
 });
 ```
 
 ### Set BG1A measurement mode
-
-Return BG1A battery level
 
 ```js
 /**
@@ -97,8 +77,36 @@ BG1AModule.setMeasureMode(mac, mode);
 
 // response
 const notifyListener = DeviceEventEmitter.addListener(BG1AModule.Event_Notify,  (event) => {
-    if (event.action === BG1AProfileModule.ACTION_BATTERY_BG1A) {
+    if (event.action === BG1AProfileModule.ACTION_SET_MEASURE_MODE) {
         // Example: {status: 0, type: 'BG1A', mac: '004D32DDC704', action: 'action_set_measure_mode'}
+        console.log(event);
+    }
+});
+```
+
+### Get BG1A history data
+
+```js
+BG1AModule.getHistoryData(mac);
+
+// Response
+const notifyListener = DeviceEventEmitter.addListener(BG1AModule.Event_Notify,  (event) => {
+    if (event.action === BG1AProfileModule.ACTION_MEASURE_RESULT_HISTORY) {
+        // Example: {"action": "action_measure_result_history", "history": [{"error_num": 0, "measure_time_device": "2023-08-23 11:25:20", "measure_time_is_error": 0, "mode": 0, "result": 89}], "mac": "004D323146E3", "type": "BG1A"}
+        console.log(event);
+    }
+});
+```
+
+### Delete BG1A history data
+
+```js
+BG1AModule.deleteHistoryData(mac);
+
+// Response
+const notifyListener = DeviceEventEmitter.addListener(BG1AModule.Event_Notify,  (event) => {
+    if (event.action === BG1AProfileModule.ACTION_DELETE_HISTORY_RESULT) {
+        // Example: {"action": "action_delete_history_result", "mac": "004D323146E3", "type": "BG1A"}
         console.log(event);
     }
 });
@@ -113,13 +121,30 @@ When BG1A is connected, it will return the strip insertion status.
 // response
 const notifyListener = DeviceEventEmitter.addListener(BG1AModule.Event_Notify,  (event) => {
     if (event.action === BG1AProfileModule.ACTION_STRIP_INSERTION_STATUS) {
-        // {"action": "action_strip_insertion_status", "describe": "strip in", "insertion_status": 1, "mac": "004D32DDC704", "type": "BG1A"}
-        console.log("strip in");
+        // {"action": "action_strip_insertion_status", "mac": "004D323146E3", "status": 1, "stripType": 1, "type": "BG1A"}
+        if (0 == status) {
+            Log.i("The test strip is inserted, and blood can be dripped.");
 
-    } else if (event.action === BG1AProfileModule.ACTION_GET_BLOOD) {
-        //  {"action": "action_get_blood", "describe": "Blood drop detected", "mac": "004D32DDC704", "type": "BG1A"}
-        console.log("put the blood onto the strip");
+        } else if (1 == status) {
+            Log.i("The test strip is removed.");
+                
+        } else if (2 == status) {
+            Log.i("Blood sucking starts.");        
 
+        } else if (3 == status) {
+            Log.i("The blood sucking volume is insufficient for 1.");   
+        
+        } else if (4 == status) {
+            Log.i("The blood sucking volume is insufficient for 1 state for more than 5 seconds.");   
+
+        } else if (5 == status) {
+            Log.i("The blood sucking volume is insufficient for 2.");   
+
+        } else if (6 == status) {
+            Log.i("The blood sucking is completed.");
+        
+        }
+    
     } else if (event.action === BG1AProfileModule.ACTION_MEASURE_RESULT) {
         // {"action": "action_measure_result", "mac": "004D32DDC704", "measure_result": 0, "type": "BG1A"}
         console.log(event[BG1AProfileModule.MEASURE_MODE]);
