@@ -1025,10 +1025,15 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
                     int restHeartRate = obj.getInt(Am6Profile.GetDailyData_RestHeartRate);
                     
                     // The time of day when the minimum heart rate occurs, date format is "yyyy-MM-DD HH:MM:SS" 
+                    // If the value is "2000-00-00 00:00:00", it means don't have heart rate result.
                     String minHeartRateTime = obj.getString(Am6Profile.GetDailyData_MinHeartRateTime);
                     
                     // The time of day when your maximum heart rate occurs, date format is "yyyy-MM-DD HH:MM:SS" 
+                    // If the value is "2000-00-00 00:00:00", it means don't have heart rate result.
                     String maxHeartRateTime = obj.getString(Am6Profile.GetDailyData_MaxHeartRateTime);
+
+                    // The standing time of daily report
+                    int effectiveStand = obj.getInt(Am6Profile.GetDailyData_EffectiveStand); 
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -1256,7 +1261,6 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
                     }
 
                     // activity daily report
-                    
                     JSONObject reportObj = object.getObject(Am6Profile.GetActivityData_Report);
                         
                     // The start time of activity, date format is "yyyy-MM-DD HH:MM:SS" 
@@ -1345,7 +1349,8 @@ Am6Control control = iHealthDevicesManager.getInstance().getAm6Control(mDeviceMa
  * @param num 0x1: step and calorie data; 
               0x2: sleep data; 
               0x4: heart rate data; 
-              0x8: blood oxygen data; 
+              0x8: blood oxygen data;
+              0x10: daily report; 
               0x20: activity data;
               0x8000: All data
  */
