@@ -14,7 +14,7 @@ const pageOptions = {
 const config = {
   title: 'iHealth SDK Docs',
   url: 'https://chenxuewei-ihealth.github.io/',
-  baseUrl: '/business/docs/',
+  baseUrl: '/ihealthlabs-sdk-docs/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
