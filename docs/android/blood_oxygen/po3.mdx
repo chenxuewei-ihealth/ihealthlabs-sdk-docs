@@ -63,6 +63,29 @@ Po3Control control = iHealthDevicesManager.getInstance().getPo3Control(mDeviceMa
 
 ## API reference
 
+### Set the PO3 time
+
+:::info
+The PO3 support this feature on firmware 3.2.0 or above.
+For versions 3.1.0 and later, the SDK automatically sets the time. 
+:::
+
+```java
+Po3Control control = iHealthDevicesManager.getInstance().getPo3Control(mDeviceMac);
+control.setTime();
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (PoProfile.ACTION_SET_TIME.equals(action)) {
+            Log.i("", "set time success")
+        }
+    } 
+}
+
 ### Get the PO3 battery status
 
 ```java
@@ -196,6 +219,10 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 
 ### Get offline data
 
+:::info
+Version 3.2.0 and above, PO3 history data remove the pulse wave and add the PI value and whether to repair the time
+:::
+
 ```java
 Po3Control control = iHealthDevicesManager.getInstance().getPo3Control(mDeviceMac);
 control.getHistoryData();
@@ -217,7 +244,12 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
                     int measureDate = obj.getInt(PoProfile.MEASURE_DATE_PO);
                     int bloodOxygen = obj.getInt(PoProfile.BLOOD_OXYGEN_PO);
                     int pulseRate = obj.getInt(PoProfile.PULSE_RATE_PO);
-                    JSONArray pulseWave = obj.getJSONArray(PoProfile.PULSE_WAVE_PO);
+                    // Version 3.2.0 and above, remove the pulse wave
+                    // JSONArray pulseWave = obj.getJSONArray(PoProfile.PULSE_WAVE_PO);
+
+                    // Only Version 3.2.0 or above.
+                    int pi = obj.getInt(PoProfile.PI_PO);
+                    int timeCalibration = obj.getInt(PoProfile.TIME_CALIBRATION);
                 }
             
             } catch (JSONException e) {
