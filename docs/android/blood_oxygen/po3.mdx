@@ -29,8 +29,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
     public void onScanFinish() { }
 
     @Override
-    public void onDeviceNotify(String mac, String deviceType,
-                                String action, String message) { }
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) { }
 }
 int callbackId = iHealthDevicesManager.getInstance().registerClientCallback(miHealthDevicesCallback);
 iHealthDevicesManager.getInstance().addCallbackFilterForDeviceType(callbackId, iHealthDevicesManager.TYPE_PO3);
@@ -209,6 +208,10 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 ```
 
 ### Start a measurement
+
+:::warning
+Don't recommend to call any other API during the measurement. Please call other API after the measurement.
+:::
 
 ```java
 Po3Control control = iHealthDevicesManager.getInstance().getPo3Control(mDeviceMac);
