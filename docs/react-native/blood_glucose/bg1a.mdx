@@ -84,6 +84,20 @@ const notifyListener = DeviceEventEmitter.addListener(BG1AModule.Event_Notify,  
 });
 ```
 
+### Set BG1A device time
+
+```js
+BG1AModule.setDeviceTime(mac);
+
+// response
+const notifyListener = DeviceEventEmitter.addListener(BG1AModule.Event_Notify,  (event) => {
+    if (event.action === BG1AProfileModule.ACTION_SET_DEVICE_TIME) {
+        // Example: {status: 0, type: 'BG1A', mac: '004D32DDC704', action: 'action_set_device_time'}
+        console.log(event);
+    }
+});
+```
+
 ### Get BG1A history data
 
 ```js
