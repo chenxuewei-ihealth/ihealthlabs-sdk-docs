@@ -80,6 +80,12 @@ const notifyListener = DeviceEventEmitter.addListener(BG1AModule.Event_Notify,  
     if (event.action === BG1AProfileModule.ACTION_SET_MEASURE_MODE) {
         // Example: {status: 0, type: 'BG1A', mac: '004D32DDC704', action: 'action_set_measure_mode'}
         console.log(event);
+
+    } else if (event.action === BG1AProfileModule.ACTION_ERROR_BG1A) {
+        // Please finish this measurement, before set measurement mode
+        // Example: {type: 'BG1A', mac: '004D32DDC704', action: 'action_error', "error_num": 240}
+        console.log(event);
+
     }
 });
 ```
