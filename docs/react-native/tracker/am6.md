@@ -18,7 +18,7 @@ import {
 
 ```js
 // add
-notifyListener = DeviceEventEmitter.addListener(AM5Module.Event_Notify,  (event) => {
+notifyListener = DeviceEventEmitter.addListener(AM6Module.Event_Notify,  (event) => {
     console.log(event);
 });
 
@@ -26,7 +26,7 @@ notifyListener = DeviceEventEmitter.addListener(AM5Module.Event_Notify,  (event)
 notifyListener.remove();
 ```
 
-### get all connected am6 devices
+### Get all connected am6 devices
 
 ```js
 AM6Module.getAllConnectedDevices();
@@ -83,7 +83,7 @@ notifyListener = DeviceEventEmitter.addListener(AM6Module.Event_Notify,  (event)
     }
 });
 ```
-### notifyMessage(Only for Android)
+### NotifyMessage(Only for Android)
 
 ```js
 AM6Module.notifyMessage(mac, date, status, type, title, content);
@@ -98,7 +98,7 @@ notifyListener = DeviceEventEmitter.addListener(AM6Module.Event_Notify,  (event)
     }
 });
 ```
-### find Device
+### Find Device
 
 ```js
 AM6Module.findDevice(mac, start);
@@ -113,7 +113,7 @@ notifyListener = DeviceEventEmitter.addListener(AM6Module.Event_Notify,  (event)
 });
 ```
 
-### reboot Device
+### Reboot Device
 
 ```js
 AM6Module.rebootDevice(mac);
@@ -316,7 +316,7 @@ AM6Module.setAlarmClockList(mac, clockList);
 // clockList : (mac, "1:1-1-1-1-1-1-1:1200;1:1-1-1-1-1-1-1:1400")
 //1(Parameters are separated by : characters, and the first parameter represents: （1: repeat 0: not repeat.))
 //1-1-1-1-1-1-1(Parameters are separated by : characters, and the second parameter represents: （Alarm Repeat Mode, randge: refer to Sunday to Staturday 1：open 0：close))
-//1200 (time，Parameters are separated by : characters, and the third parameter represents: 12:00)
+//1200 (time，Parameters are separated by : characters, and the third parameter represents: 1200 min)
 // response
 //  {"action": "am6_action_setAlarmClockList", "am6_setAlarmClockList_Status": 1, "mac": "004D321BD2D9", "type": "AM6"}
 notifyListener = DeviceEventEmitter.addListener(AM6Module.Event_Notify,  (event) => {
@@ -561,7 +561,18 @@ notifyListener = DeviceEventEmitter.addListener(AM6Module.Event_Notify,  (event)
   ### Delete Data
 
 ```js
-AM6Module.deleteData(mac);
+AM6Module.deleteData(mac,type);
+//Delete specified historical data
+//type in order bit0: steps and calories bit1: sleep bit2: heart rate bit3: blood oxygen bit4: daily bit5: multi-sports, the highest bit is 1 all delete all the corresponding data on the above bits If you need to delete, it is 1 If you don’t need to delete is 0
+//type example
+// 0x0010     deleteDailyActivityReport
+//0x0001     deleteDailyStepsCalorieDistance
+//0x0002     deleteSleepData
+//0x0004     deleteDailyHeartRate
+//0x0008     deleteOfflineBloodOxygen
+//0x0020     deleteSport
+// 0x8000    deleteAllData
+
 // response
 //{"action": "am6_action_deleteData", "am6_deleteData_result": 1, "mac": "004D321BD2DD", "type": "AM6"}
 
