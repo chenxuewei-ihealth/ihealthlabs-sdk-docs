@@ -303,7 +303,7 @@ notifyListener = DeviceEventEmitter.addListener(HS2SModule.Event_Notify,  (event
 ### Start heart rate measurement mode
 
 ```js
-HS2SModule.resetDevice(mac);
+HS2SModule.enterHS2SProHeartRateMeasurementMode(mac);
 
 notifyListener = DeviceEventEmitter.addListener(HS2SModule.Event_Notify,  (event) => {
     if (event.action === HS2SProfileModule.ACTION_HS2S_MEASURE_HEARTRATE) {
@@ -315,7 +315,7 @@ notifyListener = DeviceEventEmitter.addListener(HS2SModule.Event_Notify,  (event
 ### Stop heart rate measurement mode
 
 ```js
-HS2SModule.resetDevice(mac);
+HS2SModule.exitHS2SProHeartRateMeasurementMode(mac);
 
 notifyListener = DeviceEventEmitter.addListener(HS2SModule.Event_Notify,  (event) => {
     if (event.action === HS2SProfileModule.ACTION_HS2S_EXIT_MEASURE_HEARTRATE_STATUS) {
