@@ -37,7 +37,7 @@ notifyListener = DeviceEventEmitter.addListener(HS2SModule.Event_Notify,  (event
        console.log(event["unit_current"]);
        console.log(event["user_count"]);
     }
-}
+});
 ```
 
 ### Get HS2S battery level
@@ -49,7 +49,7 @@ notifyListener = DeviceEventEmitter.addListener(HS2SModule.Event_Notify,  (event
     if (event.action === "action_get_battery_hs") {
        console.log(event["battery_hs"]);
     }
-}
+});
 ```
 
 ### Set HS2S unit type
@@ -67,7 +67,7 @@ notifyListener = DeviceEventEmitter.addListener(HS2SModule.Event_Notify,  (event
     if (event.action === "action_set_unit") {
        console.log(event["result"]);
     }
-}
+});
 ```
 
 ### Get user profile in HS2S
@@ -88,7 +88,7 @@ notifyListener = DeviceEventEmitter.addListener(HS2SModule.Event_Notify,  (event
        console.log(array["create_time"]);
        console.log(array["user_id"]);
     }
-}
+});
 ```
 
 ### Create or update user profile in HS2S
@@ -110,7 +110,7 @@ notifyListener = DeviceEventEmitter.addListener(HS2SModule.Event_Notify,  (event
     if (event.action === "action_create_or_update_user_info") {
        console.log(event["result"]);
     }
-}
+});
 ```
 
 ### Delete user profile in HS2S
@@ -125,7 +125,7 @@ notifyListener = DeviceEventEmitter.addListener(HS2SModule.Event_Notify,  (event
     if (event.action === "action_delete_user_info") {
        console.log(event["result"]);
     }
-}
+});
 ```
 
 ### Get the number of offline measurement result in HS2S
@@ -140,7 +140,7 @@ notifyListener = DeviceEventEmitter.addListener(HS2SModule.Event_Notify,  (event
     if (event.action === "action_history_data_num") {
        console.log(event["history_data_count"]);
     }
-}
+});
 ```
 
 ### Get offline data in HS2S
@@ -178,7 +178,7 @@ notifyListener = DeviceEventEmitter.addListener(HS2SModule.Event_Notify,  (event
             console.log(result["weight"]);
        })
     }
-}
+});
 ```
 
 ### Delete offline data in HS2S by user id
@@ -193,7 +193,7 @@ notifyListener = DeviceEventEmitter.addListener(HS2SModule.Event_Notify,  (event
     if (event.action === "action_delete_history_data") {
        console.log(event["result"]);
     }
-}
+});
 ```
 
 ### Get the number of guest offline data in HS2S
@@ -205,7 +205,7 @@ notifyListener = DeviceEventEmitter.addListener(HS2SModule.Event_Notify,  (event
     if (event.action === "action_anonymous_data_num") {
        console.log(event["anonymous_data_count"]);
     }
-}
+});
 ```
 
 ### Get guest offline data in HS2S
@@ -227,7 +227,7 @@ notifyListener = DeviceEventEmitter.addListener(HS2SModule.Event_Notify,  (event
             console.log(result["weight"]);
        })
     }
-}
+});
 ```
 
 ### Delete guest offline data
@@ -239,7 +239,7 @@ notifyListener = DeviceEventEmitter.addListener(HS2SModule.Event_Notify,  (event
     if (event.action === "action_delete_anonymous_data") {
        console.log(event["result"]);
     }
-}
+});
 ```
 
 ### Start a online measurement
@@ -249,7 +249,7 @@ The API is async function. It will return message until finish measurement.
 ```js
 /**
  * userID: User id, the id must be 16 digits.
- * createTS: Create user or modify timestramp.
+ * createTS: Create user or modify Timestamp.
  * weight: user current weight, the unit is kg, range is 20kg~180kg.
  * age: user age, range is 18-99, if you are not in this range, you may not get the correect body fat result
  * height: user height, range is 90cm~220cm
@@ -309,7 +309,7 @@ notifyListener = DeviceEventEmitter.addListener(HS2SModule.Event_Notify,  (event
     if (event.action === HS2SProfileModule.ACTION_HS2S_MEASURE_HEARTRATE) {
        
     }
-}
+});
 ```
 
 ### Stop heart rate measurement mode
@@ -322,7 +322,7 @@ notifyListener = DeviceEventEmitter.addListener(HS2SModule.Event_Notify,  (event
         // {"status":0,"heartrate":78}
        console.log(event.message);
     }
-}
+});
 ```
 
 ### reset device
@@ -334,7 +334,7 @@ notifyListener = DeviceEventEmitter.addListener(HS2SModule.Event_Notify,  (event
     if (event.action === "action_restore_factory_settings") {
        console.log(event["result"]);
     }
-}
+});
 ```
 
 ### disconnect device

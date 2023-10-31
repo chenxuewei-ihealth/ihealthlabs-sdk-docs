@@ -37,7 +37,7 @@ notifyListener = DeviceEventEmitter.addListener(HS2SProModule.Event_Notify,  (ev
        console.log(event["unit_current"]);
        console.log(event["user_count"]);
     }
-}
+});
 ```
 
 ### Get HS2S Pro battery level
@@ -49,7 +49,7 @@ notifyListener = DeviceEventEmitter.addListener(HS2SProModule.Event_Notify,  (ev
     if (event.action === "action_get_battery_hs") {
        console.log(event["battery"]);
     }
-}
+});
 ```
 
 ### Set HS2S Pro unit type
@@ -67,7 +67,7 @@ notifyListener = DeviceEventEmitter.addListener(HS2SProModule.Event_Notify,  (ev
     if (event.action === "action_set_unit") {
        console.log(event["result"]);
     }
-}
+});
 ```
 
 ### Get user profile in HS2S Pro
@@ -77,7 +77,7 @@ HS2SProModule.getUserInfo(mac);
 
 notifyListener = DeviceEventEmitter.addListener(HS2SProModule.Event_Notify,  (event) => {
     if (event.action === "action_get_user_info") {
-       console.log(event["user_info-count"]);
+       console.log(event["user_info_count"]);
        let array = event["user_info_array"];
        console.log(array["body_building"]);
        console.log(array["impedance"]);
@@ -88,7 +88,7 @@ notifyListener = DeviceEventEmitter.addListener(HS2SProModule.Event_Notify,  (ev
        console.log(array["create_time"]);
        console.log(array["user_id"]);
     }
-}
+});
 ```
 
 ### Create or update user profile in HS2S Pro
@@ -96,7 +96,7 @@ notifyListener = DeviceEventEmitter.addListener(HS2SProModule.Event_Notify,  (ev
 ```js
 /**
  * userID: User id, the id must be 16 digits.
- * createTS: Create user or modify timestramp.
+ * createTS: Create user or modify timestamp.
  * weight: user current weight, the unit is kg, range is 20kg~180kg.
  * age: user age, range is 18-99, if you are not in this range, you may not get the correect body fat result
  * height: user height, range is 90cm~220cm
@@ -110,7 +110,7 @@ notifyListener = DeviceEventEmitter.addListener(HS2SProModule.Event_Notify,  (ev
     if (event.action === "action_create_or_update_user_info") {
        console.log(event["result"]);
     }
-}
+});
 ```
 
 ### Delete user profile in HS2S Pro
@@ -125,7 +125,7 @@ notifyListener = DeviceEventEmitter.addListener(HS2SProModule.Event_Notify,  (ev
     if (event.action === "action_delete_user_info") {
        console.log(event["result"]);
     }
-}
+});
 ```
 
 ### Get the number of offline measurement result in HS2S Pro 
@@ -140,7 +140,7 @@ notifyListener = DeviceEventEmitter.addListener(HS2SProModule.Event_Notify,  (ev
     if (event.action === "action_history_data_num") {
        console.log(event["history_data_count"]);
     }
-}
+});
 ```
 
 ### Get offline data in HS2S Pro
@@ -172,7 +172,7 @@ notifyListener = DeviceEventEmitter.addListener(HS2SProModule.Event_Notify,  (ev
             console.log(result["data_impedance_errors"]);
        })
     }
-}
+});
 ```
 
 ### Delete offline data in HS2S Pro by user id
@@ -187,7 +187,7 @@ notifyListener = DeviceEventEmitter.addListener(HS2SProModule.Event_Notify,  (ev
     if (event.action === "action_delete_history_data") {
        console.log(event["result"]);
     }
-}
+});
 ```
 
 ### Get the number of guest offline data in HS2S Pro
@@ -199,7 +199,7 @@ notifyListener = DeviceEventEmitter.addListener(HS2SProModule.Event_Notify,  (ev
     if (event.action === "action_anonymous_data_num") {
        console.log(event["anonymous_data_count"]);
     }
-}
+});
 ```
 
 ### Get guest offline data in HS2S Pro
@@ -217,7 +217,7 @@ notifyListener = DeviceEventEmitter.addListener(HS2SProModule.Event_Notify,  (ev
             console.log(result["weight"]);
        })
     }
-}
+});
 ```
 
 ### Delete guest offline data
@@ -229,7 +229,7 @@ notifyListener = DeviceEventEmitter.addListener(HS2SProModule.Event_Notify,  (ev
     if (event.action === "action_delete_anonymous_data") {
        console.log(event["result"]);
     }
-}
+});
 ```
 
 ### Start a online measurement
@@ -238,9 +238,9 @@ The API is async function. It will return message until finish measurement.
 
 ```js
 /**
- * userType:0 guest,1 normol uesr
+ * userType:0 guest,1 normal user
  * userID: User id, the id must be 16 digits.
- * createTS: Create user or modify timestramp.
+ * createTS: Create user or modify Timestamp.
  * weight: user current weight, the unit is kg, range is 20kg~180kg.
  * age: user age, range is 18-99, if you are not in this range, you may not get the correect body fat result
  * height: user height, range is 90cm~220cm
@@ -284,23 +284,23 @@ notifyListener = DeviceEventEmitter.addListener(HS2SProModule.Event_Notify,  (ev
 HS2SProModule.enterHS2SProHeartRateMeasurementMode(mac);
 
 notifyListener = DeviceEventEmitter.addListener(HS2SProModule.Event_Notify,  (event) => {
-    if (event.action === HS2SProfileModule.ACTION_HS2S_MEASURE_HEARTRATE) {
+    if (event.action === HS2SProfileModule.ACTION_HS2PRO_MEASURE_HEARTRATE) {
        
     }
-}
+});
 ```
 
 ### Stop heart rate measurement mode
 
 ```js
-HS2SProModule.exitHS2SProProHeartRateMeasurementMode(mac);
+HS2SProModule.exitHS2SProHeartRateMeasurementMode(mac);
 
 notifyListener = DeviceEventEmitter.addListener(HS2SProModule.Event_Notify,  (event) => {
-    if (event.action === HS2SProfileModule.ACTION_HS2S_EXIT_MEASURE_HEARTRATE_STATUS) {
+    if (event.action === HS2SProfileModule.ACTION_HS2SPRO_EXIT_MEASURE_HEARTRATE_STATUS) {
         // {"status":0,"heartrate":78}
        console.log(event.message);
     }
-}
+});
 ```
 
 ### reset device
@@ -312,13 +312,13 @@ notifyListener = DeviceEventEmitter.addListener(HS2SProModule.Event_Notify,  (ev
     if (event.action === "action_restore_fatory_settings") {
        console.log(event["result"]);
     }
-}
+});
 ```
 
 ### disconnect device
 
 ```js
-HS2SProModule.disConnect(mac);
+HS2SProModule.disconnect(mac);
 ```
 
 ### get all connected devices
