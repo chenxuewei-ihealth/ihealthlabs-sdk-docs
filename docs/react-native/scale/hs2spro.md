@@ -46,7 +46,7 @@ notifyListener = DeviceEventEmitter.addListener(HS2SProModule.Event_Notify,  (ev
 HS2SProModule.getBattery(mac);
 
 notifyListener = DeviceEventEmitter.addListener(HS2SProModule.Event_Notify,  (event) => {
-    if (event.action === "action_get_battery_hs") {
+    if (event.action === "battery_hs") {
        console.log(event["battery"]);
     }
 });
@@ -108,7 +108,7 @@ HS2SProModule.updateUserInfo(mac, userID, createTS, weight, age, height, gender,
 
 notifyListener = DeviceEventEmitter.addListener(HS2SProModule.Event_Notify,  (event) => {
     if (event.action === "action_create_or_update_user_info") {
-       console.log(event["result"]);
+       console.log(event["status"]);
     }
 });
 ```
@@ -123,7 +123,7 @@ HS2SProModule.deleteUser(mac, userId);
 
 notifyListener = DeviceEventEmitter.addListener(HS2SProModule.Event_Notify,  (event) => {
     if (event.action === "action_delete_user_info") {
-       console.log(event["result"]);
+       console.log(event["status"]);
     }
 });
 ```
@@ -155,20 +155,18 @@ notifyListener = DeviceEventEmitter.addListener(HS2SProModule.Event_Notify,  (ev
     if (event.action === "action_history_data") {
         let arr = event["history_data"];
         arr.forEach(function(result) {
-            console.log(result["body_building"]);
-            console.log(result["body_fit_percentage"]);
             console.log(result["right_time"]);
+            console.log(result["body_building"]);           
             console.log(result["gender"]);
-            console.log(result["bone_salt_content"]);
             console.log(result["height"]);
-            console.log(result["dataID"]);
-            console.log(result["muscle_mass"]);
             console.log(result["weight"]);
+            console.log(result["instruction_type"]);
+            console.log(result["impedanceEncrypt"]);
             console.log(result["age"]);
             console.log(result["impedance"]);
+            console.log(result["dataID"]);
             console.log(result["measure_time"]);
-            console.log(result["body_water_rate"]);
-            console.log(result["instruction_type"]);
+            console.log(result["user_num"]);
             console.log(result["data_impedance_errors"]);
        })
     }
@@ -185,7 +183,7 @@ HS2SProModule.deleteMemoryData(mac, userId);
 
 notifyListener = DeviceEventEmitter.addListener(HS2SProModule.Event_Notify,  (event) => {
     if (event.action === "action_delete_history_data") {
-       console.log(event["result"]);
+       console.log(event["status"]);
     }
 });
 ```
@@ -227,7 +225,7 @@ HS2SProModule.deleteAnonymousMemoryData(mac);
 
 notifyListener = DeviceEventEmitter.addListener(HS2SProModule.Event_Notify,  (event) => {
     if (event.action === "action_delete_anonymous_data") {
-       console.log(event["result"]);
+       console.log(event["status"]);
     }
 });
 ```
@@ -259,21 +257,22 @@ notifyListener = DeviceEventEmitter.addListener(HS2SProModule.Event_Notify,  (ev
         console.log(event["weight"]);
 
     } else if (event.action === "action_body_fat_result") {
-        let body_fit_percentage = event["body_fit_percentage"];
-        let right_time = bodyFat["right_time"];
-        let body_building = bodyFat["body_building"];
-        let gender = bodyFat["gender"];
-        let bone_salt_content = bodyFat["bone_salt_content"];
-        let height = bodyFat["height"];
-        let dataID = bodyFat["dataID"];
-        let muscle_mass = bodyFat["muscle_mass"];
-        let weight = bodyFat["weight"];
-        let age = bodyFat["age"];
-        let impedance = bodyFat["impedance"];
-        let measure_time = bodyFat["measure_time"];
-        let body_water_rate = bodyFat["body_water_rate"];
-        let instruction_type = bodyFat["instruction_type"];
-        let data_impedance_errors = bodyFat["data_impedance_errors"];
+        let dic = event["data_body_fat_result"];
+        dic.forEach(function(result) {
+            console.log(result["right_time"]);
+            console.log(result["body_building"]);           
+            console.log(result["gender"]);
+            console.log(result["height"]);
+            console.log(result["weight"]);
+            console.log(result["instruction_type"]);
+            console.log(result["impedanceEncrypt"]);
+            console.log(result["age"]);
+            console.log(result["impedance"]);
+            console.log(result["dataID"]);
+            console.log(result["measure_time"]);
+            console.log(result["user_num"]);
+            console.log(result["data_impedance_errors"]);
+       })
     } 
 });
 ```
@@ -284,8 +283,14 @@ notifyListener = DeviceEventEmitter.addListener(HS2SProModule.Event_Notify,  (ev
 HS2SProModule.enterHS2SProHeartRateMeasurementMode(mac);
 
 notifyListener = DeviceEventEmitter.addListener(HS2SProModule.Event_Notify,  (event) => {
-    if (event.action === HS2SProfileModule.ACTION_HS2PRO_MEASURE_HEARTRATE) {
+    if (event.action === "action_start_heartrate_measure") {
        
+    }
+    if (event.action === "action_heartrate_measure_status") {
+       console.log(event["status"]);
+    }
+    if (event.action === "action_stop_heartrate_result") {
+       console.log(event["heartrate"]);
     }
 });
 ```
@@ -296,9 +301,8 @@ notifyListener = DeviceEventEmitter.addListener(HS2SProModule.Event_Notify,  (ev
 HS2SProModule.exitHS2SProHeartRateMeasurementMode(mac);
 
 notifyListener = DeviceEventEmitter.addListener(HS2SProModule.Event_Notify,  (event) => {
-    if (event.action === HS2SProfileModule.ACTION_HS2SPRO_EXIT_MEASURE_HEARTRATE_STATUS) {
-        // {"status":0,"heartrate":78}
-       console.log(event.message);
+    if (event.action === "action_stop_heartrate_measure") {
+       
     }
 });
 ```
@@ -310,7 +314,7 @@ HS2SProModule.resetDevice(mac);
 
 notifyListener = DeviceEventEmitter.addListener(HS2SProModule.Event_Notify,  (event) => {
     if (event.action === "action_restore_fatory_settings") {
-       console.log(event["result"]);
+       console.log(event["status"]);
     }
 });
 ```
