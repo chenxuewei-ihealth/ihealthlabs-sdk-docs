@@ -65,7 +65,7 @@ HS2SProModule.setUnit(mac, unit);
 
 notifyListener = DeviceEventEmitter.addListener(HS2SProModule.Event_Notify,  (event) => {
     if (event.action === "action_set_unit") {
-       console.log(event["result"]);
+       console.log(event["status"]);
     }
 });
 ```
@@ -170,6 +170,34 @@ notifyListener = DeviceEventEmitter.addListener(HS2SProModule.Event_Notify,  (ev
             console.log(result["data_impedance_errors"]);
        })
     }
+//If body fat is measured, this information will be returned :
+
+if (event.action === "action_history_data") {
+        let arr = event["history_data"];
+        arr.forEach(function(result) {
+            console.log(result["right_time"]);
+            console.log(result["body_building"]);           
+            console.log(result["gender"]);
+            console.log(result["height"]);
+            console.log(result["weight"]);
+            console.log(result["instruction_type"]);
+            console.log(result["impedanceEncrypt"]);
+            console.log(result["age"]);
+            console.log(result["impedance"]);
+            console.log(result["dataID"]);
+            console.log(result["measure_time"]);
+            console.log(result["user_num"]);
+            console.log(result["data_impedance_errors"]);
+            console.log(result["body_fit_percentage"]);
+            console.log(result["protein_rate"]);
+            console.log(result["muscle_mass"]);
+            console.log(result["body_water_rate"]);
+            console.log(result["bone_salt_content"]);
+       })
+    }
+
+       
+
 });
 ```
 
@@ -272,6 +300,28 @@ notifyListener = DeviceEventEmitter.addListener(HS2SProModule.Event_Notify,  (ev
             console.log(result["measure_time"]);
             console.log(result["user_num"]);
             console.log(result["data_impedance_errors"]);
+       })
+       //If body fat is measured, this information will be returned :
+        let dic = event["data_body_fat_result"];
+        dic.forEach(function(result) {
+            console.log(result["right_time"]);
+            console.log(result["body_building"]);           
+            console.log(result["gender"]);
+            console.log(result["height"]);
+            console.log(result["weight"]);
+            console.log(result["instruction_type"]);
+            console.log(result["impedanceEncrypt"]);
+            console.log(result["age"]);
+            console.log(result["impedance"]);
+            console.log(result["dataID"]);
+            console.log(result["measure_time"]);
+            console.log(result["user_num"]);
+            console.log(result["data_impedance_errors"]);
+            console.log(result["body_fit_percentage"]);
+            console.log(result["protein_rate"]);
+            console.log(result["muscle_mass"]);
+            console.log(result["body_water_rate"]);
+            console.log(result["bone_salt_content"]);
        })
     } 
 });
