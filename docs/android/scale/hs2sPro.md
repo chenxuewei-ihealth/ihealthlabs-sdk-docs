@@ -61,7 +61,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 ### 3.Connect to HS2S Pro devices
 
 ```java
-iHealthDevicesManager.getInstance().connectDevice("", mac, iHealthDevicesManager.TYPE_HS2SPRO)
+iHealthDevicesManager.getInstance().connectDevice(mac, iHealthDevicesManager.TYPE_HS2SPRO)
 
 Hs2sProControl control = iHealthDevicesManager.getInstance().getHs2sProControl(mDeviceMac);
 ```
@@ -123,7 +123,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 ```java
 Hs2sProControl control = iHealthDevicesManager.getInstance().getHs2sProControl(mDeviceMac);
 
-//  Hs2sProfile#UNIT_LB}  <br>  {@link Hs2sProfile#UNIT_ST
+//  unit {@link Hs2sProfile#UNIT_KG} <br> {@link Hs2sProfile#UNIT_LB}  <br>  {@link Hs2sProfile#UNIT_ST}
 control.setUnit(Hs2sProfile.UNIT_KG);
 ```
 
@@ -181,7 +181,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 ```java
 Hs2sProControl control = iHealthDevicesManager.getInstance().getHs2sProControl(mDeviceMac);
 /*
- * @param id           User id  (The length of ID must be 16)
+ * @param id           User id  (The length of ID must be 32)
  * @param weight       weight   (unit kg     range: 20kg-180kg)
  * @param gender       0:women      1:man
  * @param age          age    18-99  (If it is not within this range, it is impossible to measure the constitution correctly.)
@@ -283,7 +283,7 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 ```java
 Hs2sProControl control = iHealthDevicesManager.getInstance().getHs2sProControl(mDeviceMac);
 /*
- * @param id           User id  (The length of ID must be 16)
+ * @param id           User id  (The length of ID must be 32)
  * @param weight       weight   (unit kg     range: 20kg-180kg)
  * @param gender       0:women      1:man
  * @param age          age    18-99  (If it is not within this range, it is impossible to measure the constitution correctly.)
