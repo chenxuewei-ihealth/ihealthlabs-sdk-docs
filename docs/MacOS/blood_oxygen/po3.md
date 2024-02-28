@@ -131,4 +131,20 @@ You need to listen to this message to get ChargeState
  }
 
  */
+ ```
+ ### GetDeviceTime
+ ```java
+ /**
+ * GetDeviceTime    （Firmware version must more than or equal to 3.2.0 support this API）
+ * @param time  DeviceTime  
+ * @param errorBlock Communication error codes
+ */
+-(void)commandPO3GetDeviceTime:(DisposePO3TimeBlock)time withErrorBlock:(DisposePO3ErrorBlock)errorBlock;
+```
+
+ ### Tool
+ ```java
+//Determine whether API for obtaining device time of new PO3 devices is supported
+-(BOOL)supportNewPO3GetDeviceTSCommand;
+
 ```
