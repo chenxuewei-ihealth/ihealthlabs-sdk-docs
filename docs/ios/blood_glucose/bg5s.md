@@ -64,8 +64,8 @@ sidebar_position: 4
  @param timezone the timezone you want to set should be from -12.00 to 14.00; step length = 0.25
  @param successBlock the block means success
  @param errorBlock the block means fail. You can get error from this block
- @note  If date is out of reange, BG5SError_InputParametersError will be returned by block. 
-        If date and timezone are invalid , use input parameters; otherwise use [NSdate date] and system time zone;
+ @note  If date is out of range, BG5SError_InputParametersError will be returned by block. 
+        If date and timezone are valid , use input parameters; otherwise use [NSdate date] and system time zone;
  */
 - (void)setTimeWithDate:(NSDate *)date
                timezone:(float)timezone
