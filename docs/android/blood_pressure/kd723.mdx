@@ -1,0 +1,394 @@
+---
+title: KD723
+sidebar_position: 7
+---
+
+## WorkFlow
+
+1. Scan and connect KD723 blood pressure monitor.
+
+2. KD723 only support offline measurement.
+
+## Connection to device
+
+### 1.Listen to device notify
+
+```java
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    
+    @Override
+    public void onScanDevice(String mac, String deviceType, int rssi, Map manufactorData) { }
+
+    @Override
+    public void onDeviceConnectionStateChange(String mac, String deviceType, int status, int errorID, Map manufactorData){ }
+
+    @Override
+    public void onScanError(String reason, long latency) { }
+
+    @Override
+    public void onScanFinish() { }
+
+    @Override
+    public void onDeviceNotify(String mac, String deviceType,
+                                String action, String message) { }
+}
+int callbackId = iHealthDevicesManager.getInstance().registerClientCallback(miHealthDevicesCallback);
+iHealthDevicesManager.getInstance().addCallbackFilterForDeviceType(callbackId, iHealthDevicesManager.TYPE_KD723);
+iHealthDevicesManager.getInstance().addCallbackFilterForAddress(callbackId, String... macs)
+```
+
+### 2.Scan for KD723 devices
+
+```java
+iHealthDevicesManager.getInstance().startDiscovery(DiscoveryTypeEnum.KD723);
+```
+
+### 3.Connect to KD723 devices
+
+```java
+iHealthDevicesManager.getInstance().connectDevice("", mac, iHealthDevicesManager.TYPE_KD723)
+
+Bp723Control control = iHealthDevicesManager.getInstance().getBp723Control(mDeviceMac);
+```
+
+## API reference
+
+### Get the device battery
+
+:::info
+Only supported by device firmware version < 1.1.0
+:::
+
+```java
+Bp723Control control = iHealthDevicesManager.getInstance().getBp723Control(mDeviceMac);
+control.getBattery();
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (BpProfile.ACTION_BATTERY_CBP.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                int battery = obj.getInt(BpProfile.BATTERY_CBP);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    } 
+}
+```
+
+### Set local time to KD723
+
+:::info
+Only supported by device firmware version < 1.1.0
+:::
+
+```java
+Bp723Control control = iHealthDevicesManager.getInstance().getBp723Control(mDeviceMac);
+control.setTime();
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (BpProfile.ACTION_SET_TIME_CBP.equals(action)) {
+            
+        }
+    } 
+}
+```
+
+:::info
+Only supported by device firmware version >= 1.1.0
+:::
+
+```java
+Bp723Control control = iHealthDevicesManager.getInstance().getBp723Control(mDeviceMac);
+/**
+ * @param is24Hour true 24h false 12h
+ */
+control.setTime(boolean is24Hour);
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (BpProfile.ACTION_SET_TIME.equals(action)) {
+            
+        }
+    } 
+}
+```
+
+### Get the feature of Continua KD723
+
+:::info
+Only supported by device firmware version < 1.1.0
+:::
+
+```java
+Bp723Control control = iHealthDevicesManager.getInstance().getBp723Control(mDeviceMac);
+control.getFeature();
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (BpProfile.ACTION_FEATURE_CBP.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                int bodyMovement   = obj.getInt(BpProfile.FEATURE_BODY_MOVEMENT_CBP);
+                int fitDetection   = obj.getInt(BpProfile.FEATURE_FIT_DETECTION_CBP);
+                int irregularPulse = obj.getInt(BpProfile.FEATURE_IRREGULAR_PULSE_DETECTION_CBP);
+                int pulseRate      = obj.getInt(BpProfile.FEATURE_PULSE_RATE_RANGE_DETECTION_CBP);
+                int measurementPosition = obj.getInt(BpProfile.FEATURE_MEASUREMENT_POSITION_DETECTION_CBP);
+                int multipleBond   = obj.getInt(BpProfile.FEATURE_MULTIPLE_BOND_CBP);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    } 
+}
+```
+### Get device function info
+:::info
+Only supported by device firmware version >= 1.1.0
+:::
+
+```java
+Bp723Control control = iHealthDevicesManager.getInstance().getBp723Control(mDeviceMac);
+control.getFunctionInfo();
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (BpProfile.ACTION_FUNCTION_INFORMATION_BP.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                int lastOperatingState   = obj.getInt(BpProfile.LAST_OPERATING_STATE);
+                boolean upAirMeasureFlg  = obj.getBoolean(BpProfile.FUNCTION_IS_UPAIR_MEASURE);
+                boolean armMeasureFlg  = obj.getBoolean(BpProfile.FUNCTION_IS_ARM_MEASURE);
+                boolean haveAngleSensor  = obj.getBoolean(BpProfile.FUNCTION_HAVE_ANGLE_SENSOR);
+                boolean haveRepeatedlyMeasure  = obj.getBoolean(BpProfile.HAVE_REPEATEDLY_MEASURE);
+                boolean haveOffline  = obj.getBoolean(BpProfile.FUNCTION_HAVE_OFFLINE);
+                boolean haveHSD  = obj.getBoolean(BpProfile.FUNCTION_HAVE_HSD);
+                int memoryGroup = obj.getInt(BpProfile.MEMORY_GROUP);
+                int maxMemoryCapacity = obj.getInt(BpProfile.MAX_MEMORY_CAPACITY);
+                boolean haveShowUnitSetting = obj.getBoolean(BpProfile.HAVE_SHOW_UNIT_SETTING);
+                int showUnit = obj.getInt(BpProfile.SHOW_UNIT);
+                boolean haveAngleSet = obj.getBoolean(BpProfile.FUNCTION_HAVE_ANGLE_SETTING);
+                boolean multiUploadFlg = obj.getBoolean(BpProfile.FUNCTION_IS_MULTI_UPLOAD);
+                boolean selfUpdateFlg = obj.getBoolean(BpProfile.FUNCTION_HAVE_SELF_UPDATE);
+                boolean haveBackLightSetting = obj.getBoolean(BpProfile.HAVE_BACKLIGHT_SETTING);
+                boolean haveClockShowSetting = obj.getBoolean(BpProfile.HAVE_CLOCK_SHOW_SETTING);
+                String deviceTime = obj.getString(BpProfile.DEVICE_TIME);
+                String is24Hour = obj.getString(BpProfile.IS_24_HOUR);
+                String strProtocol = obj.getString(BpProfile.PROTOCOL);
+                String strAccessoryName = obj.getString(BpProfile.ACCESSORY_NAME);
+                String strFwVer = obj.getString(BpProfile.FIRMWARE_VERSION);
+                String strHwVer = obj.getString(BpProfile.HARDWARE_VERSION);
+                String strManufacture = obj.getString(BpProfile.MANUFACTURER);
+                String strModeNumber = obj.getString(BpProfile.MODEL_NUMBER);
+                String strSerialnumber = obj.getString(BpProfile.SERIAL_NUMBER);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    } 
+}
+```
+
+### Set Current user
+
+:::info
+Only supported by device firmware version < 1.1.0
+:::
+
+```java
+Bp723Control control = iHealthDevicesManager.getInstance().getBp723Control(mDeviceMac);
+control.commandSetUser(int UserID);
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (BpProfile.ACTION_CONFORM_CHOOSE_USER_CBP.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                int currentUserId = obj.getInt(BpProfile.CHOOSE_USER_CBP);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    } 
+}
+```
+
+### Get history data
+
+:::info
+Only supported by device firmware version < 1.1.0
+:::
+
+```java
+Bp723Control control = iHealthDevicesManager.getInstance().getBp723Control(mDeviceMac);
+control.getData();
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (BpProfile.ACTION_HISTORY_DATA_CBP.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                int measureFlag = obj.getInt(BpProfile.CBPINFO_UNIT);
+                int timestampFlag = obj.getInt(BpProfile.CBPINFO_TIMESTAMP_FLAG);            
+                int pulseRateFlag = obj.getInt(BpProfile.CBPINFO_PULSE_RATE_FLAG);
+                int userIDFlag = obj.getInt(BpProfile.CBPINFO_USER_ID_FLAG);
+                int measureStatusFlag = obj.getInt(BpProfile.CBPINFO_MEASURE_STATUS_FLAG);
+                int hsdFlag = obj.getInt(BpProfile.CBPINFO_HSD_FLAG);
+                int sys = obj.getInt(BpProfile.CBPINFO_SYS);
+                int dia = obj.getInt(BpProfile.CBPINFO_DIA);
+                int map = obj.getInt(BpProfile.CBPINFO_MAP);
+                int measureTime = obj.getInt(BpProfile.CBPINFO_TIMESTAMP);
+                int pulseRate = obj.getInt(BpProfile.CBPINFO_PULSE_RATE);
+              
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    } 
+}
+```
+
+### Get memory count
+
+:::info
+Only supported by device firmware version >= 1.1.0
+:::
+
+```java
+Bp723Control control = iHealthDevicesManager.getInstance().getBp723Control(mDeviceMac);
+control.getMemoryCount();
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (BpProfile.ACTION_GET_MEMORY_COUNT.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                int memoryCount = obj.getInt(BpProfile.MEMORY_COUNT);
+              
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    } 
+}
+```
+
+### Get memory data
+
+:::info
+Only supported by device firmware version >= 1.1.0
+:::
+
+```java
+Bp723Control control = iHealthDevicesManager.getInstance().getBp723Control(mDeviceMac);
+control.getMemoryData();
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (BpProfile.ACTION_GET_MEMORY_DATA.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                JSONArray memoryArray = obj.getJSONArray(BpProfile.MEMORY_DATA);
+                for (int i =0; i< array.length();i++){
+                    JSONObject memoryObj = memoryArray.getJSONObject(i);
+                    String time = memoryObj.getString(BpProfile.MEASUREMENT_DATE_BP);
+                    int sys = memoryObj.getString(BpProfile.HIGH_BLOOD_PRESSURE_BP);
+                    int dia = memoryObj.getString(BpProfile.LOW_BLOOD_PRESSURE_BP);
+                    int heartRate = memoryObj.getString(BpProfile.PULSE_BP);
+                    int ID = memoryObj.getString(BpProfile.SCHEME_ID);
+                    boolean irregular = memoryObj.getBoolean(BpProfile.IRREGULAR);
+                    boolean bodyMovement = memoryObj.getBoolean(BpProfile.BODY_MOVEMENT);
+                    boolean timeCalibration = memoryObj.getBoolean(BpProfile.IS_RIGHT_TIME);
+                    String dataID = memoryObj.getString(BpProfile.DATAID);
+                }
+              
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    } 
+}
+```
+
+### Delete memory data
+
+:::info
+Only supported by device firmware version >= 1.1.0
+:::
+
+```java
+Bp723Control control = iHealthDevicesManager.getInstance().getBp723Control(mDeviceMac);
+control.deleteMemoryData();
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (BpProfile.ACTION_DELETE_MEMORY_DATA.equals(action)) {
+            Log.i("", "Delete memory data success!");
+        }
+    } 
+}
+```
+
+### Disconnect KD723 device
+
+```java
+Bp723Control control = iHealthDevicesManager.getInstance().getBp723Control(mDeviceMac);
+control.disconnect();
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceConnectionStateChange(String mac, String deviceType, int status, int errorID, Map manufactorData) { 
+        if (iHealthDevicesManager.DEVICE_STATE_DISCONNECTED == status) {
+            Log.i("The device is disconnected");
+        }
+    }
+}
+```
