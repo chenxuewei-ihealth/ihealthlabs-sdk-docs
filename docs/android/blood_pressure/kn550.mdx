@@ -2,6 +2,36 @@
 title: KN550
 sidebar_position: 6
 ---
+## Device Version
+
+### 1. FirmVersion below 2.0.0
+
+1.Does not support time adjustment.
+
+2.Supports obtaining battery power.
+
+3.automatically deleting data after synchronizing historical data.
+
+4.After pressing the power button M, the Bluetooth icon will flash on the screen.
+
+### 2. FirmVersion 2.0.0
+1.Does not support time adjustment
+
+2.Does not support obtaining battery power
+
+3.Automatically deletes data after synchronizing historical data
+
+4.After pressing the power button M, there is no Bluetooth icon on the screen, and the Bluetooth icon will only flash after the screen is successfully connected to the mobile device
+
+### 3. FirmVersion 2.0.1 and above
+
+1.The firmware version is 2.0.1 and the isRightTime field is added. This field marks whether the historical data needs time correction (0: no need 1: need correction)）
+
+2.Supports obtaining battery power
+
+3.Historical data must be deleted by calling the delete interface, otherwise historical data will always exist
+
+4.After pressing the power button M, there is no Bluetooth icon on the screen, and the Bluetooth icon will only flash after the screen is successfully connected to the mobile device
 
 :::info
 1. Scan and connect KN-550BT blood pressure monitor.
