@@ -3,6 +3,13 @@ title: BP5S
 sidebar_position: 3
 ---
 
+## Device Version
+
+### 1. HardVersion 1.0.0
+
+### 2. HardVersion 2.0.0
+This version and above HardVersion support the offline data time correction function: when obtaining offline data, the "isRightTime" field is added. This field marks whether the historical data needs time correction (0: no need; 1: need correction). The device time and device system time can be obtained through the "getFunction" interface. Using the time difference between these two times and adding it to the time of the data that needs correction gives the correct time.
+
 ## WorkFlow
 
 1. Scan and connect BP5S blood pressure monitor.
