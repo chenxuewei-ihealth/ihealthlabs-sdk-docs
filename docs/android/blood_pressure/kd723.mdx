@@ -46,7 +46,7 @@ iHealthDevicesManager.getInstance().startDiscovery(DiscoveryTypeEnum.KD723);
 ### 3.Connect to KD723 devices
 
 ```java
-iHealthDevicesManager.getInstance().connectDevice("", mac, iHealthDevicesManager.TYPE_KD723)
+iHealthDevicesManager.getInstance().connectDevice(mac, iHealthDevicesManager.TYPE_KD723)
 
 Bp723Control control = iHealthDevicesManager.getInstance().getBp723Control(mDeviceMac);
 ```
