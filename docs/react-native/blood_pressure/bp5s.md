@@ -3,6 +3,13 @@ title: BP5S
 sidebar_position: 3
 ---
 
+## Device Version
+
+### 1. HardVersion 1.0.0
+
+### 2. HardVersion 2.0.0
+This version and above HardVersion support the offline data time correction function: when obtaining offline data, the "isRightTime" field is added. This field marks whether the historical data needs time correction (0: no need; 1: need correction). The device time and device system time can be obtained through the "getFunction" interface. Using the time difference between these two times and adding it to the time of the data that needs correction gives the correct time.
+
 ## API Reference
 
 ### Import BP5S Module
@@ -98,8 +105,8 @@ BP5SModule.disableOffline(mac);
 BP5SModule.isEnableOffline(mac);
 
 notifyListener = DeviceEventEmitter.addListener(BP5SModule.Event_Notify,  (event) => {
-    if (e.action === BPProfileModule.ACTION_IS_ENABLE_OFFLINE) {
-        console.log(event[BPProfileModule.IS_ENABLE_OFFLINE]);
+    if (e.action === BPProfileModule.ACTION_SET_MODE) {
+        console.log(event[BPProfileModule.ACTION_SET_MODE]);
     }
 });
 ```
@@ -153,4 +160,14 @@ BP5SModule.disConnect(mac);
 
 ```js
 BP5SModule.getAllConnectedDevices();
+```
+```js
+BP5SModule.deleteData();
+
+// Return value
+const notifyListener = DeviceEventEmitter.addListener(BP5SModule.Event_Notify,  (event) => {
+    if (e.action === BPProfileModule.ACTION_DELETE_ALL_MEMORY_SUCCESS) {
+        console.log("Finish data transfer");
+    }
+});
 ```
