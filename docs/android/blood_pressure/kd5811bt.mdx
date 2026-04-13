@@ -1,0 +1,258 @@
+---
+title: KD5811BT
+sidebar_position: 8
+---
+
+The Android SDK supports KD5811BT in v2.13.0 and above.
+
+:::info
+1. Scan and connect KD-5811BT blood pressure monitor.
+2. Use `MemoryDataGroupNumber` to read or delete memory for user group 1, user group 2, or all (`GROUP_1` → user id `0`, `GROUP_2` → `1`, `GROUP_ALL` → `254` on the wire).
+:::
+
+## Connection to device
+
+### 1. Listen to device notify
+
+```java
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+
+    @Override
+    public void onScanDevice(String mac, String deviceType, int rssi, Map manufactorData) { }
+
+    @Override
+    public void onDeviceConnectionStateChange(String mac, String deviceType, int status, int errorID, Map manufactorData){ }
+
+    @Override
+    public void onScanError(String reason, long latency) { }
+
+    @Override
+    public void onScanFinish() { }
+
+    @Override
+    public void onDeviceNotify(String mac, String deviceType,
+                                String action, String message) { }
+};
+int callbackId = iHealthDevicesManager.getInstance().registerClientCallback(miHealthDevicesCallback);
+iHealthDevicesManager.getInstance().addCallbackFilterForDeviceType(callbackId, iHealthDevicesManager.TYPE_KD5811BT);
+iHealthDevicesManager.getInstance().addCallbackFilterForAddress(callbackId, String... macs);
+```
+
+### 2. Scan for KD-5811BT devices
+
+```java
+iHealthDevicesManager.getInstance().startDiscovery(DiscoveryTypeEnum.KD5811BT);
+```
+
+### 3. Connect to KD-5811BT devices
+
+```java
+iHealthDevicesManager.getInstance().connectDevice("", mac, iHealthDevicesManager.TYPE_KD5811BT);
+
+Kd5811btControl control = iHealthDevicesManager.getInstance().getKd5811BtControl(mac);
+```
+
+## API reference
+
+### Set device time
+
+Sends the phone’s current date and time (default time zone) to the device. The boolean argument is **24-hour clock on the device** (`true` = 24-hour mode).
+
+```java
+import com.ihealth.communication.control.Kd5811btControl;
+import com.ihealth.communication.manager.iHealthDevicesManager;
+
+Kd5811btControl control = iHealthDevicesManager.getInstance().getKd5811BtControl(mDeviceMac);
+control.setTime(true);
+```
+
+```java
+// Return value — success (message is often empty)
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (BpProfile.ACTION_SET_TIME.equals(action)) {
+            // Time set completed
+        } else if (BpProfile.ACTION_ERROR_BP.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                int errorId = obj.getInt(BpProfile.ERROR_NUM_BP);
+                String errorMessage = obj.getString(BpProfile.ERROR_DESCRIPTION_BP);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+};
+```
+
+### Get function information
+
+Returns capability flags, firmware/hardware version strings, device time strings, current user index, and related settings. The JSON uses **camelCase** keys (see sample below), not the `function_*` key names used on some other BP models.
+
+```java
+Kd5811btControl control = iHealthDevicesManager.getInstance().getKd5811BtControl(mDeviceMac);
+control.getFunctionInfo();
+```
+
+```java
+// Return value — action: BpProfile.ACTION_FUNCTION_INFORMATION_BP ("function_info_bp")
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (BpProfile.ACTION_FUNCTION_INFORMATION_BP.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                boolean upAirMeasureFlg = obj.getBoolean("upAirMeasureFlg");
+                boolean armMeasureFlg = obj.getBoolean("armMeasureFlg");
+                boolean haveAngleSensor = obj.getBoolean("haveAngleSensor");
+                boolean haveRepeatedlyMeasure = obj.getBoolean("haveRepeatedlyMeasure");
+                boolean haveOffline = obj.getBoolean("haveOffline");
+                boolean haveCuffLooseFlg = obj.getBoolean("haveCuffLooseFlg");
+                boolean haveHSD = obj.getBoolean("haveHSD");
+                boolean haveBodyMovementFlg = obj.getBoolean("haveBodyMovementFlg");
+                int memoryGroup = obj.getInt("memoryGroup");
+                int maxMemoryCapacity = obj.getInt("maxMemoryCapacity");
+                boolean haveShowUnitSetting = obj.getBoolean("haveShowUnitSetting");
+                int showUnit = obj.getInt("showUnit");
+                boolean haveAngleSet = obj.getBoolean("haveAngleSet");
+                boolean mutableUpload = obj.getBoolean("mutableUpload");
+                boolean selfUpdate = obj.getBoolean("selfUpdate");
+                boolean haveBackLightSetting = obj.getBoolean("haveBackLightSetting");
+                boolean haveClockShowSetting = obj.getBoolean("haveClockShowSetting");
+                String deviceTime = obj.getString("deviceTime");
+                String deviceSysTime = obj.getString("deviceSysTime");
+                boolean is24Hour = obj.getBoolean("is24Hour");
+                String firmwareVersion = obj.getString("firmwareVersion");
+                String hardwareVersion = obj.getString("hardwareVersion");
+                int currentUser = obj.getInt("currentUser");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+};
+```
+
+### Get memory record count
+
+```java
+import com.ihealth.sdk.constants.MemoryDataGroupNumber;
+
+Kd5811btControl control = iHealthDevicesManager.getInstance().getKd5811BtControl(mDeviceMac);
+control.getMemoryCount(MemoryDataGroupNumber.GROUP_1);
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (BpProfile.ACTION_GET_MEMORY_COUNT.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                int count = obj.getInt(BpProfile.MEMORY_COUNT);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+};
+```
+
+### Get memory (history) data
+
+Data arrive in one or more BLE packets; the SDK assembles them and delivers a single notify when the transfer is complete. Each record includes cuff/body-movement/IHB-related flags and an app-level `dataID`.
+
+```java
+Kd5811btControl control = iHealthDevicesManager.getInstance().getKd5811BtControl(mDeviceMac);
+control.getMemoryData(MemoryDataGroupNumber.GROUP_1);
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (BpProfile.ACTION_GET_MEMORY_DATA.equals(action)) {
+            try {
+                JSONObject root = new JSONObject(message);
+                JSONArray historyArr = root.getJSONArray(BpProfile.MEMORY_DATA);
+                for (int i = 0; i < historyArr.length(); i++) {
+                    JSONObject obj = historyArr.getJSONObject(i);
+                    String time = obj.getString(BpProfile.MEASUREMENT_DATE_BP);
+                    int sys = obj.getInt(BpProfile.HIGH_BLOOD_PRESSURE_BP);
+                    int dia = obj.getInt(BpProfile.LOW_BLOOD_PRESSURE_BP);
+                    int heartRate = obj.getInt(BpProfile.PULSE_BP);
+                    boolean irregular = obj.getBoolean(BpProfile.IRREGULAR);
+                    boolean bodyMovement = obj.getBoolean(BpProfile.BODY_MOVEMENT);
+                    boolean cuffLoose = obj.getBoolean(BpProfile.CUF_LOOSE);
+                    String dataID = obj.getString(BpProfile.DATAID);
+                    boolean isRightTime = obj.getBoolean(BpProfile.IS_RIGHT_TIME);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+};
+```
+
+### Delete memory data
+
+```java
+Kd5811btControl control = iHealthDevicesManager.getInstance().getKd5811BtControl(mDeviceMac);
+control.deleteMemoryData(MemoryDataGroupNumber.GROUP_1);
+```
+
+```java
+// Return value — success (message is often empty)
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (BpProfile.ACTION_DELETE_MEMORY_DATA.equals(action)) {
+            // Delete completed
+        }
+    }
+};
+```
+
+### Disconnect KD-5811BT device
+
+```java
+Kd5811btControl control = iHealthDevicesManager.getInstance().getKd5811BtControl(mDeviceMac);
+control.disconnect();
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+     @Override
+    public void onDeviceConnectionStateChange(String mac, String deviceType, int status, int errorID, Map manufactorData) {
+        if (iHealthDevicesManager.DEVICE_STATE_DISCONNECTED == status) {
+            // Disconnected
+        }
+    }
+};
+```
+
+### Release control (optional)
+
+```java
+Kd5811btControl control = iHealthDevicesManager.getInstance().getKd5811BtControl(mDeviceMac);
+if (control != null) {
+    control.destroy();
+}
+```
+
+### Errors and command timeout
+
+`Kd5811btControl` treats `BpProfile.ACTION_ERROR_BP` (`error_bp`), communication timeout (`action_communication_timeout`), and the actions listed above as completion paths. Compare `action` with `iHealthDevicesManager.IHEALTH_COMM_TIMEOUT` where you handle timeouts globally.
+
+```java
+if (BpProfile.ACTION_ERROR_BP.equals(action)) {
+    JSONObject obj = new JSONObject(message);
+    int errorId = obj.getInt(BpProfile.ERROR_NUM_BP);
+    String errorMessage = obj.getString(BpProfile.ERROR_DESCRIPTION_BP);
+}
+```

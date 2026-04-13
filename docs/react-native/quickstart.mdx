@@ -43,3 +43,12 @@ import { iHealthDeviceManagerModule } from '@ihealth/ihealthlibrary-react-native
 const filename = 'license.pem';
 iHealthDeviceManagerModule.sdkAuthWithLicense(filename);
 ```
+
+## Devices not supported by React Native
+
+The React Native package (`@ihealth/ihealthlibrary-react-native`) does **not** include modules for the following devices. Use the **native iOS SDK** instead if you need them.
+
+| Device | Native iOS SDK |
+|--------|----------------|
+| **KD-5811BT** (iHealth KD-5811BT) | 2.14.0 and above — see [iOS KD5811BT](/ihealthlabs-sdk-docs/docs/ios/blood_pressure/kd5811bt) |
+
