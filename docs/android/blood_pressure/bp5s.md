@@ -3,6 +3,13 @@ title: BP5S
 sidebar_position: 3
 ---
 
+## Device Version
+
+### 1. HardVersion 1.0.0
+
+### 2. HardVersion 2.0.0
+This version and above HardVersion support the offline data time correction function: when obtaining offline data, the "isRightTime" field is added. This field marks whether the historical data needs time correction (0: no need; 1: need correction). The device time and device system time can be obtained through the "getFunction" interface. Using the time difference between these two times and adding it to the time of the data that needs correction gives the correct time.
+
 ## WorkFlow
 
 1. Scan and connect BP5S blood pressure monitor.
@@ -119,6 +126,10 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 
                 int maxMemoryCapacity = obj.getInt(BpProfile.FUNCTION_MAX_MEMORY_CAPACITY);
 
+                // only support hardware 2.0.0 or later
+                long deviceTime = obj.getLong(BpProfile.DEVICE_TIME);
+                long deviceSysTime = obj.getLong(BpProfile.DEVICE_SYS_TIME);
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -199,6 +210,10 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
 ```
 
 ### Get history data
+:::info
+When user use BP5S first time and don't set time yet, the device time is not correct. 
+and the returned data will contain whether the time need to be set. HardwareVersion 2.0.0 or above support this feature.
+:::
 
 ```java
 Bp5sControl control = iHealthDevicesManager.getInstance().getBp5sControl(mDeviceMac);
@@ -221,6 +236,9 @@ private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallb
                     int pulse = obj.getString(BpProfile.PULSE_BP);
                     int ahr = obj.getString(BpProfile.MEASUREMENT_AHR_BP);
                     int hsd = obj.getString(BpProfile.MEASUREMENT_HSD_BP);
+
+                    // only support hardware 2.0.0 or later
+                    int isRightTime = obj.getBoolean(BpProfile.IS_RIGHT_TIME);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
