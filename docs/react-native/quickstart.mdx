@@ -4,51 +4,353 @@ sidebar_position: 1
 
 # Get started
 
+Official React Native SDK for iHealth Bluetooth health devices.
+
+`@ihealth/ihealthlibrary-react-native` v2 fully supports the React Native New Architecture (TurboModules) and remains compatible with the old Bridge architecture.
+
+:::info
+React Native device pages in this docs site still contain many legacy `DeviceEventEmitter` examples. For v2, please use the `NativeEventEmitter` pattern shown on this page. Device APIs such as `startMeasure()`, `getOfflineData()`, and `disconnect()` remain the same.
+:::
+
+## Requirements
+
+- React Native `>= 0.76.0`
+- iOS `12.0+`
+- Android `7.0+` (API 24+)
+
 ## Installation
 
 ```shell
-// use npm
-npm install --save @ihealth/ihealthlibrary-react-native
-// use yarn
+npm install @ihealth/ihealthlibrary-react-native
+# or
 yarn add @ihealth/ihealthlibrary-react-native
 ```
 
-## Usage
+## iOS setup
 
-### Authentication
+### Install pods
 
-#### Download license file
+```shell
+cd ios && pod install
+```
 
-1. Sign up iHealth developer webside. [Please sign up here](https://dev.ihealthlabs.com)
-2. Press "Add New App" button, fill in your information of your app. We will get email and active the license for your app.
-3. Download license file, as shown below.
-![Download](/doc_ready_5.png)
+### Add Bluetooth permissions
 
-#### Integrate license file
+Add the following entries to `Info.plist`:
 
-For iOS
-As shown below, add your license file to your iOS project.
-![integrate ios](/guide_ios_1.png)
+```xml
+<key>NSBluetoothAlwaysUsageDescription</key>
+<string>Required to connect to iHealth devices</string>
+<key>NSBluetoothPeripheralUsageDescription</key>
+<string>Required to connect to iHealth devices</string>
+```
 
-For Android
-As show below, add your license file to your asserts folder.
-![integrate android](/guide_android_1.png)
+### Enable the New Architecture
 
-#### Using license file
+For React Native `0.76+`, enabling the New Architecture is recommended.
+
+Update `ios/Podfile.properties.json`:
+
+```json
+{
+  "newArchEnabled": "true"
+}
+```
+
+Then run `pod install` again.
+
+### iOS license note
+
+iOS does **not** require SDK license authentication.
+
+## Android setup
+
+### Add Bluetooth permissions
+
+Add the following to `android/app/src/main/AndroidManifest.xml`:
+
+```xml
+<!-- Bluetooth for Android 11 and below -->
+<uses-permission android:name="android.permission.BLUETOOTH" />
+<uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+<!-- Bluetooth for Android 12+ -->
+<uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+<uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+```
+
+### Request runtime permissions
+
+```js
+import { PermissionsAndroid, Platform } from 'react-native';
+
+export async function requestBluetoothPermissions() {
+  if (Platform.OS !== 'android') return true;
+
+  const permissions =
+    Platform.Version >= 31
+      ? [
+          PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
+          PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        ]
+      : [PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION];
+
+  const result = await PermissionsAndroid.requestMultiple(permissions);
+  return Object.values(result).every(
+    value => value === PermissionsAndroid.RESULTS.GRANTED
+  );
+}
+```
+
+### Authenticate the SDK license
+
+Android requires a `.pem` license file from iHealth.
+
+1. Sign up at [dev.ihealthlabs.com](https://dev.ihealthlabs.com).
+2. Create your app and obtain the `.pem` file from the developer portal.
+3. Place the file under `android/app/src/main/assets/`.
+4. Call `sdkAuthWithLicense()` once during app startup.
 
 ```js
 import { iHealthDeviceManagerModule } from '@ihealth/ihealthlibrary-react-native';
 
-// your license file
-const filename = 'license.pem';
-iHealthDeviceManagerModule.sdkAuthWithLicense(filename);
+iHealthDeviceManagerModule.sdkAuthWithLicense('your_license_file.pem');
 ```
 
-## Devices not supported by React Native
+### Enable the New Architecture
 
-The React Native package (`@ihealth/ihealthlibrary-react-native`) does **not** include modules for the following devices. Use the **native iOS SDK** instead if you need them.
+Update `android/gradle.properties`:
 
-| Device | Native iOS SDK |
-|--------|----------------|
-| **KD-5811BT** (iHealth KD-5811BT) | 2.14.0 and above — see [iOS KD5811BT](/ihealthlabs-sdk-docs/docs/ios/blood_pressure/kd5811bt) |
+```properties
+newArchEnabled=true
+```
+
+## Quick start
+
+The example below shows a complete scan, connect, and measure flow using the `BP5S` blood pressure monitor.
+
+```jsx
+import React, { useEffect, useState } from 'react';
+import { Button, NativeEventEmitter, NativeModules, Text, View } from 'react-native';
+import {
+  BP5SModule,
+  iHealthDeviceManagerModule,
+} from '@ihealth/ihealthlibrary-react-native';
+
+export default function BP5SScreen() {
+  const [devices, setDevices] = useState([]);
+  const [connectedMac, setConnectedMac] = useState(null);
+  const [result, setResult] = useState('');
+
+  useEffect(() => {
+    const managerEmitter = new NativeEventEmitter(
+      NativeModules.iHealthDeviceManagerModule
+    );
+
+    const onScan = managerEmitter.addListener(
+      iHealthDeviceManagerModule.Event_Scan_Device,
+      event => setDevices(prev => [...prev, event])
+    );
+
+    const onConnected = managerEmitter.addListener(
+      iHealthDeviceManagerModule.Event_Device_Connected,
+      event => setConnectedMac(event.mac)
+    );
+
+    const onDisconnect = managerEmitter.addListener(
+      iHealthDeviceManagerModule.Event_Device_Disconnect,
+      () => setConnectedMac(null)
+    );
+
+    return () => {
+      onScan.remove();
+      onConnected.remove();
+      onDisconnect.remove();
+    };
+  }, []);
+
+  useEffect(() => {
+    const bp5sEmitter = new NativeEventEmitter(NativeModules.BP5SModule);
+
+    const onData = bp5sEmitter.addListener(BP5SModule.Event_Notify, event => {
+      setResult(JSON.stringify(event));
+    });
+
+    return () => onData.remove();
+  }, []);
+
+  return (
+    <View>
+      <Button
+        title="Scan"
+        onPress={() => {
+          setDevices([]);
+          iHealthDeviceManagerModule.startDiscovery(iHealthDeviceManagerModule.BP5S);
+        }}
+      />
+
+      {devices.map(device => (
+        <Button
+          key={device.mac}
+          title={`Connect ${device.mac}`}
+          onPress={() =>
+            iHealthDeviceManagerModule.connectDevice(
+              device.mac,
+              iHealthDeviceManagerModule.BP5S
+            )
+          }
+        />
+      ))}
+
+      {connectedMac && (
+        <Button
+          title="Start Measure"
+          onPress={() => BP5SModule.startMeasure(connectedMac)}
+        />
+      )}
+
+      <Text>{result}</Text>
+    </View>
+  );
+}
+```
+
+## Event listening in v2
+
+### Required listener pattern
+
+`v2.0.0` is a breaking change for event subscriptions: use `NativeEventEmitter`, not `DeviceEventEmitter`.
+
+```js
+import { NativeEventEmitter, NativeModules } from 'react-native';
+import { BP5SModule } from '@ihealth/ihealthlibrary-react-native';
+
+useEffect(() => {
+  const emitter = new NativeEventEmitter(NativeModules.BP5SModule);
+
+  const listener = emitter.addListener(BP5SModule.Event_Notify, event => {
+    console.log(event);
+  });
+
+  return () => listener.remove();
+}, []);
+```
+
+### Common mistakes
+
+- Do not use `DeviceEventEmitter`.
+- Do not create the emitter at module top level.
+- Create the emitter after the app is mounted, usually inside `useEffect`.
+- Always remove listeners on unmount.
+
+### NativeModules mapping
+
+Use the matching native module when creating the emitter:
+
+- `iHealthDeviceManagerModule` -> `NativeModules.iHealthDeviceManagerModule`
+- `BP5SModule` -> `NativeModules.BP5SModule`
+- `PO3Module` -> `NativeModules.PO3Module`
+- `HS2SModule` -> `NativeModules.HS2SModule`
+- `BG5SModule` -> `NativeModules.BG5SModule`
+- `AM6Module` -> `NativeModules.AM6Module`
+- `BTMModule` -> `NativeModules.BTMModule`
+
+## Device management
+
+### Scan for devices
+
+```js
+import { iHealthDeviceManagerModule } from '@ihealth/ihealthlibrary-react-native';
+
+iHealthDeviceManagerModule.startDiscovery(iHealthDeviceManagerModule.BP5S);
+iHealthDeviceManagerModule.stopDiscovery();
+```
+
+Common device type constants include:
+
+- `iHealthDeviceManagerModule.BP5`
+- `iHealthDeviceManagerModule.BP5S`
+- `iHealthDeviceManagerModule.BP7`
+- `iHealthDeviceManagerModule.BP7S`
+- `iHealthDeviceManagerModule.BP3L`
+- `iHealthDeviceManagerModule.KN550`
+- `iHealthDeviceManagerModule.PO3`
+- `iHealthDeviceManagerModule.PO1`
+- `iHealthDeviceManagerModule.HS2S`
+- `iHealthDeviceManagerModule.BG5S`
+- `iHealthDeviceManagerModule.BG1A`
+- `iHealthDeviceManagerModule.BG1S`
+- `iHealthDeviceManagerModule.AM3S`
+- `iHealthDeviceManagerModule.AM4`
+- `iHealthDeviceManagerModule.AM5`
+- `iHealthDeviceManagerModule.AM6`
+- `iHealthDeviceManagerModule.BTM`
+- `iHealthDeviceManagerModule.NT13B`
+- `iHealthDeviceManagerModule.TS28B`
+- `iHealthDeviceManagerModule.PT3SBT`
+
+### Connect and disconnect
+
+```js
+iHealthDeviceManagerModule.connectDevice(mac, iHealthDeviceManagerModule.BP5S);
+iHealthDeviceManagerModule.disconnectDevice(mac, iHealthDeviceManagerModule.BP5S);
+```
+
+### Device manager events
+
+Listen on `NativeModules.iHealthDeviceManagerModule` for:
+
+- `Event_Scan_Device`
+- `Event_Scan_Finish`
+- `Event_Device_Connected`
+- `Event_Device_Connect_Failed`
+- `Event_Device_Disconnect`
+- `Event_Authenticate_Result` on Android only
+
+## Supported devices
+
+React Native v2 supports the following device families:
+
+- Blood pressure: `BP5`, `BP5S`, `BP3L`, `BP7`, `BP7S`, `KN-550BT`
+- Blood oxygen: `PO3`, `PO1`
+- Scales: `HS2S`, `HS2S Pro`, `HS4S`, `HS6`
+- Blood glucose: `BG5S`, `BG5`, `BG1`, `BG1A`, `BG1S`
+- Activity trackers: `AM3S`, `AM4`, `AM5`, `AM6`
+- Thermometers: `BTM`, `TS28B`, `NT13B`, `PT3SBT`
+
+See the left sidebar for per-device API details.
+
+## Migration from v1.x
+
+If you are upgrading from React Native SDK `v1.x`, the main code change is the event listener migration:
+
+```js
+// v1.x
+import { DeviceEventEmitter } from 'react-native';
+DeviceEventEmitter.addListener(BP5SModule.Event_Notify, handler);
+
+// v2.x
+import { NativeEventEmitter, NativeModules } from 'react-native';
+const emitter = new NativeEventEmitter(NativeModules.BP5SModule);
+emitter.addListener(BP5SModule.Event_Notify, handler);
+```
+
+Your device API calls generally do not need to change.
+
+## FAQ
+
+### I can scan and connect, but I never receive measurement data
+
+Make sure the `NativeEventEmitter` is created inside `useEffect` rather than at module top level or too early in component initialization.
+
+### Android calls have no effect
+
+Check that:
+
+- the `.pem` file is present in `android/app/src/main/assets/`
+- `sdkAuthWithLicense()` is called once on app startup
+- Bluetooth runtime permissions were granted
+
 
