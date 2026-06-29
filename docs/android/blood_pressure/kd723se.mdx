@@ -1,0 +1,284 @@
+---
+title: KD723SE
+sidebar_position: 9
+---
+
+The Android SDK supports KD723SE in v2.16.0 and above.
+
+:::info
+1. Scan and connect the KD-723SE blood pressure monitor (encrypted "new protocol" device).
+2. Use `MemoryDataGroupNumberKd723se` to read/delete memory for user group 1 or group 2
+   (`GROUP_1` → user id `0`, `GROUP_2` → `1` on the wire). `GROUP_ALL` is **not** supported by
+   memory count / memory data on this device.
+:::
+
+## Connection to device
+
+### 1. Listen to device notify
+
+```java
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+
+    @Override
+    public void onScanDevice(String mac, String deviceType, int rssi, Map manufactorData) { }
+
+    @Override
+    public void onDeviceConnectionStateChange(String mac, String deviceType, int status, int errorID, Map manufactorData){ }
+
+    @Override
+    public void onScanError(String reason, long latency) { }
+
+    @Override
+    public void onScanFinish() { }
+
+    @Override
+    public void onDeviceNotify(String mac, String deviceType,
+                                String action, String message) { }
+};
+int callbackId = iHealthDevicesManager.getInstance().registerClientCallback(miHealthDevicesCallback);
+iHealthDevicesManager.getInstance().addCallbackFilterForDeviceType(callbackId, iHealthDevicesManager.TYPE_KD723SE);
+iHealthDevicesManager.getInstance().addCallbackFilterForAddress(callbackId, String... macs);
+```
+
+### 2. Scan for KD-723SE devices
+
+```java
+iHealthDevicesManager.getInstance().startDiscovery(DiscoveryTypeEnum.KD723SE);
+```
+
+### 3. Connect to KD-723SE devices
+
+```java
+iHealthDevicesManager.getInstance().connectDevice("", mac, iHealthDevicesManager.TYPE_KD723SE);
+
+Kd723seControl control = iHealthDevicesManager.getInstance().getKd723seControl(mac);
+```
+
+## API reference
+
+### Set device time
+
+Sends the phone’s current date and time (default time zone) to the device. The boolean argument is **24-hour clock on the device** (`true` = 24-hour mode).
+
+```java
+import com.ihealth.communication.control.Kd723seControl;
+import com.ihealth.communication.manager.iHealthDevicesManager;
+
+Kd723seControl control = iHealthDevicesManager.getInstance().getKd723seControl(mDeviceMac);
+control.setTime(true);
+```
+
+```java
+// Return value — success (message is often empty)
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (BpProfile.ACTION_SET_TIME.equals(action)) {
+            // Time set completed
+        } else if (BpProfile.ACTION_ERROR_BP.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                int errorId = obj.getInt(BpProfile.ERROR_NUM_BP);
+                String errorMessage = obj.getString(BpProfile.ERROR_DESCRIPTION_BP);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+};
+```
+
+### Get function information
+
+Returns capability flags, firmware/hardware version strings, the device time string, the
+clock mode and IDPS fields. The JSON uses `BpProfile` key names.
+
+```java
+Kd723seControl control = iHealthDevicesManager.getInstance().getKd723seControl(mDeviceMac);
+control.getFunctionInfo();
+```
+
+```java
+// Return value — action: BpProfile.ACTION_FUNCTION_INFORMATION_BP
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (BpProfile.ACTION_FUNCTION_INFORMATION_BP.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                int lastOperatingState = obj.getInt(BpProfile.LAST_OPERATING_STATE);
+                boolean haveOffline = obj.getBoolean(BpProfile.FUNCTION_HAVE_OFFLINE);
+                int memoryGroup = obj.getInt(BpProfile.MEMORY_GROUP);
+                int maxMemoryCapacity = obj.getInt(BpProfile.MAX_MEMORY_CAPACITY);
+                boolean selfUpdate = obj.getBoolean(BpProfile.FUNCTION_HAVE_SELF_UPDATE);
+                String deviceTime = obj.getString(BpProfile.DEVICE_TIME);
+                boolean is24Hour = obj.getBoolean(BpProfile.IS_24_HOUR);
+                String protocol = obj.getString(BpProfile.PROTOCOL);
+                String accessoryName = obj.getString(BpProfile.ACCESSORY_NAME);
+                String firmwareVersion = obj.getString(BpProfile.FIRMWARE_VERSION);
+                String hardwareVersion = obj.getString(BpProfile.HARDWARE_VERSION);
+                String manufacturer = obj.getString(BpProfile.MANUFACTURER);
+                String modelNumber = obj.getString(BpProfile.MODEL_NUMBER);
+                String serialNumber = obj.getString(BpProfile.SERIAL_NUMBER);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+};
+```
+
+### Get memory record count
+
+```java
+import com.ihealth.sdk.constants.MemoryDataGroupNumberKd723se;
+
+Kd723seControl control = iHealthDevicesManager.getInstance().getKd723seControl(mDeviceMac);
+control.getMemoryCount(MemoryDataGroupNumberKd723se.GROUP_1);
+```
+
+```java
+// Return value — action: BpProfile.ACTION_GET_MEMORY_COUNT
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (BpProfile.ACTION_GET_MEMORY_COUNT.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                int count = obj.getInt(BpProfile.MEMORY_COUNT);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+};
+```
+
+### Get latest memory data
+
+Returns up to two most-recent records (one per user group), keyed by
+`Kd723SEMessageKey.LATEST_MEMORY_DATA1` / `LATEST_MEMORY_DATA2`. Each record shares the
+fields of a memory record (see below).
+
+```java
+Kd723seControl control = iHealthDevicesManager.getInstance().getKd723seControl(mDeviceMac);
+control.getLatestMemoryData();
+```
+
+```java
+// Return value — action: Kd723SEMessageKey.ACTION_GET_LATEST_MEMORY_DATA
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Kd723SEMessageKey.ACTION_GET_LATEST_MEMORY_DATA.equals(action)) {
+            try {
+                JSONObject root = new JSONObject(message);
+                JSONObject data1 = root.optJSONObject(Kd723SEMessageKey.LATEST_MEMORY_DATA1);
+                JSONObject data2 = root.optJSONObject(Kd723SEMessageKey.LATEST_MEMORY_DATA2);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+};
+```
+
+### Get memory (history) data
+
+Data arrive in one or more BLE packets; the SDK assembles them and delivers a single notify
+when the transfer is complete.
+
+```java
+Kd723seControl control = iHealthDevicesManager.getInstance().getKd723seControl(mDeviceMac);
+control.getMemoryData(MemoryDataGroupNumberKd723se.GROUP_1);
+```
+
+```java
+// Return value — action: BpProfile.ACTION_GET_MEMORY_DATA
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (BpProfile.ACTION_GET_MEMORY_DATA.equals(action)) {
+            try {
+                JSONObject root = new JSONObject(message);
+                JSONArray historyArr = root.getJSONArray(BpProfile.MEMORY_DATA);
+                for (int i = 0; i < historyArr.length(); i++) {
+                    JSONObject obj = historyArr.getJSONObject(i);
+                    String time = obj.getString(BpProfile.MEASUREMENT_DATE_BP);
+                    int sys = obj.getInt(BpProfile.HIGH_BLOOD_PRESSURE_BP);
+                    int dia = obj.getInt(BpProfile.LOW_BLOOD_PRESSURE_BP);
+                    int heartRate = obj.getInt(BpProfile.PULSE_BP);
+                    int schemeId = obj.getInt(BpProfile.SCHEME_ID);
+                    boolean irregular = obj.getBoolean(BpProfile.IRREGULAR);
+                    boolean bodyMovement = obj.getBoolean(BpProfile.BODY_MOVEMENT);
+                    boolean isRightTime = obj.getBoolean(BpProfile.IS_RIGHT_TIME);
+                    String dataID = obj.getString(BpProfile.DATAID);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+};
+```
+
+### Delete memory data
+
+```java
+Kd723seControl control = iHealthDevicesManager.getInstance().getKd723seControl(mDeviceMac);
+control.deleteMemoryData(MemoryDataGroupNumberKd723se.GROUP_1);
+```
+
+```java
+// Return value — action: BpProfile.ACTION_DELETE_MEMORY_DATA (message is often empty)
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (BpProfile.ACTION_DELETE_MEMORY_DATA.equals(action)) {
+            // Delete completed
+        }
+    }
+};
+```
+
+### Disconnect KD-723SE device
+
+```java
+Kd723seControl control = iHealthDevicesManager.getInstance().getKd723seControl(mDeviceMac);
+control.disconnect();
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+     @Override
+    public void onDeviceConnectionStateChange(String mac, String deviceType, int status, int errorID, Map manufactorData) {
+        if (iHealthDevicesManager.DEVICE_STATE_DISCONNECTED == status) {
+            // Disconnected
+        }
+    }
+};
+```
+
+### Release control (optional)
+
+```java
+Kd723seControl control = iHealthDevicesManager.getInstance().getKd723seControl(mDeviceMac);
+if (control != null) {
+    control.destroy();
+}
+```
+
+### Errors and command timeout
+
+`Kd723seControl` treats `BpProfile.ACTION_ERROR_BP` (`error_bp`), communication timeout
+(`action_communication_timeout`), and the actions listed above as completion paths. Compare
+`action` with `iHealthDevicesManager.IHEALTH_COMM_TIMEOUT` where you handle timeouts globally.
+
+```java
+if (BpProfile.ACTION_ERROR_BP.equals(action)) {
+    JSONObject obj = new JSONObject(message);
+    int errorId = obj.getInt(BpProfile.ERROR_NUM_BP);
+    String errorMessage = obj.getString(BpProfile.ERROR_DESCRIPTION_BP);
+}
+```

@@ -1,0 +1,305 @@
+---
+title: BP300CL
+sidebar_position: 10
+---
+
+The Android SDK supports BP300CL in v2.16.0 and above.
+
+:::info
+1. Scan and connect the BP-300CL blood pressure monitor.
+2. Use `MemoryDataGroupNumberBp300Cv` to read memory for user group 1, user group 2, or all
+   (`GROUP_1` → user id `1`, `GROUP_2` → `2`, `GROUP_ALL` → `254` on the wire).
+:::
+
+## Connection to device
+
+### 1. Listen to device notify
+
+```java
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+
+    @Override
+    public void onScanDevice(String mac, String deviceType, int rssi, Map manufactorData) { }
+
+    @Override
+    public void onDeviceConnectionStateChange(String mac, String deviceType, int status, int errorID, Map manufactorData){ }
+
+    @Override
+    public void onScanError(String reason, long latency) { }
+
+    @Override
+    public void onScanFinish() { }
+
+    @Override
+    public void onDeviceNotify(String mac, String deviceType,
+                                String action, String message) { }
+};
+int callbackId = iHealthDevicesManager.getInstance().registerClientCallback(miHealthDevicesCallback);
+iHealthDevicesManager.getInstance().addCallbackFilterForDeviceType(callbackId, iHealthDevicesManager.TYPE_BP300CL);
+iHealthDevicesManager.getInstance().addCallbackFilterForAddress(callbackId, String... macs);
+```
+
+### 2. Scan for BP-300CL devices
+
+```java
+iHealthDevicesManager.getInstance().startDiscovery(DiscoveryTypeEnum.BP300CL);
+```
+
+### 3. Connect to BP-300CL devices
+
+```java
+iHealthDevicesManager.getInstance().connectDevice("", mac, iHealthDevicesManager.TYPE_BP300CL);
+
+Bp300ClControl control = iHealthDevicesManager.getInstance().getBp300ClControl(mac);
+```
+
+## API reference
+
+### Get battery
+
+```java
+import com.ihealth.communication.control.Bp300ClControl;
+import com.ihealth.communication.manager.iHealthDevicesManager;
+
+Bp300ClControl control = iHealthDevicesManager.getInstance().getBp300ClControl(mDeviceMac);
+control.getBattery();
+```
+
+```java
+// Return value — action: Bp300ClMessageKey.ACTION_BATTERY_CBP
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Bp300ClMessageKey.ACTION_BATTERY_CBP.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                int battery = obj.getInt(Bp300CvMessageKey.BATTERY_BP); // 0-100
+                int batteryStatus = obj.getInt(BpProfile.BATTERY_STATUS); // charging status
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+};
+```
+
+### Get device IDPS
+
+```java
+Bp300ClControl control = iHealthDevicesManager.getInstance().getBp300ClControl(mDeviceMac);
+control.getIdps();
+```
+
+```java
+// Return value — action: Bp300ClMessageKey.ACTION_IDPS_BP300CL
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Bp300ClMessageKey.ACTION_IDPS_BP300CL.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                String firmwareVersion = obj.getString(iHealthDevicesIDPS.FIRMWAREVERSION);
+                String hardwareVersion = obj.getString(iHealthDevicesIDPS.HARDWAREVERSION);
+                String protocolString = obj.getString(iHealthDevicesIDPS.PROTOCOLSTRING);
+                String accessoryName = obj.getString(iHealthDevicesIDPS.ACCESSORYNAME);
+                String modelNumber = obj.getString(iHealthDevicesIDPS.MODENUMBER);
+                String manufacturer = obj.getString(iHealthDevicesIDPS.MANUFACTURER);
+                String serialNumber = obj.getString(iHealthDevicesIDPS.SERIALNUMBER);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+};
+```
+
+### Get function information
+
+```java
+Bp300ClControl control = iHealthDevicesManager.getInstance().getBp300ClControl(mDeviceMac);
+control.getFunctionInfo();
+```
+
+```java
+// Return value — action: Bp300ClMessageKey.ACTION_FUNCTION_INFORMATION_BP
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Bp300ClMessageKey.ACTION_FUNCTION_INFORMATION_BP.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                boolean haveOffline = obj.getBoolean(BpProfile.FUNCTION_HAVE_OFFLINE);
+                boolean haveThreeMeasureSetting = obj.getBoolean(Bp300ClMessageKey.HAVE_THREE_MEASURE_SETTING);
+                boolean haveVoice = obj.getBoolean(Bp300ClMessageKey.HAVE_VOICE);
+                boolean haveHRV = obj.getBoolean(Bp300ClMessageKey.HAVE_HRV);
+                int memoryGroup = obj.getInt(BpProfile.MEMORY_GROUP);
+                int maxMemoryCapacity = obj.getInt(BpProfile.MAX_MEMORY_CAPACITY);
+                boolean selfUpdate = obj.getBoolean(BpProfile.FUNCTION_HAVE_SELF_UPDATE);
+                String deviceTime = obj.getString(BpProfile.DEVICE_TIME);
+                String deviceSysTime = obj.getString(BpProfile.DEVICE_SYS_TIME);
+                int currentUser = obj.getInt(BpProfile.CURRENT_USER);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+};
+```
+
+### Get memory record count
+
+```java
+import com.ihealth.sdk.constants.MemoryDataGroupNumberBp300Cv;
+
+Bp300ClControl control = iHealthDevicesManager.getInstance().getBp300ClControl(mDeviceMac);
+control.getMemoryCount(MemoryDataGroupNumberBp300Cv.GROUP_1);
+```
+
+```java
+// Return value — action: Bp300ClMessageKey.ACTION_GET_MEMORY_COUNT
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Bp300ClMessageKey.ACTION_GET_MEMORY_COUNT.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                int count = obj.getInt(BpProfile.MEMORY_COUNT);
+                int group = obj.getInt(BpProfile.FUNCTION_MEMORY_GROUP);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+};
+```
+
+### Get latest memory data
+
+Returns up to two most-recent records keyed by `Bp300ClMessageKey.LATEST_MEMORY_DATA1` /
+`LATEST_MEMORY_DATA2`. Each record shares the fields of a memory record (see below).
+
+```java
+Bp300ClControl control = iHealthDevicesManager.getInstance().getBp300ClControl(mDeviceMac);
+control.getLatestMemoryData();
+```
+
+```java
+// Return value — action: Bp300ClMessageKey.ACTION_GET_LATEST_MEMORY_DATA
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Bp300ClMessageKey.ACTION_GET_LATEST_MEMORY_DATA.equals(action)) {
+            try {
+                JSONObject root = new JSONObject(message);
+                JSONObject data1 = root.optJSONObject(Bp300ClMessageKey.LATEST_MEMORY_DATA1);
+                JSONObject data2 = root.optJSONObject(Bp300ClMessageKey.LATEST_MEMORY_DATA2);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+};
+```
+
+### Get memory (history) data
+
+Data arrive in one or more BLE packets; the SDK assembles them and delivers a single notify
+when the transfer is complete.
+
+```java
+Bp300ClControl control = iHealthDevicesManager.getInstance().getBp300ClControl(mDeviceMac);
+control.getMemoryData(MemoryDataGroupNumberBp300Cv.GROUP_1);
+```
+
+```java
+// Return value — action: BpProfile.ACTION_GET_MEMORY_DATA
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (BpProfile.ACTION_GET_MEMORY_DATA.equals(action)) {
+            try {
+                JSONObject root = new JSONObject(message);
+                JSONArray historyArr = root.getJSONArray(BpProfile.MEMORY_DATA);
+                for (int i = 0; i < historyArr.length(); i++) {
+                    JSONObject obj = historyArr.getJSONObject(i);
+                    String time = obj.getString(BpProfile.MEASUREMENT_DATE_BP);
+                    int sys = obj.getInt(BpProfile.HIGH_BLOOD_PRESSURE_BP);
+                    int dia = obj.getInt(BpProfile.LOW_BLOOD_PRESSURE_BP);
+                    int heartRate = obj.getInt(BpProfile.PULSE_BP);
+                    boolean irregular = obj.getBoolean(BpProfile.IRREGULAR);
+                    boolean bodyMovement = obj.getBoolean(BpProfile.BODY_MOVEMENT);
+                    boolean cuffLoose = obj.getBoolean(BpProfile.CUF_LOOSE);
+                    int timeFlag = obj.getInt(Bp300ClMessageKey.TIME_FLAG);
+                    int measureFlag = obj.getInt(Bp300ClMessageKey.MEASURE_FLAG);
+                    String dataID = obj.getString(BpProfile.DATAID);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+};
+```
+
+### Finish reading memory data
+
+After reading the history you can acknowledge/finalize the transfer for the given user group.
+
+```java
+Bp300ClControl control = iHealthDevicesManager.getInstance().getBp300ClControl(mDeviceMac);
+control.finishGetMemoryData(MemoryDataGroupNumberBp300Cv.GROUP_1);
+```
+
+```java
+// Return value — action: BpProfile.ACTION_DELETE_MEMORY_DATA (message is often empty)
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (BpProfile.ACTION_DELETE_MEMORY_DATA.equals(action)) {
+            // Finish completed
+        }
+    }
+};
+```
+
+### Disconnect BP-300CL device
+
+```java
+Bp300ClControl control = iHealthDevicesManager.getInstance().getBp300ClControl(mDeviceMac);
+control.disconnect();
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+     @Override
+    public void onDeviceConnectionStateChange(String mac, String deviceType, int status, int errorID, Map manufactorData) {
+        if (iHealthDevicesManager.DEVICE_STATE_DISCONNECTED == status) {
+            // Disconnected
+        }
+    }
+};
+```
+
+### Release control (optional)
+
+```java
+Bp300ClControl control = iHealthDevicesManager.getInstance().getBp300ClControl(mDeviceMac);
+if (control != null) {
+    control.destroy();
+}
+```
+
+### Errors and command timeout
+
+`Bp300ClControl` treats `Bp300ClMessageKey.ACTION_ERROR_BP` (`error_bp`), communication timeout
+(`action_communication_timeout`), and the actions listed above as completion paths. Compare
+`action` with `iHealthDevicesManager.IHEALTH_COMM_TIMEOUT` where you handle timeouts globally.
+
+```java
+if (Bp300ClMessageKey.ACTION_ERROR_BP.equals(action)) {
+    JSONObject obj = new JSONObject(message);
+    int errorId = obj.getInt(BpProfile.ERROR_NUM_BP);
+    String errorMessage = obj.getString(BpProfile.ERROR_DESCRIPTION_BP);
+}
+```

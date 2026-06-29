@@ -1,0 +1,291 @@
+---
+title: KN550LT
+sidebar_position: 11
+---
+
+The Android SDK supports KN550LT in v2.16.0 and above.
+
+:::info
+1. Scan and connect the KN-550LT blood pressure monitor.
+2. KN-550LT keeps a single memory bank — `getMemoryCount` / `getMemoryData` / `deleteMemoryData`
+   take no user-group argument.
+:::
+
+## Connection to device
+
+### 1. Listen to device notify
+
+```java
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+
+    @Override
+    public void onScanDevice(String mac, String deviceType, int rssi, Map manufactorData) { }
+
+    @Override
+    public void onDeviceConnectionStateChange(String mac, String deviceType, int status, int errorID, Map manufactorData){ }
+
+    @Override
+    public void onScanError(String reason, long latency) { }
+
+    @Override
+    public void onScanFinish() { }
+
+    @Override
+    public void onDeviceNotify(String mac, String deviceType,
+                                String action, String message) { }
+};
+int callbackId = iHealthDevicesManager.getInstance().registerClientCallback(miHealthDevicesCallback);
+iHealthDevicesManager.getInstance().addCallbackFilterForDeviceType(callbackId, iHealthDevicesManager.TYPE_KN550LT);
+iHealthDevicesManager.getInstance().addCallbackFilterForAddress(callbackId, String... macs);
+```
+
+### 2. Scan for KN-550LT devices
+
+```java
+iHealthDevicesManager.getInstance().startDiscovery(DiscoveryTypeEnum.KN550LT);
+```
+
+### 3. Connect to KN-550LT devices
+
+```java
+iHealthDevicesManager.getInstance().connectDevice("", mac, iHealthDevicesManager.TYPE_KN550LT);
+
+Kn550LtControl control = iHealthDevicesManager.getInstance().getKn550LtControl(mac);
+```
+
+## API reference
+
+### Get device IDPS
+
+```java
+import com.ihealth.communication.control.Kn550LtControl;
+import com.ihealth.communication.manager.iHealthDevicesManager;
+
+Kn550LtControl control = iHealthDevicesManager.getInstance().getKn550LtControl(mDeviceMac);
+control.getIdps();
+```
+
+```java
+// Return value — action: Kn550LtMessageKey.ACTION_IDPS_KN550
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Kn550LtMessageKey.ACTION_IDPS_KN550.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                String firmwareVersion = obj.getString(iHealthDevicesIDPS.FIRMWAREVERSION);
+                String hardwareVersion = obj.getString(iHealthDevicesIDPS.HARDWAREVERSION);
+                String protocolString = obj.getString(iHealthDevicesIDPS.PROTOCOLSTRING);
+                String accessoryName = obj.getString(iHealthDevicesIDPS.ACCESSORYNAME);
+                String modelNumber = obj.getString(iHealthDevicesIDPS.MODENUMBER);
+                String manufacturer = obj.getString(iHealthDevicesIDPS.MANUFACTURER);
+                String serialNumber = obj.getString(iHealthDevicesIDPS.SERIALNUMBER);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+};
+```
+
+### Get battery
+
+```java
+Kn550LtControl control = iHealthDevicesManager.getInstance().getKn550LtControl(mDeviceMac);
+control.getBattery();
+```
+
+```java
+// Return value — action: Kn550LtMessageKey.ACTION_BATTERY_BP
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Kn550LtMessageKey.ACTION_BATTERY_BP.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                int battery = obj.getInt(Kn550LtMessageKey.BATTERY_BP); // 0-100
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+};
+```
+
+### Get device time
+
+```java
+Kn550LtControl control = iHealthDevicesManager.getInstance().getKn550LtControl(mDeviceMac);
+control.getTime();
+```
+
+```java
+// Return value — action: BpProfile.ACTION_GET_TIME
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (BpProfile.ACTION_GET_TIME.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                String deviceTime = obj.getString(BpProfile.DEVICE_TIME);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+};
+```
+
+### Get function information
+
+```java
+Kn550LtControl control = iHealthDevicesManager.getInstance().getKn550LtControl(mDeviceMac);
+control.getFunctionInfo();
+```
+
+```java
+// Return value — action: Kn550LtMessageKey.ACTION_FUNCTION_INFORMATION_BP
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Kn550LtMessageKey.ACTION_FUNCTION_INFORMATION_BP.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                int status = obj.getInt(Kn550LtMessageKey.STATUS);
+                boolean haveOffline = obj.getBoolean(Kn550LtMessageKey.FUNCTION_HAVE_OFFLINE);
+                boolean armMeasure = obj.getBoolean(Kn550LtMessageKey.FUNCTION_IS_ARM_MEASURE);
+                int memoryGroup = obj.getInt(Kn550LtMessageKey.MEMORY_GROUP);
+                int maxMemoryCapacity = obj.getInt(Kn550LtMessageKey.MAX_MEMORY_CAPACITY);
+                boolean selfUpdate = obj.getBoolean(Kn550LtMessageKey.FUNCTION_HAVE_SELF_UPDATE);
+                int showUnit = obj.getInt(Kn550LtMessageKey.SHOW_UNIT);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+};
+```
+
+### Get memory record count
+
+```java
+Kn550LtControl control = iHealthDevicesManager.getInstance().getKn550LtControl(mDeviceMac);
+control.getMemoryCount();
+```
+
+```java
+// Return value — action: Kn550LtMessageKey.ACTION_GET_MEMORY_COUNT
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Kn550LtMessageKey.ACTION_GET_MEMORY_COUNT.equals(action)) {
+            try {
+                JSONObject obj = new JSONObject(message);
+                int count = obj.getInt(Kn550LtMessageKey.MEMORY_COUNT);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+};
+```
+
+### Get memory (history) data
+
+Data arrive in one or more BLE packets; the SDK assembles them and delivers a single notify
+when the transfer is complete.
+
+```java
+Kn550LtControl control = iHealthDevicesManager.getInstance().getKn550LtControl(mDeviceMac);
+control.getMemoryData();
+```
+
+```java
+// Return value — action: Kn550LtMessageKey.ACTION_GET_MEMORY_DATA
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Kn550LtMessageKey.ACTION_GET_MEMORY_DATA.equals(action)) {
+            try {
+                JSONObject root = new JSONObject(message);
+                JSONArray historyArr = root.getJSONArray(Kn550LtMessageKey.MEMORY_DATA);
+                for (int i = 0; i < historyArr.length(); i++) {
+                    JSONObject obj = historyArr.getJSONObject(i);
+                    String time = obj.getString(Kn550LtMessageKey.MEASUREMENT_DATE_BP);
+                    int sys = obj.getInt(Kn550LtMessageKey.HIGH_BLOOD_PRESSURE_BP);
+                    int dia = obj.getInt(Kn550LtMessageKey.LOW_BLOOD_PRESSURE_BP);
+                    int heartRate = obj.getInt(Kn550LtMessageKey.PULSE_BP);
+                    boolean bodyMovement = obj.getBoolean(Kn550LtMessageKey.BODY_MOVEMENT);
+                    boolean cuffLoose = obj.getBoolean(Kn550LtMessageKey.CUF_LOOSE);
+                    boolean haveIHB = obj.getBoolean(Kn550LtMessageKey.HAVE_IHB);
+                    int timeFlag = obj.getInt(Kn550LtMessageKey.TIME_FLAG);
+                    String dataID = obj.getString(Kn550LtMessageKey.DATAID);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+};
+```
+
+### Delete memory data
+
+```java
+Kn550LtControl control = iHealthDevicesManager.getInstance().getKn550LtControl(mDeviceMac);
+control.deleteMemoryData();
+```
+
+```java
+// Return value — action: Kn550LtMessageKey.ACTION_DELETE_MEMORY_DATA (message is often empty)
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+    @Override
+    public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+        if (Kn550LtMessageKey.ACTION_DELETE_MEMORY_DATA.equals(action)) {
+            // Delete completed
+        }
+    }
+};
+```
+
+### Disconnect KN-550LT device
+
+```java
+Kn550LtControl control = iHealthDevicesManager.getInstance().getKn550LtControl(mDeviceMac);
+control.disconnect();
+```
+
+```java
+// Return value
+private iHealthDevicesCallback miHealthDevicesCallback = new iHealthDevicesCallback() {
+     @Override
+    public void onDeviceConnectionStateChange(String mac, String deviceType, int status, int errorID, Map manufactorData) {
+        if (iHealthDevicesManager.DEVICE_STATE_DISCONNECTED == status) {
+            // Disconnected
+        }
+    }
+};
+```
+
+### Release control (optional)
+
+```java
+Kn550LtControl control = iHealthDevicesManager.getInstance().getKn550LtControl(mDeviceMac);
+if (control != null) {
+    control.destroy();
+}
+```
+
+### Errors and command timeout
+
+`Kn550LtControl` treats `Kn550LtMessageKey.ACTION_ERROR_BP` (`error_bp`), communication timeout
+(`action_communication_timeout`), and the actions listed above as completion paths. Compare
+`action` with `iHealthDevicesManager.IHEALTH_COMM_TIMEOUT` where you handle timeouts globally.
+
+```java
+if (Kn550LtMessageKey.ACTION_ERROR_BP.equals(action)) {
+    JSONObject obj = new JSONObject(message);
+    int errorId = obj.getInt(BpProfile.ERROR_NUM_BP);
+    String errorMessage = obj.getString(BpProfile.ERROR_DESCRIPTION_BP);
+}
+```
